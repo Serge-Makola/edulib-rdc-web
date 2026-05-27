@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduLib RDC - Plateforme de Ressources Pédagogiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1a56db;--blue-dark:#1341b0;--blue-light:#e8f0fe;
+  --green:#0d7f5f;--green-light:#e4f7f0;
+  --amber:#c97a10;--amber-light:#fef3e2;
+  --red:#c0392b;--red-light:#fef2f2;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;
+  --gray-400:#9ca3af;--gray-600:#4b5563;--gray-800:#1f2937;--gray-900:#111827;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--gray-800);background:#fff;line-height:1.6}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+input,select,textarea{font-family:var(--font-body)}
+nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1.5px solid var(--gray-200);padding:0 1.5rem}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-logo-text{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--blue)}
+.nav-logo-sub{font-size:0.7rem;color:var(--gray-400);letter-spacing:0.1em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:0.25rem}
+.nav-link{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:0.9rem;font-weight:500;color:var(--gray-600);transition:all 0.15s;cursor:pointer}
+.nav-link:hover,.nav-link.active{background:var(--blue-light);color:var(--blue)}
+.nav-btn{padding:9px 20px;border-radius:8px;font-size:0.9rem;font-weight:500;cursor:pointer;border:none}
+.nav-btn.primary{background:var(--blue);color:#fff}.nav-btn.primary:hover{background:var(--blue-dark)}
+.nav-btn.outline{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}.nav-btn.outline:hover{background:var(--blue-light)}
+.cart-count{background:var(--red);color:#fff;font-size:0.65rem;font-weight:700;border-radius:99px;padding:1px 5px;margin-left:2px;display:none}
+.mobile-menu-btn{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer;background:none;border:none}
+.mobile-menu-btn span{display:block;width:22px;height:2px;background:var(--gray-800);border-radius:2px}
+.mobile-menu{display:none;position:fixed;inset:64px 0 0 0;background:#fff;z-index:99;padding:1.5rem;border-top:1px solid var(--gray-200);flex-direction:column;gap:0.5rem;overflow-y:auto}
+.mobile-menu.open{display:flex}
+.hero{background:linear-gradient(135deg,#0f2d6e 0%,#1a56db 60%,#2d7af7 100%);color:#fff;padding:5rem 1.5rem 4rem;position:relative;overflow:hidden}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:99px;padding:5px 14px;font-size:0.8rem;font-weight:500;margin-bottom:1.5rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.15;margin-bottom:1.2rem}
+.hero h1 span{color:#93c5fd}
+.hero p{font-size:1.05rem;opacity:0.85;margin-bottom:2rem;max-width:480px;line-height:1.7}
+.hero-actions{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn-white{background:#fff;color:var(--blue);padding:12px 28px;border-radius:9px;font-weight:600;font-size:0.95rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.12)}
+.btn-white:hover{transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:#fff;padding:12px 28px;border-radius:9px;font-weight:600;font-size:0.95rem;border:1.5px solid rgba(255,255,255,0.5);cursor:pointer}
+.btn-ghost:hover{background:rgba(255,255,255,0.1)}
+.hero-visual{display:flex;flex-direction:column;gap:1rem}
+.hero-card{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:1.25rem 1.5rem}
+.hero-card-label{font-size:0.75rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.35rem;font-weight:500}
+.hero-card-value{font-family:var(--font-display);font-size:1.9rem;font-weight:700}
+.hero-card-desc{font-size:0.8rem;opacity:0.75;margin-top:0.2rem}
+.hero-cards-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.search-section{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:2rem 1.5rem}
+.search-inner{max-width:800px;margin:0 auto}
+.search-box{position:relative;margin-bottom:1rem}
+.search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none}
+.search-box input{width:100%;padding:14px 16px 14px 48px;border:2px solid var(--gray-200);border-radius:12px;font-size:1rem;background:#fff;outline:none;transition:border-color 0.15s}
+.search-box input:focus{border-color:var(--blue)}
+.filter-chips{display:flex;gap:0.5rem;flex-wrap:wrap}
+.chip{padding:7px 16px;border-radius:99px;border:1.5px solid var(--gray-200);background:#fff;font-size:0.85rem;font-weight:500;color:var(--gray-600);cursor:pointer;transition:all 0.15s}
+.chip:hover,.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.stats{padding:3rem 1.5rem}
+.stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.stat-card{text-align:center;padding:2rem 1rem;border-radius:16px;background:var(--gray-50);border:1.5px solid var(--gray-200)}
+.stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.stat-icon.blue{background:var(--blue-light);color:var(--blue)}
+.stat-icon.green{background:var(--green-light);color:var(--green)}
+.stat-icon.amber{background:var(--amber-light);color:var(--amber)}
+.stat-num{font-family:var(--font-display);font-size:2.4rem;font-weight:700;color:var(--gray-900)}
+.stat-label{font-size:0.9rem;color:var(--gray-600);margin-top:0.25rem}
+.section{padding:3rem 1.5rem}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem}
+.section-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--gray-900)}
+.section-link{color:var(--blue);font-size:0.9rem;font-weight:500;cursor:pointer}
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+.doc-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;overflow:hidden;transition:all 0.2s;cursor:pointer;display:flex;flex-direction:column}
+.doc-card:hover{border-color:var(--blue);box-shadow:0 8px 28px rgba(26,86,219,0.1);transform:translateY(-3px)}
+.doc-thumb{height:120px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative}
+.doc-thumb.droit{background:linear-gradient(135deg,#e8f0fe,#c7d7f9)}
+.doc-thumb.medecine{background:linear-gradient(135deg,#e4f7f0,#a7e9d2)}
+.doc-thumb.polytechnique{background:linear-gradient(135deg,#fef3e2,#fdd98a)}
+.doc-thumb.sciences{background:linear-gradient(135deg,#f0fdf4,#bbf7d0)}
+.doc-thumb.lettres{background:linear-gradient(135deg,#fdf2f8,#f5c2e7)}
+.doc-thumb.economie{background:linear-gradient(135deg,#fff7ed,#fed7aa)}
+.doc-body{padding:1rem 1.125rem;flex:1;display:flex;flex-direction:column}
+.doc-filiere{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem}
+.doc-filiere.droit{color:var(--blue)}.doc-filiere.medecine{color:var(--green)}.doc-filiere.polytechnique{color:var(--amber)}.doc-filiere.sciences{color:#15803d}.doc-filiere.lettres{color:#9333ea}.doc-filiere.economie{color:#c2410c}
+.doc-title{font-weight:600;font-size:0.95rem;color:var(--gray-900);margin-bottom:0.35rem;line-height:1.4;flex:1}
+.doc-prof{font-size:0.8rem;color:var(--gray-600);margin-bottom:0.75rem}
+.doc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.doc-price{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--gray-900)}
+.doc-price small{font-size:0.75rem;font-weight:400;color:var(--gray-400);font-family:var(--font-body)}
+.doc-btn{background:var(--blue-light);color:var(--blue);padding:6px 14px;border-radius:7px;font-size:0.8rem;font-weight:600;border:none;cursor:pointer}
+.doc-btn:hover{background:var(--blue);color:#fff}
+.doc-btn.green{background:var(--green-light);color:var(--green)}
+.doc-btn.green:hover{background:var(--green);color:#fff}
+.doc-badge{position:absolute;top:10px;right:10px;background:#fff;border-radius:6px;padding:3px 8px;font-size:0.7rem;font-weight:600}
+.doc-badge.new{color:var(--green)}.doc-badge.popular{color:var(--amber)}
+.filieres-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.fil-card{border-radius:14px;padding:1.5rem 1.25rem;cursor:pointer;transition:all 0.2s;text-align:center}
+.fil-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.1)}
+.fil-card.droit{background:var(--blue-light);color:var(--blue)}.fil-card.medecine{background:var(--green-light);color:var(--green)}.fil-card.polytechnique{background:var(--amber-light);color:var(--amber)}.fil-card.sciences{background:#f0fdf4;color:#15803d}.fil-card.lettres{background:#fdf4ff;color:#9333ea}.fil-card.economie{background:#fff7ed;color:#c2410c}
+.fil-icon{font-size:2.5rem;margin-bottom:0.75rem}
+.fil-name{font-weight:700;font-size:1rem;margin-bottom:0.25rem}
+.fil-count{font-size:0.8rem;opacity:0.75}
+.cta{background:linear-gradient(135deg,#0f2d6e,#1a56db);color:#fff;padding:4rem 1.5rem;text-align:center}
+.cta h2{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin-bottom:1rem}
+.cta p{opacity:0.85;max-width:500px;margin:0 auto 2rem;line-height:1.7}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+footer{background:var(--gray-900);color:var(--gray-400);padding:3rem 1.5rem 1.5rem}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+.footer-brand-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:0.5rem}
+.footer-brand-desc{font-size:0.87rem;line-height:1.6;max-width:250px}
+.footer-col-title{font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-400);margin-bottom:1rem}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
+.footer-links li{font-size:0.87rem;color:var(--gray-400);cursor:pointer}
+.footer-links li:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:0.82rem;flex-wrap:wrap;gap:0.75rem}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--gray-900);color:#fff;padding:12px 20px;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem}
+.modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem}
+.modal-title{font-family:var(--font-display);font-size:1.4rem;font-weight:700}
+.modal-close-btn{background:var(--gray-100);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--gray-600);font-size:1rem}
+.modal-close-btn:hover{background:var(--gray-200)}
+.mdet{display:flex;gap:8px;margin-bottom:0.6rem;font-size:0.9rem}
+.mdet-label{color:var(--gray-600);min-width:100px;flex-shrink:0}
+.mdet-value{font-weight:500}
+.mbtn{width:100%;padding:14px;border-radius:10px;font-size:1rem;font-weight:600;margin-top:0.75rem;cursor:pointer;border:none}
+.mbtn.primary{background:var(--blue);color:#fff}.mbtn.primary:hover{background:var(--blue-dark)}
+.mbtn.secondary{background:var(--gray-100);color:var(--gray-800)}
+.mbtn.success{background:var(--green);color:#fff}
+.mbtn.danger{background:var(--red);color:#fff}
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.cart-overlay.open{opacity:1;pointer-events:all}
+.cart-panel{position:fixed;right:0;top:0;bottom:0;width:min(380px,100vw);background:#fff;z-index:301;transform:translateX(100%);transition:transform 0.3s;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,0.12)}
+.cart-panel.open{transform:translateX(0)}
+.cart-hd{padding:1.5rem;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between}
+.cart-hd-title{font-family:var(--font-display);font-size:1.3rem;font-weight:700}
+.cart-items{flex:1;overflow-y:auto;padding:1rem}
+.cart-empty{text-align:center;color:var(--gray-400);padding:3rem 1rem}
+.cart-item{display:flex;gap:0.75rem;padding:0.9rem 0;border-bottom:1px solid var(--gray-100);align-items:flex-start}
+.cart-item-thumb{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-title{font-weight:500;font-size:0.9rem;line-height:1.3}
+.cart-item-price{font-weight:700;font-size:0.9rem;color:var(--blue);margin-top:3px}
+.cart-item-remove{color:var(--gray-400);cursor:pointer;background:none;border:none;font-size:1.1rem}
+.cart-footer{padding:1.5rem;border-top:1px solid var(--gray-200)}
+.cart-total{display:flex;justify-content:space-between;font-weight:600;font-size:1.05rem;margin-bottom:1rem}
+.cart-checkout-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer}
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2d6e,#1a56db);padding:1.5rem}
+.auth-box{background:#fff;border-radius:20px;padding:2.5rem;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.auth-logo{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue);text-align:center;margin-bottom:0.25rem}
+.auth-logo-sub{font-size:0.8rem;color:var(--gray-400);text-align:center;margin-bottom:2rem}
+.auth-title{font-family:var(--font-display);font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:1.5rem}
+.fg{display:flex;flex-direction:column;gap:1rem;margin-bottom:1rem}
+.fg-grp{display:flex;flex-direction:column;gap:0.5rem}
+.fg-lbl{font-size:0.875rem;font-weight:500;color:#374151}
+.fg-inp{padding:12px 16px;border:2px solid var(--gray-200);border-radius:10px;font-size:1rem;outline:none;transition:border-color 0.15s;color:var(--gray-800);width:100%;background:#fff}
+.fg-inp:focus{border-color:var(--blue)}
+.fg-sel{padding:12px 16px;border:2px solid var(--gray-200);border-radius:10px;font-size:1rem;outline:none;background:#fff;color:var(--gray-800);cursor:pointer;width:100%}
+.fg-sel:focus{border-color:var(--blue)}
+.auth-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.5rem}
+.auth-btn:hover{background:var(--blue-dark)}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed}
+.auth-err{background:#fef2f2;color:var(--red);border-radius:8px;padding:10px 14px;font-size:0.875rem;margin-bottom:1rem;display:none}
+.auth-err.show{display:block}
+.auth-link{color:var(--blue);cursor:pointer;font-size:0.875rem;text-align:center;margin-top:1rem;display:block}
+.auth-link.gray{color:var(--gray-400)}
+.dash-tabs{display:flex;gap:0.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.dtab{padding:9px 20px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:0.9rem;font-weight:500;color:var(--gray-600);cursor:pointer}
+.dtab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bought-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
+.bought-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;padding:1.25rem}
+.bought-card-top{display:flex;gap:0.75rem;margin-bottom:1rem}
+.bought-emoji{font-size:2rem;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bought-info{flex:1}
+.bought-title{font-weight:600;font-size:0.95rem;line-height:1.3;margin-bottom:0.25rem}
+.bought-prof{font-size:0.8rem;color:var(--gray-600)}
+.dl-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.dl-btn:hover{background:#0a6b4f}
+.empty-state{text-align:center;padding:4rem 1rem;grid-column:1/-1}
+.empty-icon{font-size:3rem;margin-bottom:1rem}
+.empty-title{font-weight:600;font-size:1.1rem;color:var(--gray-600);margin-bottom:0.5rem}
+.profile-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:16px;padding:2rem;max-width:500px}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.6rem;font-weight:700;margin-bottom:1rem}
+.profile-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:0.25rem}
+.profile-email{font-size:0.9rem;color:var(--gray-600);margin-bottom:1.5rem}
+.profile-stats{display:flex;gap:1.5rem;margin-bottom:1.5rem}
+.profile-stat-num{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--blue)}
+.profile-stat-label{font-size:0.78rem;color:var(--gray-600)}
+.admin-layout{display:flex;min-height:calc(100vh - 64px)}
+.admin-sidebar{width:240px;background:var(--gray-900);color:#fff;padding:1.5rem 0;flex-shrink:0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.adm-sidebar-title{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-400);padding:0 1.5rem;margin-bottom:0.75rem;margin-top:1.25rem}
+.adm-nav-item{display:flex;align-items:center;gap:10px;padding:10px 1.5rem;font-size:0.9rem;color:var(--gray-400);cursor:pointer;border-left:3px solid transparent;transition:all 0.15s}
+.adm-nav-item:hover{background:rgba(255,255,255,0.05);color:#fff}
+.adm-nav-item.active{background:rgba(26,86,219,0.2);color:#fff;border-left-color:var(--blue)}
+.admin-content{flex:1;padding:2rem;background:var(--gray-50);overflow-x:hidden}
+.adm-pg{display:none}.adm-pg.active{display:block}
+.adm-page-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--gray-900);margin-bottom:0.5rem}
+.adm-page-sub{color:var(--gray-600);font-size:0.9rem;margin-bottom:2rem}
+.adm-stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem}
+.adm-stat{background:#fff;border-radius:14px;padding:1.5rem;border:1.5px solid var(--gray-200)}
+.adm-stat-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+.adm-stat-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.adm-badge{font-size:0.75rem;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--green-light);color:var(--green)}
+.adm-num{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--gray-900)}
+.adm-lbl{font-size:0.85rem;color:var(--gray-600);margin-top:0.2rem}
+.adm-card{background:#fff;border-radius:14px;border:1.5px solid var(--gray-200);overflow:hidden;margin-bottom:1.5rem}
+.adm-card-hd{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem}
+.adm-card-title{font-weight:600;font-size:1rem;color:var(--gray-900)}
+.adm-tbl{width:100%;border-collapse:collapse}
+.adm-tbl th{padding:12px 16px;text-align:left;font-size:0.78rem;font-weight:600;text-transform:uppercase;color:var(--gray-600);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+.adm-tbl td{padding:12px 16px;font-size:0.875rem;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+.adm-tbl tr:last-child td{border-bottom:none}
+.adm-tbl tr:hover td{background:var(--gray-50)}
+.bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:0.75rem;font-weight:600}
+.bdg-blue{background:var(--blue-light);color:var(--blue)}.bdg-green{background:var(--green-light);color:var(--green)}.bdg-amber{background:var(--amber-light);color:var(--amber)}.bdg-purple{background:#f5f3ff;color:#7c3aed}
+.act-btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;border:none;margin-right:4px}
+.act-edit{background:var(--blue-light);color:var(--blue)}.act-edit:hover{background:var(--blue);color:#fff}
+.act-del{background:#fef2f2;color:var(--red)}.act-del:hover{background:var(--red);color:#fff}
+.adm-btn{background:var(--blue);color:#fff;padding:11px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;border:none;cursor:pointer}
+.adm-btn:hover{background:var(--blue-dark)}
+.adm-btn-sec{background:var(--gray-100);color:var(--gray-800);padding:11px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;border:none;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-full{grid-column:1/-1}
+.loading-txt{text-align:center;padding:3rem;color:var(--gray-400)}
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr}.hero-visual{display:none}.footer-top{grid-template-columns:1fr 1fr}.stats-inner{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.admin-layout{flex-direction:column}.admin-sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;padding:0.75rem}.adm-nav-item{padding:8px 12px;font-size:0.82rem;border-left:none;border-bottom:3px solid transparent}.adm-nav-item.active{border-left:none;border-bottom-color:var(--blue)}.adm-sidebar-title{display:none}.form-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.nav-links{display:none}.mobile-menu-btn{display:flex!important}.stats-inner{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr}.hero{padding:3rem 1.25rem 2.5rem}}
+</style>
+</head>
+<body>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="showPage('home')">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <div><div class="nav-logo-text">EduLib RDC</div><div class="nav-logo-sub">Ressources pédagogiques</div></div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <span class="nav-link active" id="nl-home" onclick="showPage('home');setActive('nl-home')">Accueil</span>
+      <span class="nav-link" id="nl-cat" onclick="showPage('catalogue');setActive('nl-cat')">Catalogue</span>
+      <span class="nav-link" id="nl-fil" onclick="showPage('filieres');setActive('nl-fil')">Filières</span>
+      <span class="nav-link" onclick="openCart()">🛒 Panier <span class="cart-count" id="cartCount">0</span></span>
+      <span id="navGuest">
+        <button class="nav-btn outline" onclick="showPage('login')" style="margin-right:6px">Connexion</button>
+        <button class="nav-btn primary" onclick="showPage('register')">S'inscrire</button>
+      </span>
+      <span id="navUser" style="display:none;align-items:center;gap:8px">
+        <span class="nav-link" onclick="showPage('dashboard')">👤 Mon espace</span>
+        <button class="nav-btn outline" onclick="doLogout()">Déconnexion</button>
+      </span>
+    </div>
+    <button class="mobile-menu-btn" id="mobileBtn" onclick="toggleMobile()" style="display:none">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <span class="nav-link" onclick="showPage('home');closeMobile()">🏠 Accueil</span>
+  <span class="nav-link" onclick="showPage('catalogue');closeMobile()">📚 Catalogue</span>
+  <span class="nav-link" onclick="showPage('filieres');closeMobile()">🎓 Filières</span>
+  <span class="nav-link" onclick="openCart();closeMobile()">🛒 Panier</span>
+  <span id="mobGuest">
+    <span class="nav-link" onclick="showPage('login');closeMobile()">🔐 Connexion</span>
+    <span class="nav-link" onclick="showPage('register');closeMobile()">📝 S'inscrire</span>
+  </span>
+  <span id="mobUser" style="display:none">
+    <span class="nav-link" onclick="showPage('dashboard');closeMobile()">👤 Mon espace</span>
+    <span class="nav-link" style="color:var(--red)" onclick="doLogout();closeMobile()">🚪 Déconnexion</span>
+  </span>
+</div>
+
+<!-- HOME -->
+<div id="page-home">
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">🎓 Plateforme #1 en RDC</div>
+        <h1>Les meilleures ressources pour <span>réussir vos études</span></h1>
+        <p>Syllabus, notes de cours, exercices corrigés pour tous les étudiants universitaires en République Démocratique du Congo.</p>
+        <div class="hero-actions">
+          <button class="btn-white" onclick="showPage('catalogue')">Parcourir le catalogue</button>
+          <button class="btn-ghost" onclick="showPage('register')">S'inscrire gratuitement</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-cards-row">
+          <div class="hero-card"><div class="hero-card-label">Documents</div><div class="hero-card-value" id="heroDocCount">0</div><div class="hero-card-desc">Disponibles</div></div>
+          <div class="hero-card"><div class="hero-card-label">Filières</div><div class="hero-card-value">6</div><div class="hero-card-desc">Couvertes</div></div>
+        </div>
+        <div class="hero-card"><div class="hero-card-label">Étudiants inscrits</div><div class="hero-card-value" id="heroUserCount">0</div><div class="hero-card-desc">Font confiance à EduLib RDC</div></div>
+      </div>
+    </div>
+  </section>
+  <div class="search-section">
+    <div class="search-inner">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>
+        <input type="text" id="searchInput" placeholder="Rechercher un document, un cours, un professeur..." oninput="filterDocs()"/>
+      </div>
+      <div class="filter-chips">
+        <button class="chip active" onclick="filterByFiliere('',this)">Tous</button>
+        <button class="chip" onclick="filterByFiliere('droit',this)">Droit</button>
+        <button class="chip" onclick="filterByFiliere('medecine',this)">Médecine</button>
+        <button class="chip" onclick="filterByFiliere('polytechnique',this)">Polytechnique</button>
+        <button class="chip" onclick="filterByFiliere('sciences',this)">Sciences</button>
+        <button class="chip" onclick="filterByFiliere('lettres',this)">Lettres</button>
+        <button class="chip" onclick="filterByFiliere('economie',this)">Économie</button>
+      </div>
+    </div>
+  </div>
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="stat-card"><div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-num" id="statDocs">0</div><div class="stat-label">Documents disponibles</div></div>
+      <div class="stat-card"><div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-num" id="statUsers">0</div><div class="stat-label">Étudiants inscrits</div></div>
+      <div class="stat-card"><div class="stat-icon amber"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="stat-num">6</div><div class="stat-label">Filières couvertes</div></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-header"><h2 class="section-title">Documents récents</h2><span class="section-link" onclick="showPage('catalogue')">Voir tout →</span></div>
+      <div class="docs-grid" id="homeGrid"><div class="loading-txt">Chargement...</div></div>
+    </div>
+  </section>
+  <section class="section" style="background:var(--gray-50);margin:0">
+    <div class="section-inner">
+      <div class="section-header"><h2 class="section-title">Parcourir par filière</h2><span class="section-link" onclick="showPage('filieres')">Toutes les filières →</span></div>
+      <div class="filieres-grid" id="homeFil"></div>
+    </div>
+  </section>
+  <section class="cta">
+    <h2>Prêt à réussir vos examens ?</h2>
+    <p>Créez votre compte gratuitement et accédez aux meilleures ressources pédagogiques de la RDC.</p>
+    <div class="cta-btns">
+      <button class="btn-white" onclick="showPage('register')">Créer un compte gratuit</button>
+      <button class="btn-ghost" onclick="showPage('catalogue')">Parcourir le catalogue</button>
+    </div>
+  </section>
+</div>
+
+<!-- CATALOGUE -->
+<div id="page-catalogue" style="display:none">
+  <div style="background:var(--gray-50);padding:2.5rem 1.5rem;border-bottom:1px solid var(--gray-200)">
+    <div style="max-width:1200px;margin:0 auto"><h1 style="font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:0.5rem">Catalogue</h1><p style="color:var(--gray-600)">Tous nos documents pédagogiques</p></div>
+  </div>
+  <section class="section"><div class="section-inner"><div class="docs-grid" id="catGrid"><div class="loading-txt">Chargement...</div></div></div></section>
+</div>
+
+<!-- FILIERES -->
+<div id="page-filieres" style="display:none">
+  <div style="background:var(--gray-50);padding:2.5rem 1.5rem;border-bottom:1px solid var(--gray-200)">
+    <div style="max-width:1200px;margin:0 auto"><h1 style="font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:0.5rem">Filières</h1><p style="color:var(--gray-600)">Choisissez votre domaine</p></div>
+  </div>
+  <section class="section">
+    <div class="section-inner">
+      <div class="filieres-grid" id="allFil" style="margin-bottom:3rem"></div>
+      <div class="section-header"><h2 class="section-title" id="filTitle">Tous les documents</h2></div>
+      <div class="docs-grid" id="filGrid"><div class="loading-txt">Chargement...</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- LOGIN -->
+<div id="page-login" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">EduLib RDC</div>
+      <div class="auth-logo-sub">Accédez à vos ressources pédagogiques</div>
+      <div class="auth-title">Connexion</div>
+      <div class="auth-err" id="loginErr"></div>
+      <div class="fg">
+        <div class="fg-grp"><label class="fg-lbl">Email</label><input class="fg-inp" type="email" id="loginEmail" placeholder="votre@email.com"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Mot de passe</label><input class="fg-inp" type="password" id="loginPass" placeholder="••••••••"/></div>
+      </div>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()">Se connecter</button>
+      <span class="auth-link" onclick="showPage('register')">Pas encore de compte ? S'inscrire</span>
+      <span class="auth-link gray" onclick="showPage('home')">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="page-register" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">EduLib RDC</div>
+      <div class="auth-logo-sub">Rejoignez des milliers d'étudiants</div>
+      <div class="auth-title">Créer un compte</div>
+      <div class="auth-err" id="regErr"></div>
+      <div class="fg">
+        <div class="fg-grp"><label class="fg-lbl">Nom complet *</label><input class="fg-inp" type="text" id="regName" placeholder="Votre nom complet"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Email *</label><input class="fg-inp" type="email" id="regEmail" placeholder="votre@email.com"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Filière *</label>
+          <select class="fg-sel" id="regFiliere">
+            <option value="">Sélectionner votre filière...</option>
+            <option value="droit">Droit</option><option value="medecine">Médecine</option>
+            <option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option>
+            <option value="lettres">Lettres</option><option value="economie">Économie</option>
+          </select>
+        </div>
+        <div class="fg-grp"><label class="fg-lbl">Mot de passe *</label><input class="fg-inp" type="password" id="regPass" placeholder="Minimum 6 caractères"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Confirmer *</label><input class="fg-inp" type="password" id="regPass2" placeholder="••••••••"/></div>
+      </div>
+      <button class="auth-btn" id="regBtn" onclick="doRegister()">Créer mon compte</button>
+      <span class="auth-link" onclick="showPage('login')">Déjà un compte ? Se connecter</span>
+      <span class="auth-link gray" onclick="showPage('home')">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" style="display:none">
+  <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:2rem 1.5rem">
+    <div style="max-width:1100px;margin:0 auto">
+      <h1 style="font-family:var(--font-display);font-size:1.75rem;font-weight:700">Mon espace</h1>
+      <p style="color:var(--gray-600);font-size:0.9rem" id="dashWelcome">Bienvenue !</p>
+    </div>
+  </div>
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+    <div class="dash-tabs">
+      <button class="dtab active" onclick="showDashTab('bought',this)">📚 Mes documents</button>
+      <button class="dtab" onclick="showDashTab('profile',this)">👤 Mon profil</button>
+    </div>
+    <div id="dashBought"><div class="bought-grid" id="boughtGrid"><div class="loading-txt">Chargement...</div></div></div>
+    <div id="dashProfile" style="display:none">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profAvatar">?</div>
+        <div class="profile-name" id="profName">-</div>
+        <div class="profile-email" id="profEmail">-</div>
+        <div class="profile-stats">
+          <div><div class="profile-stat-num" id="profDocCount">0</div><div class="profile-stat-label">Documents achetés</div></div>
+        </div>
+        <button class="adm-btn-sec" onclick="doLogout()" style="width:100%">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="page-adminlogin" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">EduLib RDC</div>
+      <div class="auth-logo-sub">Espace Administrateur</div>
+      <div class="auth-title">Connexion Admin</div>
+      <div class="auth-err" id="adminErr"></div>
+      <div class="fg">
+        <div class="fg-grp"><label class="fg-lbl">Identifiant</label><input class="fg-inp" type="text" id="adminUser" placeholder="admin"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Mot de passe</label><input class="fg-inp" type="password" id="adminPass" placeholder="••••••••"/></div>
+      </div>
+      <button class="auth-btn" onclick="doAdminLogin()">Se connecter</button>
+      <span class="auth-link gray" onclick="showPage('home')">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" style="display:none">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="adm-sidebar-title">Principal</div>
+      <div class="adm-nav-item active" onclick="showAP('dashboard',this)"><span>📊</span>Tableau de bord</div>
+      <div class="adm-nav-item" onclick="showAP('documents',this)"><span>📚</span>Documents</div>
+      <div class="adm-nav-item" onclick="showAP('ajouter',this);resetForm()"><span>➕</span>Ajouter document</div>
+      <div class="adm-nav-item" onclick="showAP('utilisateurs',this)"><span>👥</span>Utilisateurs</div>
+      <div class="adm-nav-item" onclick="showAP('commandes',this)"><span>🛒</span>Commandes</div>
+      <div class="adm-sidebar-title">Compte</div>
+      <div class="adm-nav-item" onclick="showAP('parametres',this)"><span>⚙️</span>Paramètres</div>
+      <div class="adm-nav-item" style="color:#ef4444" onclick="adminLogout()"><span>🚪</span>Déconnexion</div>
+    </div>
+    <div class="admin-content">
+      <div class="adm-pg active" id="adm-dashboard">
+        <div class="adm-page-title">Tableau de bord</div>
+        <p class="adm-page-sub">Bienvenue, Serge ! Résumé de votre plateforme.</p>
+        <div class="adm-stats-grid">
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--blue-light)">📚</div><span class="adm-badge" id="admDocBadge">0</span></div><div class="adm-num" id="admDocNum">0</div><div class="adm-lbl">Documents</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--green-light)">👥</div><span class="adm-badge" id="admUserBadge">0</span></div><div class="adm-num" id="admUserNum">0</div><div class="adm-lbl">Étudiants inscrits</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--amber-light)">🛒</div><span class="adm-badge" id="admOrderBadge">0</span></div><div class="adm-num" id="admOrderNum">0</div><div class="adm-lbl">Commandes</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:#f5f3ff">💰</div><span class="adm-badge">Total</span></div><div class="adm-num" id="admRevenue">$0</div><div class="adm-lbl">Revenus</div></div>
+        </div>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Documents récents</div><button class="act-btn act-edit" onclick="showAP('documents',null)">Voir tous</button></div><div style="overflow-x:auto"><table class="adm-tbl" id="admRecentDocs"></table></div></div>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Derniers inscrits</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="admRecentUsers"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-documents">
+        <div class="adm-page-title">Documents</div>
+        <p class="adm-page-sub">Gérez tous les documents.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="docListTitle">Tous les documents</div><button class="adm-btn" onclick="showAP('ajouter',null);resetForm()">+ Ajouter</button></div><div style="overflow-x:auto"><table class="adm-tbl" id="admDocsTable"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-ajouter">
+        <div class="adm-page-title" id="formTitle">Ajouter un document</div>
+        <p class="adm-page-sub" id="formSub">Remplissez toutes les informations.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Informations</div></div>
+        <div style="padding:1.5rem">
+          <input type="hidden" id="editId"/>
+          <div class="form-grid">
+            <div class="fg-grp form-full"><label class="fg-lbl">Titre *</label><input class="fg-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Filière *</label><select class="fg-sel" id="fFiliere"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option></select></div>
+            <div class="fg-grp"><label class="fg-lbl">Type *</label><select class="fg-sel" id="fType"><option value="">Sélectionner...</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
+            <div class="fg-grp"><label class="fg-lbl">Professeur *</label><input class="fg-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Prix (USD) *</label><input class="fg-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Pages</label><input class="fg-inp" type="number" id="fPages" placeholder="100"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Année</label><input class="fg-inp" type="number" id="fAnnee" placeholder="2025"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Badge</label><select class="fg-sel" id="fBadge"><option value="">Aucun</option><option value="new">Nouveau</option><option value="popular">Populaire</option></select></div>
+            <div class="fg-grp form-full"><label class="fg-lbl">Description</label><textarea class="fg-inp" id="fDesc" rows="3" placeholder="Décrivez le contenu..."></textarea></div>
+            <div class="fg-grp form-full">
+              <label class="fg-lbl">Lien Google Drive du PDF *</label>
+              <input class="fg-inp" type="url" id="fLink" placeholder="https://drive.google.com/file/d/..."/>
+              <small style="color:var(--gray-400);font-size:0.78rem;margin-top:4px;display:block">💡 Drive : clic droit sur fichier → Partager → Copier le lien</small>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap">
+            <button class="adm-btn" onclick="saveDoc()" id="saveBtn">Enregistrer</button>
+            <button class="adm-btn-sec" onclick="resetForm();showAP('documents',null)">Annuler</button>
+          </div>
+        </div></div>
+      </div>
+      <div class="adm-pg" id="adm-utilisateurs">
+        <div class="adm-page-title">Utilisateurs</div>
+        <p class="adm-page-sub">Tous les étudiants inscrits.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="userListTitle">Utilisateurs</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="admUsersTable"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-commandes">
+        <div class="adm-page-title">Commandes</div>
+        <p class="adm-page-sub">Historique des commandes.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="orderListTitle">Commandes</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="admOrdersTable"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-parametres">
+        <div class="adm-page-title">Paramètres</div>
+        <p class="adm-page-sub">Gérez votre compte admin.</p>
+        <div class="adm-card" style="max-width:500px"><div class="adm-card-hd"><div class="adm-card-title">Changer le mot de passe</div></div>
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+          <div class="fg-grp"><label class="fg-lbl">Mot de passe actuel</label><input class="fg-inp" type="password" id="oldPass" placeholder="••••••••"/></div>
+          <div class="fg-grp"><label class="fg-lbl">Nouveau</label><input class="fg-inp" type="password" id="newPass" placeholder="••••••••"/></div>
+          <div class="fg-grp"><label class="fg-lbl">Confirmer</label><input class="fg-inp" type="password" id="confPass" placeholder="••••••••"/></div>
+          <button class="adm-btn" style="align-self:flex-start" onclick="changeAdminPass()">Mettre à jour</button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer id="mainFooter">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div><div class="footer-brand-name">EduLib RDC</div><p class="footer-brand-desc">La plateforme de référence pour les ressources pédagogiques universitaires en RDC.</p></div>
+      <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="showPage('home')">Accueil</li><li onclick="showPage('catalogue')">Catalogue</li><li onclick="showPage('filieres')">Filières</li></ul></div>
+      <div><div class="footer-col-title">Filières</div><ul class="footer-links"><li>Droit</li><li>Médecine</li><li>Polytechnique</li><li>Sciences</li><li>Lettres</li></ul></div>
+      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:var(--gray-400)">contact@edulibrdc.com</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 EduLib RDC. Tous droits réservés.</span><span>Fait avec ❤️ pour les étudiants congolais</span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+<div class="overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><div class="modal-hd"><div class="modal-title" id="modalTitle"></div><button class="modal-close-btn" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div>
+</div>
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-hd"><div class="cart-hd-title">Mon panier</div><button class="modal-close-btn" onclick="closeCart()">✕</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total"><span>Total</span><span id="cartTotal">$0</span></div>
+    <button class="cart-checkout-btn" onclick="checkout()">Passer commande</button>
+  </div>
+</div>
+
+<script>
+// ===================== FIREBASE INIT =====================
+const firebaseConfig = {
+  apiKey: "AIzaSyAoxL9c71QEhA1-TLdmiTDjnxWFhprWe44",
+  authDomain: "edulib-rdc.firebaseapp.com",
+  projectId: "edulib-rdc",
+  storageBucket: "edulib-rdc.firebasestorage.app",
+  messagingSenderId: "523092755243",
+  appId: "1:523092755243:web:eef7329b63c03e281ebb6e"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+var auth = firebase.auth();
+
+// ===================== STATE =====================
+var allDocs = [];
+var allUsers = [];
+var allOrders = [];
+var cart = [];
+var currentUser = null;
+var boughtIds = [];
+var isAdmin = false;
+var adminPass = 'edulib2025';
+var curFiliere = '';
+var curSearch = '';
+
+var filieres = [
+  {id:'droit',name:'Droit',emoji:'⚖️'},
+  {id:'medecine',name:'Médecine',emoji:'🩺'},
+  {id:'polytechnique',name:'Polytechnique',emoji:'⚙️'},
+  {id:'sciences',name:'Sciences',emoji:'🔬'},
+  {id:'lettres',name:'Lettres',emoji:'📖'},
+  {id:'economie',name:'Économie',emoji:'📊'}
+];
+var emojiMap = {droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
+
+function getFlabel(f){return (filieres.find(function(x){return x.id===f;})||{name:f}).name;}
+function getBdg(f){return ({droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'})[f]||'bdg-blue';}
+
+// ===================== AUTH STATE =====================
+auth.onAuthStateChanged(function(user){
+  currentUser = user;
+  if(user){
+    document.getElementById('navGuest').style.display='none';
+    document.getElementById('navUser').style.display='flex';
+    document.getElementById('mobGuest').style.display='none';
+    document.getElementById('mobUser').style.display='block';
+    loadBoughtIds();
+  } else {
+    document.getElementById('navGuest').style.display='flex';
+    document.getElementById('navUser').style.display='none';
+    document.getElementById('mobGuest').style.display='block';
+    document.getElementById('mobUser').style.display='none';
+    boughtIds = [];
+    reRenderDocs();
+  }
+});
+
+// ===================== LOAD DATA =====================
+function loadDocs(){
+  db.collection('documents').orderBy('createdAt','desc').get()
+    .then(function(snap){
+      allDocs = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+      updatePublicStats();
+      renderFil('homeFil');
+      renderFil('allFil');
+      reRenderDocs();
+    })
+    .catch(function(){
+      db.collection('documents').get().then(function(snap){
+        allDocs = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+        updatePublicStats();
+        renderFil('homeFil');
+        renderFil('allFil');
+        reRenderDocs();
+      });
+    });
+}
+
+function loadBoughtIds(){
+  if(!currentUser) return;
+  db.collection('users').doc(currentUser.uid).collection('purchases').get()
+    .then(function(snap){
+      boughtIds = snap.docs.map(function(d){return d.id;});
+      reRenderDocs();
+    }).catch(function(){boughtIds=[];});
+}
+
+function loadUsers(){
+  db.collection('users').get().then(function(snap){
+    allUsers = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    updateAdminStats();
+    renderAdmUsers();
+    renderAdmRecentUsers();
+    var c = snap.size;
+    ['statUsers','heroUserCount','admUserNum','admUserBadge'].forEach(function(id){
+      var e=document.getElementById(id);if(e)e.textContent=c+(id==='admUserBadge'?' inscrits':'');
+    });
+  }).catch(function(){allUsers=[];});
+}
+
+function loadOrders(){
+  db.collection('orders').get().then(function(snap){
+    allOrders = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    updateAdminStats();
+    renderAdmOrders();
+  }).catch(function(){allOrders=[];});
+}
+
+function updatePublicStats(){
+  var n = allDocs.length;
+  ['statDocs','heroDocCount','admDocNum','admDocBadge'].forEach(function(id){
+    var e=document.getElementById(id);if(e)e.textContent=n+(id==='admDocBadge'?' docs':'');
+  });
+}
+
+function updateAdminStats(){
+  var n=allDocs.length, o=allOrders.length;
+  var rev=allOrders.reduce(function(s,x){return s+(parseFloat(x.total)||0);},0);
+  var e;
+  e=document.getElementById('admDocNum');if(e)e.textContent=n;
+  e=document.getElementById('admDocBadge');if(e)e.textContent=n+' docs';
+  e=document.getElementById('admOrderNum');if(e)e.textContent=o;
+  e=document.getElementById('admOrderBadge');if(e)e.textContent=o+' total';
+  e=document.getElementById('admRevenue');if(e)e.textContent='$'+rev.toFixed(2);
+}
+
+// ===================== RENDER =====================
+function reRenderDocs(){
+  renderDocs('homeGrid', filteredDocs().slice(0,8));
+  renderDocs('catGrid', filteredDocs());
+  renderDocs('filGrid', allDocs.filter(function(d){return !curFiliere||d.filiere===curFiliere;}));
+}
+
+function docCard(d){
+  var bought = boughtIds.indexOf(d.id) > -1;
+  var badge = d.badge==='new' ? '<div class="doc-badge new">✦ Nouveau</div>' : d.badge==='popular' ? '<div class="doc-badge popular">🔥 Populaire</div>' : '';
+  var boughtBadge = bought ? '<div class="doc-badge new" style="left:10px;right:auto">✓</div>' : '';
+  var footerHtml = bought
+    ? '<div style="color:var(--green);font-size:0.85rem;font-weight:600">✓ Acheté</div><button class="doc-btn green" onclick="event.stopPropagation();dlDoc(\''+d.id+'\')">⬇ Télécharger</button>'
+    : '<div class="doc-price">$'+d.prix+' <small>USD</small></div><button class="doc-btn" onclick="event.stopPropagation();addToCart(\''+d.id+'\')">+ Panier</button>';
+  return '<div class="doc-card" onclick="openDoc(\''+d.id+'\')">'
+    +'<div class="doc-thumb '+(d.filiere||'')+'">'+(d.emoji||emojiMap[d.filiere]||'📄')+badge+boughtBadge+'</div>'
+    +'<div class="doc-body">'
+    +'<div class="doc-filiere '+(d.filiere||'')+'">'+getFlabel(d.filiere)+'</div>'
+    +'<div class="doc-title">'+(d.title||'')+'</div>'
+    +'<div class="doc-prof">'+(d.prof||'')+'</div>'
+    +'<div class="doc-footer">'+footerHtml+'</div>'
+    +'</div></div>';
+}
+
+function renderDocs(id, list){
+  var el=document.getElementById(id);if(!el)return;
+  el.innerHTML = list.length ? list.map(docCard).join('') : '<p style="color:var(--gray-400);grid-column:1/-1;text-align:center;padding:3rem">Aucun document trouvé.</p>';
+}
+
+function renderFil(id){
+  var el=document.getElementById(id);if(!el)return;
+  el.innerHTML = filieres.map(function(f){
+    var cnt = allDocs.filter(function(d){return d.filiere===f.id;}).length;
+    return '<div class="fil-card '+f.id+'" onclick="filterByFil(\''+f.id+'\')">'
+      +'<div class="fil-icon">'+f.emoji+'</div>'
+      +'<div class="fil-name">'+f.name+'</div>'
+      +'<div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function filteredDocs(){
+  return allDocs.filter(function(d){
+    var mF = !curFiliere || d.filiere===curFiliere;
+    var mS = !curSearch || (d.title&&d.title.toLowerCase().indexOf(curSearch.toLowerCase())>-1) || (d.prof&&d.prof.toLowerCase().indexOf(curSearch.toLowerCase())>-1);
+    return mF && mS;
+  });
+}
+
+// ===================== FILTER =====================
+function filterDocs(){
+  curSearch = document.getElementById('searchInput').value;
+  reRenderDocs();
+}
+
+function filterByFiliere(f, el){
+  curFiliere = f;
+  document.querySelectorAll('.filter-chips .chip').forEach(function(c){c.classList.remove('active');});
+  if(el) el.classList.add('active');
+  reRenderDocs();
+}
+
+function filterByFil(f){
+  curFiliere = f;
+  showPage('filieres');
+  var found = filieres.find(function(x){return x.id===f;});
+  var t = document.getElementById('filTitle');
+  if(t) t.textContent = found ? 'Documents — '+found.name : 'Tous les documents';
+  renderDocs('filGrid', allDocs.filter(function(d){return !f||d.filiere===f;}));
+}
+
+// ===================== DOC MODAL =====================
+function openDoc(id){
+  var d = allDocs.find(function(x){return x.id===id;});if(!d)return;
+  var bought = boughtIds.indexOf(id) > -1;
+  document.getElementById('modalTitle').textContent = d.title;
+  document.getElementById('modalBody').innerHTML =
+    '<div style="font-size:3rem;text-align:center;margin-bottom:1rem">'+(d.emoji||emojiMap[d.filiere]||'📄')+'</div>'
+    +(bought ? '<div style="background:var(--green-light);color:var(--green);border-radius:10px;padding:10px;text-align:center;font-weight:600;margin-bottom:1rem">✓ Document dans votre bibliothèque</div>'
+             : '<div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem">$'+d.prix+' USD</div>')
+    +'<div class="mdet"><span class="mdet-label">Filière</span><span class="mdet-value">'+getFlabel(d.filiere)+'</span></div>'
+    +'<div class="mdet"><span class="mdet-label">Professeur</span><span class="mdet-value">'+(d.prof||'-')+'</span></div>'
+    +'<div class="mdet"><span class="mdet-label">Type</span><span class="mdet-value">'+(d.type||'-')+'</span></div>'
+    +'<div class="mdet"><span class="mdet-label">Pages</span><span class="mdet-value">'+(d.pages||'-')+'</span></div>'
+    +'<div class="mdet"><span class="mdet-label">Année</span><span class="mdet-value">'+(d.annee||'-')+'</span></div>'
+    +(d.desc ? '<p style="margin-top:1rem;font-size:0.9rem;color:var(--gray-600);line-height:1.6">'+d.desc+'</p>' : '')
+    +(bought
+      ? '<button class="mbtn success" onclick="dlDoc(\''+id+'\');closeModal()">⬇ Télécharger le PDF</button>'
+      : '<button class="mbtn primary" onclick="addToCart(\''+id+'\');closeModal()">🛒 Ajouter au panier</button>')
+    +'<button class="mbtn secondary" onclick="closeModal()">Fermer</button>';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+
+// ===================== DOWNLOAD =====================
+function dlDoc(id){
+  if(!currentUser){toast('Connectez-vous pour télécharger','error');showPage('login');return;}
+  if(boughtIds.indexOf(id)<0){toast('Achetez ce document dabord','error');return;}
+  var d = allDocs.find(function(x){return x.id===id;});if(!d)return;
+  if(d.driveLink){
+    var url = d.driveLink;
+    var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if(m) url = 'https://drive.google.com/uc?export=download&id='+m[1];
+    window.open(url,'_blank');
+    toast('Téléchargement en cours 📥','success');
+  } else { toast('Lien non disponible','error'); }
+}
+
+// ===================== CART =====================
+function addToCart(id){
+  if(!currentUser){toast('Connectez-vous pour acheter','error');showPage('login');return;}
+  var d = allDocs.find(function(x){return x.id===id;});if(!d)return;
+  if(boughtIds.indexOf(id)>-1){toast('Document déjà dans votre bibliothèque','');return;}
+  if(cart.find(function(x){return x.id===id;})){toast('Déjà dans le panier !','');return;}
+  cart.push(d);
+  updateCartUI();
+  toast('"'+d.title.substring(0,30)+'..." ajouté au panier 🛒','success');
+}
+
+function removeFromCart(id){
+  cart = cart.filter(function(x){return x.id!==id;});
+  updateCartUI();renderCartItems();
+}
+
+function updateCartUI(){
+  var c=document.getElementById('cartCount');
+  c.textContent=cart.length;
+  c.style.display=cart.length?'inline':'none';
+}
+
+function renderCartItems(){
+  var el=document.getElementById('cartItems'),footer=document.getElementById('cartFooter');
+  if(!cart.length){el.innerHTML='<div class="cart-empty">🛒<br><br>Votre panier est vide</div>';footer.style.display='none';return;}
+  var total=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
+  el.innerHTML=cart.map(function(d){
+    return '<div class="cart-item">'
+      +'<div class="cart-item-thumb '+(d.filiere||'')+'">'+(d.emoji||'📄')+'</div>'
+      +'<div class="cart-item-info"><div class="cart-item-title">'+d.title+'</div><div class="cart-item-price">$'+d.prix+' USD</div></div>'
+      +'<button class="cart-item-remove" onclick="removeFromCart(\''+d.id+'\')">✕</button>'
+      +'</div>';
+  }).join('');
+  document.getElementById('cartTotal').textContent='$'+total.toFixed(2);
+  footer.style.display='block';
+}
+
+function openCart(){renderCartItems();document.getElementById('cartOverlay').classList.add('open');document.getElementById('cartPanel').classList.add('open');}
+function closeCart(){document.getElementById('cartOverlay').classList.remove('open');document.getElementById('cartPanel').classList.remove('open');}
+
+function checkout(){
+  if(!currentUser){toast('Connectez-vous pour commander','error');return;}
+  if(!cart.length)return;
+  var total=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
+  var orderData={
+    userId:currentUser.uid,
+    userName:currentUser.displayName||currentUser.email,
+    userEmail:currentUser.email,
+    items:cart.map(function(d){return {id:d.id,title:d.title,prix:d.prix};}),
+    total:total,
+    status:'En attente de paiement',
+    createdAt:Date.now()
+  };
+  db.collection('orders').add(orderData).then(function(){
+    var batch = db.batch();
+    cart.forEach(function(d){
+      var ref=db.collection('users').doc(currentUser.uid).collection('purchases').doc(d.id);
+      batch.set(ref,{docId:d.id,title:d.title,purchasedAt:Date.now()});
+    });
+    return batch.commit();
+  }).then(function(){
+    boughtIds = boughtIds.concat(cart.map(function(d){return d.id;}));
+    cart=[];updateCartUI();closeCart();
+    reRenderDocs();
+    toast('Commande enregistrée ! Voir "Mon espace" 🎉','success');
+  }).catch(function(e){toast('Erreur: '+e.message,'error');});
+}
+
+// ===================== AUTH =====================
+function doLogin(){
+  var email=document.getElementById('loginEmail').value.trim();
+  var pass=document.getElementById('loginPass').value;
+  var err=document.getElementById('loginErr');
+  var btn=document.getElementById('loginBtn');
+  err.classList.remove('show');
+  if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Connexion...';
+  auth.signInWithEmailAndPassword(email,pass)
+    .then(function(){showPage('dashboard');toast('Bienvenue ! 👋','success');})
+    .catch(function(e){
+      err.textContent=(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
+      err.classList.add('show');
+    })
+    .finally(function(){btn.disabled=false;btn.textContent='Se connecter';});
+}
+
+function doRegister(){
+  var name=document.getElementById('regName').value.trim();
+  var email=document.getElementById('regEmail').value.trim();
+  var filiere=document.getElementById('regFiliere').value;
+  var pass=document.getElementById('regPass').value;
+  var pass2=document.getElementById('regPass2').value;
+  var err=document.getElementById('regErr');
+  var btn=document.getElementById('regBtn');
+  err.classList.remove('show');
+  if(!name||!email||!filiere||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
+  if(pass!==pass2){err.textContent='Les mots de passe ne correspondent pas.';err.classList.add('show');return;}
+  if(pass.length<6){err.textContent='Minimum 6 caractères.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Création...';
+  auth.createUserWithEmailAndPassword(email,pass)
+    .then(function(cred){
+      return cred.user.updateProfile({displayName:name}).then(function(){
+        return db.collection('users').doc(cred.user.uid).set({name:name,email:email,filiere:filiere,createdAt:Date.now(),uid:cred.user.uid});
+      });
+    })
+    .then(function(){showPage('dashboard');toast('Compte créé ! Bienvenue 🎉','success');})
+    .catch(function(e){
+      err.textContent=e.code==='auth/email-already-in-use'?'Email déjà utilisé.':'Erreur: '+e.message;
+      err.classList.add('show');
+    })
+    .finally(function(){btn.disabled=false;btn.textContent='Créer mon compte';});
+}
+
+function doLogout(){
+  auth.signOut().then(function(){showPage('home');toast('Déconnecté.','');});
+}
+
+// ===================== DASHBOARD =====================
+function loadDashboard(){
+  if(!currentUser){showPage('login');return;}
+  var w=document.getElementById('dashWelcome');
+  if(w) w.textContent='Bienvenue, '+(currentUser.displayName||'Étudiant')+' !';
+  loadBoughtIds();
+  setTimeout(function(){renderBoughtDocs();updateProfileUI();},500);
+}
+
+function renderBoughtDocs(){
+  var el=document.getElementById('boughtGrid');if(!el)return;
+  var bought=allDocs.filter(function(d){return boughtIds.indexOf(d.id)>-1;});
+  var c=document.getElementById('profDocCount');if(c)c.textContent=bought.length;
+  if(!bought.length){
+    el.innerHTML='<div class="empty-state">'
+      +'<div class="empty-icon">📚</div>'
+      +'<div class="empty-title">Aucun document acheté pour l\'instant</div>'
+      +'<p style="font-size:0.9rem;color:var(--gray-400);margin-top:0.5rem">Parcourez notre catalogue et achetez vos premiers documents.</p>'
+      +'<button class="adm-btn" style="margin-top:1rem" onclick="showPage(\'catalogue\')">Parcourir le catalogue</button>'
+      +'</div>';
+    return;
+  }
+  el.innerHTML=bought.map(function(d){
+    return '<div class="bought-card">'
+      +'<div class="bought-card-top">'
+      +'<div class="bought-emoji">'+(d.emoji||emojiMap[d.filiere]||'📄')+'</div>'
+      +'<div class="bought-info"><div class="bought-title">'+d.title+'</div><div class="bought-prof">'+d.prof+'</div></div>'
+      +'</div>'
+      +'<button class="dl-btn" onclick="dlDoc(\''+d.id+'\')">⬇ Télécharger le PDF</button>'
+      +'</div>';
+  }).join('');
+}
+
+function updateProfileUI(){
+  if(!currentUser)return;
+  var name=currentUser.displayName||'Étudiant';
+  var initials=name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().substring(0,2);
+  var pa=document.getElementById('profAvatar');if(pa)pa.textContent=initials;
+  var pn=document.getElementById('profName');if(pn)pn.textContent=name;
+  var pe=document.getElementById('profEmail');if(pe)pe.textContent=currentUser.email;
+}
+
+function showDashTab(tab,el){
+  document.querySelectorAll('.dtab').forEach(function(t){t.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.getElementById('dashBought').style.display=tab==='bought'?'block':'none';
+  document.getElementById('dashProfile').style.display=tab==='profile'?'block':'none';
+  if(tab==='bought')renderBoughtDocs();
+  if(tab==='profile')updateProfileUI();
+}
+
+// ===================== ADMIN AUTH =====================
+function doAdminLogin(){
+  var u=document.getElementById('adminUser').value.trim();
+  var p=document.getElementById('adminPass').value;
+  var err=document.getElementById('adminErr');
+  if(u==='admin'&&p===adminPass){
+    isAdmin=true;err.classList.remove('show');
+    showPage('admin');toast('Bienvenue Serge ! Connexion reussie','success');
+    loadAdminAll();
+  } else {
+    err.textContent='Identifiants incorrects.';err.classList.add('show');
+  }
+}
+
+function adminLogout(){isAdmin=false;showPage('home');toast('Deconnecte.','');}
+
+function changeAdminPass(){
+  var o=document.getElementById('oldPass').value;
+  var n=document.getElementById('newPass').value;
+  var c=document.getElementById('confPass').value;
+  if(o!==adminPass){toast('Mot de passe actuel incorrect.','error');return;}
+  if(n.length<6){toast('Minimum 6 caracteres.','error');return;}
+  if(n!==c){toast('Les mots de passe ne correspondent pas.','error');return;}
+  adminPass=n;
+  ['oldPass','newPass','confPass'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  toast('Mot de passe mis a jour !','success');
+}
+
+function loadAdminAll(){loadDocs();loadUsers();loadOrders();}
+
+function showAP(p,el){
+  document.querySelectorAll('.adm-pg').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.adm-nav-item').forEach(function(x){x.classList.remove('active');});
+  var pg=document.getElementById('adm-'+p);if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');
+  if(p==='documents')renderAdmDocs();
+  if(p==='utilisateurs')renderAdmUsers();
+  if(p==='commandes')renderAdmOrders();
+  if(p==='dashboard'){loadAdminAll();}
+}
+
+function renderAdmRecentDocs(){
+  var t=document.getElementById('admRecentDocs');if(!t)return;
+  if(!allDocs.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun document encore.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Titre</th><th>Filiere</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
+    +allDocs.slice(0,5).map(function(d){
+      return '<tr><td>'+(d.emoji||'d')+' '+(d.title||'').substring(0,28)+'</td>'
+        +'<td><span class="bdg '+getBdg(d.filiere)+'">'+getFlabel(d.filiere)+'</span></td>'
+        +'<td><b>$'+d.prix+'</b></td>'
+        +'<td><button class="act-btn act-edit" onclick="editDoc(''+d.id+'')">Modifier</button>'
+        +'<button class="act-btn act-del" onclick="deleteDoc(''+d.id+'')">Supprimer</button></td></tr>';
+    }).join('')+'</tbody>';
+}
+
+function renderAdmRecentUsers(){
+  var t=document.getElementById('admRecentUsers');if(!t)return;
+  if(!allUsers.length){t.innerHTML='<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun utilisateur encore.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filiere</th></tr></thead><tbody>'
+    +allUsers.slice(0,5).map(function(u){
+      return '<tr><td><b>'+(u.name||'x')+'</b></td><td>'+u.email+'</td>'
+        +'<td><span class="bdg '+getBdg(u.filiere)+'">'+getFlabel(u.filiere)+'</span></td></tr>';
+    }).join('')+'</tbody>';
+}
+
+function renderAdmDocs(){
+  var t=document.getElementById('admDocsTable');if(!t)return;
+  var lbl=document.getElementById('docListTitle');if(lbl)lbl.textContent='Tous les documents ('+allDocs.length+')';
+  if(!allDocs.length){t.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun document. Cliquez sur + Ajouter.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>#</th><th>Titre</th><th>Filiere</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
+    +allDocs.map(function(d,i){
+      return '<tr><td style="color:var(--gray-400)">'+(i+1)+'</td>'
+        +'<td>'+(d.emoji||'d')+' '+(d.title||'').substring(0,25)+'</td>'
+        +'<td><span class="bdg '+getBdg(d.filiere)+'">'+getFlabel(d.filiere)+'</span></td>'
+        +'<td><b>$'+d.prix+'</b></td>'
+        +'<td><button class="act-btn act-edit" onclick="editDoc(''+d.id+'')">Modifier</button>'
+        +'<button class="act-btn act-del" onclick="deleteDoc(''+d.id+'')">Supprimer</button></td></tr>';
+    }).join('')+'</tbody>';
+}
+
+function renderAdmUsers(){
+  var t=document.getElementById('admUsersTable');if(!t)return;
+  var lbl=document.getElementById('userListTitle');if(lbl)lbl.textContent='Utilisateurs ('+allUsers.length+')';
+  if(!allUsers.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun utilisateur inscrit.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filiere</th><th>Date</th></tr></thead><tbody>'
+    +allUsers.map(function(u){
+      return '<tr><td><b>'+(u.name||'x')+'</b></td><td>'+u.email+'</td>'
+        +'<td><span class="bdg '+getBdg(u.filiere)+'">'+getFlabel(u.filiere)+'</span></td>'
+        +'<td style="color:var(--gray-400)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'x')+'</td></tr>';
+    }).join('')+'</tbody>';
+}
+
+function renderAdmOrders(){
+  var t=document.getElementById('admOrdersTable');if(!t)return;
+  var lbl=document.getElementById('orderListTitle');if(lbl)lbl.textContent='Commandes ('+allOrders.length+')';
+  if(!allOrders.length){t.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucune commande.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Etudiant</th><th>Docs</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
+    +allOrders.map(function(o){
+      return '<tr><td><b>'+(o.userName||'x')+'</b></td>'
+        +'<td>'+(o.items&&o.items.length||0)+'</td>'
+        +'<td><b>$'+(o.total||0)+'</b></td>'
+        +'<td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td>'
+        +'<td style="color:var(--gray-400)">'+(o.createdAt?new Date(o.createdAt).toLocaleDateString('fr-FR'):'x')+'</td></tr>';
+    }).join('')+'</tbody>';
+}
+
+function saveDoc(){
+  var title=document.getElementById('fTitle').value.trim();
+  var filiere=document.getElementById('fFiliere').value;
+  var type=document.getElementById('fType').value;
+  var prof=document.getElementById('fProf').value.trim();
+  var prix=parseFloat(document.getElementById('fPrix').value);
+  var driveLink=document.getElementById('fLink').value.trim();
+  if(!title||!filiere||!type||!prof||isNaN(prix)||!driveLink){
+    toast('Remplissez tous les champs obligatoires (*)','error');return;
+  }
+  var data={title:title,filiere:filiere,type:type,prof:prof,prix:prix,driveLink:driveLink,
+    pages:parseInt(document.getElementById('fPages').value)||null,
+    annee:parseInt(document.getElementById('fAnnee').value)||null,
+    desc:document.getElementById('fDesc').value||'',
+    badge:document.getElementById('fBadge').value||'',
+    emoji:emojiMap[filiere]||'d',createdAt:Date.now()};
+  var btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='Enregistrement...';
+  var eid=document.getElementById('editId').value;
+  var promise=eid?db.collection('documents').doc(eid).update(data):db.collection('documents').add(data);
+  promise.then(function(){
+    toast(eid?'Document mis a jour !':'Document ajoute !','success');
+    loadDocs();
+    setTimeout(function(){updatePublicStats();renderAdmDocs();renderAdmRecentDocs();},800);
+    resetForm();showAP('documents',null);
+  }).catch(function(e){toast('Erreur: '+e.message,'error');})
+  .finally(function(){btn.disabled=false;btn.textContent='Enregistrer';});
+}
+
+function editDoc(id){
+  var d=allDocs.find(function(x){return x.id===id;});if(!d)return;
+  document.getElementById('editId').value=id;
+  document.getElementById('fTitle').value=d.title||'';
+  document.getElementById('fFiliere').value=d.filiere||'';
+  document.getElementById('fType').value=d.type||'';
+  document.getElementById('fProf').value=d.prof||'';
+  document.getElementById('fPrix').value=d.prix||'';
+  document.getElementById('fPages').value=d.pages||'';
+  document.getElementById('fAnnee').value=d.annee||'';
+  document.getElementById('fDesc').value=d.desc||'';
+  document.getElementById('fBadge').value=d.badge||'';
+  document.getElementById('fLink').value=d.driveLink||'';
+  var ft=document.getElementById('formTitle');if(ft)ft.textContent='Modifier le document';
+  var fs=document.getElementById('formSub');if(fs)fs.textContent='Mettez a jour les informations.';
+  var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Mettre a jour';
+  showAP('ajouter',null);
+}
+
+function deleteDoc(id){
+  var d=allDocs.find(function(x){return x.id===id;});if(!d)return;
+  document.getElementById('modalTitle').textContent='Supprimer le document';
+  document.getElementById('modalBody').innerHTML=
+    '<p style="margin-bottom:1.5rem;color:var(--gray-600)">Supprimer <b>'+d.title+'</b> ? Irreversible.</p>'
+    +'<button onclick="confirmDelete(''+id+'')" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.5rem">Oui, supprimer</button>'
+    +'<button class="mbtn secondary" onclick="closeModal()">Annuler</button>';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function confirmDelete(id){
+  db.collection('documents').doc(id).delete().then(function(){
+    closeModal();
+    allDocs=allDocs.filter(function(x){return x.id!==id;});
+    updatePublicStats();renderAdmDocs();renderAdmRecentDocs();reRenderDocs();
+    toast('Document supprime.','');
+  }).catch(function(e){toast('Erreur: '+e.message,'error');});
+}
+
+function resetForm(){
+  document.getElementById('editId').value='';
+  ['fTitle','fProf','fPrix','fPages','fAnnee','fDesc','fLink'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['fFiliere','fType','fBadge'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var ft=document.getElementById('formTitle');if(ft)ft.textContent='Ajouter un document';
+  var fs=document.getElementById('formSub');if(fs)fs.textContent='Remplissez toutes les informations.';
+  var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Enregistrer';
+}
+
+function showPage(p){
+  if(p==='admin'&&!isAdmin){showPage('adminlogin');return;}
+  if(p==='dashboard'&&!currentUser){showPage('login');return;}
+  ['home','catalogue','filieres','login','register','dashboard','admin','adminlogin'].forEach(function(x){
+    var e=document.getElementById('page-'+x);if(e)e.style.display='none';
+  });
+  var target=document.getElementById('page-'+p);if(target)target.style.display='block';
+  var footer=document.getElementById('mainFooter');
+  if(footer)footer.style.display=['admin','adminlogin','login','register'].indexOf(p)>-1?'none':'block';
+  window.scrollTo(0,0);
+  if(p==='catalogue')renderDocs('catGrid',filteredDocs());
+  if(p==='filieres'){renderFil('allFil');renderDocs('filGrid',allDocs);}
+  if(p==='dashboard')loadDashboard();
+  if(p==='admin')loadAdminAll();
+}
+
+function setActive(id){
+  document.querySelectorAll('.nav-link').forEach(function(a){a.classList.remove('active');});
+  var e=document.getElementById(id);if(e)e.classList.add('active');
+}
+
+function toggleMobile(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMobile(){document.getElementById('mobileMenu').classList.remove('open');}
+
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.className='toast show'+(type==='success'?' success':type==='error'?' error':'');
+  setTimeout(function(){t.classList.remove('show');},3500);
+}
+
+function checkRoute(){
+  if(window.location.hash==='#admin-edulib2025') showPage('adminlogin');
+}
+window.addEventListener('hashchange',checkRoute);
+checkRoute();
+
+function handleResize(){
+  var btn=document.getElementById('mobileBtn');
+  if(btn) btn.style.display=window.innerWidth<=600?'flex':'none';
+}
+window.addEventListener('resize',handleResize);
+handleResize();
+
+renderFil('homeFil');
+loadDocs();
+</script>
+</body>
+</html>
