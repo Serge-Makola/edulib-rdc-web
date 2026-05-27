@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduLib RDC - Plateforme de Ressources Pédagogiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1a56db;--blue-dark:#1341b0;--blue-light:#e8f0fe;
+  --green:#0d7f5f;--green-light:#e4f7f0;
+  --amber:#c97a10;--amber-light:#fef3e2;
+  --red:#c0392b;--red-light:#fef2f2;
+  --purple:#7c3aed;--purple-light:#f5f3ff;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;
+  --gray-400:#9ca3af;--gray-600:#4b5563;--gray-800:#1f2937;--gray-900:#111827;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--gray-800);background:#fff;line-height:1.6}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+input,select,textarea{font-family:var(--font-body)}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1.5px solid var(--gray-200);padding:0 1.5rem}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-logo-text{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--blue)}
+.nav-logo-sub{font-size:0.7rem;color:var(--gray-400);letter-spacing:0.1em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:0.25rem}
+.nav-link{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:0.9rem;font-weight:500;color:var(--gray-600);transition:background 0.15s,color 0.15s;cursor:pointer}
+.nav-link:hover,.nav-link.active{background:var(--blue-light);color:var(--blue)}
+.nav-btn{padding:9px 20px;border-radius:8px;font-size:0.9rem;font-weight:500;transition:background 0.15s;cursor:pointer;border:none}
+.nav-btn.primary{background:var(--blue);color:#fff}
+.nav-btn.primary:hover{background:var(--blue-dark)}
+.nav-btn.outline{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}
+.nav-btn.outline:hover{background:var(--blue-light)}
+.cart-count{background:var(--red);color:#fff;font-size:0.65rem;font-weight:700;border-radius:99px;padding:1px 5px;margin-left:2px;display:none}
+.mobile-menu-btn{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer}
+.mobile-menu-btn span{display:block;width:22px;height:2px;background:var(--gray-800);border-radius:2px}
+.mobile-menu{display:none;position:fixed;inset:64px 0 0 0;background:#fff;z-index:99;padding:1.5rem;border-top:1px solid var(--gray-200);flex-direction:column;gap:0.5rem;overflow-y:auto}
+.mobile-menu.open{display:flex}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f2d6e 0%,#1a56db 60%,#2d7af7 100%);color:#fff;padding:5rem 1.5rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:99px;padding:5px 14px;font-size:0.8rem;font-weight:500;margin-bottom:1.5rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.15;margin-bottom:1.2rem}
+.hero h1 span{color:#93c5fd}
+.hero p{font-size:1.05rem;opacity:0.85;margin-bottom:2rem;max-width:480px;line-height:1.7}
+.hero-actions{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn-primary{background:#fff;color:var(--blue);padding:12px 28px;border-radius:9px;font-weight:600;font-size:0.95rem;transition:all 0.15s;box-shadow:0 4px 14px rgba(0,0,0,0.12);cursor:pointer;border:none}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,0.16)}
+.btn-outline-white{background:transparent;color:#fff;padding:12px 28px;border-radius:9px;font-weight:600;font-size:0.95rem;border:1.5px solid rgba(255,255,255,0.5);transition:all 0.15s;cursor:pointer}
+.btn-outline-white:hover{background:rgba(255,255,255,0.1)}
+.hero-visual{display:flex;flex-direction:column;gap:1rem}
+.hero-card{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:1.25rem 1.5rem}
+.hero-card-label{font-size:0.75rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.35rem;font-weight:500}
+.hero-card-value{font-family:var(--font-display);font-size:1.9rem;font-weight:700}
+.hero-card-desc{font-size:0.8rem;opacity:0.75;margin-top:0.2rem}
+.hero-cards-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+/* SEARCH */
+.search-section{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:2rem 1.5rem}
+.search-inner{max-width:800px;margin:0 auto}
+.search-box{position:relative;margin-bottom:1rem}
+.search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none}
+.search-box input{width:100%;padding:14px 16px 14px 48px;border:2px solid var(--gray-200);border-radius:12px;font-size:1rem;background:#fff;transition:border-color 0.15s;outline:none}
+.search-box input:focus{border-color:var(--blue)}
+.filter-chips{display:flex;gap:0.5rem;flex-wrap:wrap}
+.chip{padding:7px 16px;border-radius:99px;border:1.5px solid var(--gray-200);background:#fff;font-size:0.85rem;font-weight:500;color:var(--gray-600);cursor:pointer;transition:all 0.15s}
+.chip:hover,.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* STATS */
+.stats{padding:3rem 1.5rem;background:#fff}
+.stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.stat-card{text-align:center;padding:2rem 1rem;border-radius:16px;background:var(--gray-50);border:1.5px solid var(--gray-200);transition:transform 0.2s,box-shadow 0.2s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.08)}
+.stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.stat-icon.blue{background:var(--blue-light);color:var(--blue)}
+.stat-icon.green{background:var(--green-light);color:var(--green)}
+.stat-icon.amber{background:var(--amber-light);color:var(--amber)}
+.stat-num{font-family:var(--font-display);font-size:2.4rem;font-weight:700;color:var(--gray-900)}
+.stat-label{font-size:0.9rem;color:var(--gray-600);margin-top:0.25rem}
+
+/* SECTIONS */
+.section{padding:3rem 1.5rem}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem}
+.section-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--gray-900)}
+.section-link{color:var(--blue);font-size:0.9rem;font-weight:500;cursor:pointer}
+.section-link:hover{text-decoration:underline}
+
+/* DOC CARDS */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+.doc-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;overflow:hidden;transition:all 0.2s;cursor:pointer;display:flex;flex-direction:column}
+.doc-card:hover{border-color:var(--blue);box-shadow:0 8px 28px rgba(26,86,219,0.1);transform:translateY(-3px)}
+.doc-card-thumb{height:120px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative}
+.doc-card-thumb.droit{background:linear-gradient(135deg,#e8f0fe,#c7d7f9)}
+.doc-card-thumb.medecine{background:linear-gradient(135deg,#e4f7f0,#a7e9d2)}
+.doc-card-thumb.polytechnique{background:linear-gradient(135deg,#fef3e2,#fdd98a)}
+.doc-card-thumb.sciences{background:linear-gradient(135deg,#f0fdf4,#bbf7d0)}
+.doc-card-thumb.lettres{background:linear-gradient(135deg,#fdf2f8,#f5c2e7)}
+.doc-card-thumb.economie{background:linear-gradient(135deg,#fff7ed,#fed7aa)}
+.doc-card-body{padding:1rem 1.125rem;flex:1;display:flex;flex-direction:column}
+.doc-card-filiere{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem}
+.doc-card-filiere.droit{color:var(--blue)}.doc-card-filiere.medecine{color:var(--green)}.doc-card-filiere.polytechnique{color:var(--amber)}.doc-card-filiere.sciences{color:#15803d}.doc-card-filiere.lettres{color:#9333ea}.doc-card-filiere.economie{color:#c2410c}
+.doc-card-title{font-weight:600;font-size:0.95rem;color:var(--gray-900);margin-bottom:0.35rem;line-height:1.4;flex:1}
+.doc-card-prof{font-size:0.8rem;color:var(--gray-600);margin-bottom:0.75rem}
+.doc-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.doc-card-price{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--gray-900)}
+.doc-card-price span{font-size:0.75rem;font-weight:400;color:var(--gray-400)}
+.doc-card-btn{background:var(--blue-light);color:var(--blue);padding:6px 14px;border-radius:7px;font-size:0.8rem;font-weight:600;transition:all 0.15s;border:none;cursor:pointer}
+.doc-card-btn:hover{background:var(--blue);color:#fff}
+.doc-badge{position:absolute;top:10px;right:10px;background:#fff;border-radius:6px;padding:3px 8px;font-size:0.7rem;font-weight:600}
+.doc-badge.new{color:var(--green)}.doc-badge.popular{color:var(--amber)}
+
+/* FILIERES */
+.filieres-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.filiere-card{border-radius:14px;padding:1.5rem 1.25rem;cursor:pointer;transition:all 0.2s;text-align:center}
+.filiere-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.1)}
+.filiere-card.droit{background:var(--blue-light);color:var(--blue)}.filiere-card.medecine{background:var(--green-light);color:var(--green)}.filiere-card.polytechnique{background:var(--amber-light);color:var(--amber)}.filiere-card.sciences{background:#f0fdf4;color:#15803d}.filiere-card.lettres{background:#fdf4ff;color:#9333ea}.filiere-card.economie{background:#fff7ed;color:#c2410c}
+.filiere-icon{font-size:2.5rem;margin-bottom:0.75rem}
+.filiere-name{font-weight:700;font-size:1rem;margin-bottom:0.25rem}
+.filiere-count{font-size:0.8rem;opacity:0.75}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,#0f2d6e,#1a56db);color:#fff;padding:4rem 1.5rem;text-align:center}
+.cta h2{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin-bottom:1rem}
+.cta p{opacity:0.85;max-width:500px;margin:0 auto 2rem;font-size:1rem;line-height:1.7}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* FOOTER */
+footer{background:var(--gray-900);color:var(--gray-400);padding:3rem 1.5rem 1.5rem}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+.footer-brand-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:0.5rem}
+.footer-brand-desc{font-size:0.87rem;line-height:1.6;max-width:250px}
+.footer-col-title{font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-400);margin-bottom:1rem}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
+.footer-links li{font-size:0.87rem;color:var(--gray-400);transition:color 0.15s;cursor:pointer}
+.footer-links li:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:0.82rem;flex-wrap:wrap;gap:0.75rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--gray-900);color:#fff;padding:12px 20px;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:8px;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem}
+.modal-title{font-family:var(--font-display);font-size:1.4rem;font-weight:700}
+.modal-close{background:var(--gray-100);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-600);flex-shrink:0}
+.modal-close:hover{background:var(--gray-200)}
+.modal-detail{display:flex;gap:8px;align-items:flex-start;margin-bottom:0.6rem;font-size:0.9rem}
+.modal-detail-label{color:var(--gray-600);min-width:100px;flex-shrink:0}
+.modal-detail-value{font-weight:500;color:var(--gray-900)}
+.mbtn{width:100%;padding:14px;border-radius:10px;font-size:1rem;font-weight:600;margin-top:0.75rem;cursor:pointer;transition:all 0.15s;border:none}
+.mbtn.primary{background:var(--blue);color:#fff}.mbtn.primary:hover{background:var(--blue-dark)}
+.mbtn.secondary{background:var(--gray-100);color:var(--gray-800)}.mbtn.secondary:hover{background:var(--gray-200)}
+.mbtn.success{background:var(--green);color:#fff}.mbtn.danger{background:var(--red);color:#fff}
+
+/* CART */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.cart-overlay.open{opacity:1;pointer-events:all}
+.cart-panel{position:fixed;right:0;top:0;bottom:0;width:min(380px,100vw);background:#fff;z-index:301;transform:translateX(100%);transition:transform 0.3s;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,0.12)}
+.cart-panel.open{transform:translateX(0)}
+.cart-head{padding:1.5rem;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between}
+.cart-head-title{font-family:var(--font-display);font-size:1.3rem;font-weight:700}
+.cart-items{flex:1;overflow-y:auto;padding:1rem}
+.cart-empty{text-align:center;color:var(--gray-400);padding:3rem 1rem}
+.cart-item{display:flex;gap:0.75rem;padding:0.9rem 0;border-bottom:1px solid var(--gray-100);align-items:flex-start}
+.cart-item-thumb{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-title{font-weight:500;font-size:0.9rem;line-height:1.3}
+.cart-item-price{font-weight:700;font-size:0.9rem;color:var(--blue);margin-top:3px}
+.cart-item-remove{color:var(--gray-400);cursor:pointer;padding:4px;border-radius:6px;background:none;border:none;font-size:1.1rem}
+.cart-item-remove:hover{color:var(--red)}
+.cart-footer{padding:1.5rem;border-top:1px solid var(--gray-200)}
+.cart-total{display:flex;justify-content:space-between;font-weight:600;font-size:1.05rem;margin-bottom:1rem}
+.cart-checkout-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer}
+.cart-checkout-btn:hover{background:var(--blue-dark)}
+
+/* AUTH PAGES */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2d6e,#1a56db);padding:1.5rem}
+.auth-box{background:#fff;border-radius:20px;padding:2.5rem;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.auth-logo{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue);text-align:center;margin-bottom:0.25rem}
+.auth-logo-sub{font-size:0.8rem;color:var(--gray-400);text-align:center;margin-bottom:2rem}
+.auth-title{font-family:var(--font-display);font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:0.5rem}
+.auth-subtitle{font-size:0.9rem;color:var(--gray-600);text-align:center;margin-bottom:1.5rem}
+.auth-tabs{display:flex;gap:0;margin-bottom:2rem;border-radius:10px;overflow:hidden;border:1.5px solid var(--gray-200)}
+.auth-tab{flex:1;padding:10px;text-align:center;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.15s;background:#fff;color:var(--gray-600);border:none}
+.auth-tab.active{background:var(--blue);color:#fff}
+.fg{display:flex;flex-direction:column;gap:1rem}
+.fg-grp{display:flex;flex-direction:column;gap:0.5rem}
+.fg-lbl{font-size:0.875rem;font-weight:500;color:#374151}
+.fg-inp{padding:12px 16px;border:2px solid var(--gray-200);border-radius:10px;font-size:1rem;outline:none;transition:border-color 0.15s;color:var(--gray-800);width:100%;background:#fff}
+.fg-inp:focus{border-color:var(--blue)}
+.fg-sel{padding:12px 16px;border:2px solid var(--gray-200);border-radius:10px;font-size:1rem;outline:none;background:#fff;color:var(--gray-800);cursor:pointer;width:100%}
+.fg-sel:focus{border-color:var(--blue)}
+.auth-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.5rem;transition:background 0.15s}
+.auth-btn:hover{background:var(--blue-dark)}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed}
+.auth-error{background:#fef2f2;color:var(--red);border-radius:8px;padding:10px 14px;font-size:0.875rem;margin-bottom:1rem;display:none}
+.auth-error.show{display:block}
+.auth-link{color:var(--blue);cursor:pointer;font-size:0.875rem;text-align:center;margin-top:1rem;display:block}
+.auth-link:hover{text-decoration:underline}
+.auth-divider{display:flex;align-items:center;gap:1rem;margin:1rem 0;color:var(--gray-400);font-size:0.85rem}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--gray-200)}
+
+/* ESPACE PERSONNEL */
+.dashboard-layout{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.dashboard-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.dashboard-welcome{font-family:var(--font-display);font-size:1.75rem;font-weight:700}
+.dashboard-tabs{display:flex;gap:0.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.dtab{padding:9px 20px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:0.9rem;font-weight:500;color:var(--gray-600);cursor:pointer;transition:all 0.15s}
+.dtab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bought-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
+.bought-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;padding:1.25rem;transition:all 0.2s}
+.bought-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(26,86,219,0.1)}
+.bought-card-top{display:flex;gap:0.75rem;align-items:flex-start;margin-bottom:1rem}
+.bought-card-emoji{font-size:2rem;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bought-card-info{flex:1}
+.bought-card-title{font-weight:600;font-size:0.95rem;line-height:1.3;margin-bottom:0.25rem}
+.bought-card-prof{font-size:0.8rem;color:var(--gray-600)}
+.download-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;text-decoration:none}
+.download-btn:hover{background:#0a6b4f}
+.empty-state{text-align:center;padding:4rem 1rem;color:var(--gray-400)}
+.empty-state-icon{font-size:3rem;margin-bottom:1rem}
+.empty-state-title{font-weight:600;font-size:1.1rem;color:var(--gray-600);margin-bottom:0.5rem}
+.profile-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:16px;padding:2rem;max-width:500px}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.6rem;font-weight:700;margin-bottom:1rem}
+.profile-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:0.25rem}
+.profile-email{font-size:0.9rem;color:var(--gray-600);margin-bottom:1.5rem}
+.profile-stat{display:flex;gap:1.5rem;margin-bottom:1.5rem}
+.profile-stat-item{text-align:center}
+.profile-stat-num{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--blue)}
+.profile-stat-label{font-size:0.78rem;color:var(--gray-600)}
+
+/* ADMIN */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2d6e,#1a56db);padding:1.5rem}
+.login-box{background:#fff;border-radius:20px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.admin-layout{display:flex;min-height:calc(100vh - 64px)}
+.admin-sidebar{width:240px;background:var(--gray-900);color:#fff;padding:1.5rem 0;flex-shrink:0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.admin-sidebar-title{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-400);padding:0 1.5rem;margin-bottom:0.75rem;margin-top:1.25rem}
+.admin-sidebar-title:first-child{margin-top:0}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:10px 1.5rem;font-size:0.9rem;color:var(--gray-400);cursor:pointer;transition:all 0.15s;border-left:3px solid transparent}
+.admin-nav-item:hover{background:rgba(255,255,255,0.05);color:#fff}
+.admin-nav-item.active{background:rgba(26,86,219,0.2);color:#fff;border-left-color:var(--blue)}
+.admin-content{flex:1;padding:2rem;background:var(--gray-50);overflow-x:hidden}
+.admin-pg{display:none}.admin-pg.active{display:block}
+.admin-page-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--gray-900);margin-bottom:0.5rem}
+.admin-page-sub{color:var(--gray-600);font-size:0.9rem;margin-bottom:2rem}
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem}
+.adm-stat{background:#fff;border-radius:14px;padding:1.5rem;border:1.5px solid var(--gray-200)}
+.adm-stat-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+.adm-stat-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.adm-badge{font-size:0.75rem;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--green-light);color:var(--green)}
+.adm-num{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--gray-900)}
+.adm-lbl{font-size:0.85rem;color:var(--gray-600);margin-top:0.2rem}
+.adm-card{background:#fff;border-radius:14px;border:1.5px solid var(--gray-200);overflow:hidden;margin-bottom:1.5rem}
+.adm-card-hd{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem}
+.adm-card-title{font-weight:600;font-size:1rem;color:var(--gray-900)}
+.adm-tbl{width:100%;border-collapse:collapse}
+.adm-tbl th{padding:12px 16px;text-align:left;font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--gray-600);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+.adm-tbl td{padding:12px 16px;font-size:0.875rem;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+.adm-tbl tr:last-child td{border-bottom:none}
+.adm-tbl tr:hover td{background:var(--gray-50)}
+.bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:0.75rem;font-weight:600}
+.bdg-blue{background:var(--blue-light);color:var(--blue)}.bdg-green{background:var(--green-light);color:var(--green)}.bdg-amber{background:var(--amber-light);color:var(--amber)}.bdg-purple{background:#f5f3ff;color:#7c3aed}
+.act-btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;margin-right:4px}
+.act-edit{background:var(--blue-light);color:var(--blue)}.act-edit:hover{background:var(--blue);color:#fff}
+.act-del{background:#fef2f2;color:var(--red)}.act-del:hover{background:var(--red);color:#fff}
+.adm-btn{background:var(--blue);color:#fff;padding:11px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;border:none;cursor:pointer}
+.adm-btn:hover{background:var(--blue-dark)}
+.adm-btn-sec{background:var(--gray-100);color:var(--gray-800);padding:11px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;border:none;cursor:pointer}
+.adm-btn-sec:hover{background:var(--gray-200)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-full{grid-column:1/-1}
+.loading{text-align:center;padding:3rem;color:var(--gray-400)}
+.upload-zone{border:2px dashed var(--gray-200);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--gray-50)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-light)}
+.upload-zone-icon{font-size:2rem;margin-bottom:0.5rem}
+.upload-zone-text{font-size:0.9rem;color:var(--gray-600)}
+.upload-zone-hint{font-size:0.78rem;color:var(--gray-400);margin-top:0.25rem}
+.upload-progress{height:6px;background:var(--gray-200);border-radius:99px;overflow:hidden;margin-top:0.75rem;display:none}
+.upload-progress-bar{height:100%;background:var(--blue);border-radius:99px;transition:width 0.3s}
+.file-preview{display:flex;align-items:center;gap:0.75rem;background:var(--green-light);border-radius:8px;padding:10px 14px;margin-top:0.75rem}
+.file-preview-icon{font-size:1.5rem}
+.file-preview-name{font-size:0.875rem;font-weight:500;color:var(--green);flex:1}
+.file-preview-remove{color:var(--green);cursor:pointer;font-size:1rem;background:none;border:none}
+
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr}.hero-visual{display:none}.footer-top{grid-template-columns:1fr 1fr}.stats-inner{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.admin-layout{flex-direction:column}.admin-sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;padding:0.75rem}.admin-nav-item{padding:8px 12px;font-size:0.82rem;border-left:none;border-bottom:3px solid transparent}.admin-nav-item.active{border-left:none;border-bottom-color:var(--blue)}.admin-sidebar-title{display:none}.form-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.nav-links{display:none}.mobile-menu-btn{display:flex}.stats-inner{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr}.hero{padding:3rem 1.25rem 2.5rem}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="showPage('home')">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <div><div class="nav-logo-text">EduLib RDC</div><div class="nav-logo-sub">Ressources pédagogiques</div></div>
+    </div>
+    <div class="nav-links">
+      <span class="nav-link active" id="nl-home" onclick="showPage('home');setActive('nl-home')">Accueil</span>
+      <span class="nav-link" id="nl-cat" onclick="showPage('catalogue');setActive('nl-cat')">Catalogue</span>
+      <span class="nav-link" id="nl-fil" onclick="showPage('filieres');setActive('nl-fil')">Filières</span>
+      <span class="nav-link" onclick="openCart()">🛒 Panier <span class="cart-count" id="cart-count">0</span></span>
+      <span id="nav-auth-btns">
+        <button class="nav-btn outline" onclick="showPage('login')" style="margin-right:6px">Connexion</button>
+        <button class="nav-btn primary" onclick="showPage('register')">S'inscrire</button>
+      </span>
+      <span id="nav-user-btns" style="display:none;align-items:center;gap:8px">
+        <span class="nav-link" id="nl-dash" onclick="showPage('dashboard');setActive('nl-dash')">👤 Mon espace</span>
+        <button class="nav-btn outline" onclick="doLogout()">Déconnexion</button>
+      </span>
+    </div>
+    <button class="mobile-menu-btn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <span class="nav-link" onclick="showPage('home');closeMobile()">🏠 Accueil</span>
+  <span class="nav-link" onclick="showPage('catalogue');closeMobile()">📚 Catalogue</span>
+  <span class="nav-link" onclick="showPage('filieres');closeMobile()">🎓 Filières</span>
+  <span class="nav-link" onclick="openCart();closeMobile()">🛒 Panier</span>
+  <span id="mob-auth" class="nav-link" onclick="showPage('login');closeMobile()">🔐 Connexion</span>
+  <span id="mob-reg" class="nav-link" onclick="showPage('register');closeMobile()">📝 S'inscrire</span>
+  <span id="mob-dash" class="nav-link" style="display:none" onclick="showPage('dashboard');closeMobile()">👤 Mon espace</span>
+  <span id="mob-logout" class="nav-link" style="display:none;color:var(--red)" onclick="doLogout();closeMobile()">🚪 Déconnexion</span>
+</div>
+
+<!-- HOME -->
+<div id="page-home">
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">🎓 Plateforme #1 en RDC</div>
+        <h1>Les meilleures ressources pour <span>réussir vos études</span></h1>
+        <p>Syllabus, notes de cours, exercices corrigés — tout ce dont vous avez besoin pour exceller à l'université en République Démocratique du Congo.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="showPage('catalogue')">Parcourir le catalogue</button>
+          <button class="btn-outline-white" onclick="showPage('register')">S'inscrire gratuitement</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-cards-row">
+          <div class="hero-card"><div class="hero-card-label">Documents</div><div class="hero-card-value" id="heroDocCount">0</div><div class="hero-card-desc">Disponibles</div></div>
+          <div class="hero-card"><div class="hero-card-label">Filières</div><div class="hero-card-value">6</div><div class="hero-card-desc">Facultés couvertes</div></div>
+        </div>
+        <div class="hero-card"><div class="hero-card-label">Étudiants inscrits</div><div class="hero-card-value" id="heroUserCount">0</div><div class="hero-card-desc">Font confiance à EduLib RDC</div></div>
+      </div>
+    </div>
+  </section>
+  <div class="search-section">
+    <div class="search-inner">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>
+        <input type="text" id="searchInput" placeholder="Rechercher un document, un cours, un professeur..." oninput="filterDocs()"/>
+      </div>
+      <div class="filter-chips">
+        <button class="chip active" onclick="filterByFiliere('',this)">Tous</button>
+        <button class="chip" onclick="filterByFiliere('droit',this)">Droit</button>
+        <button class="chip" onclick="filterByFiliere('medecine',this)">Médecine</button>
+        <button class="chip" onclick="filterByFiliere('polytechnique',this)">Polytechnique</button>
+        <button class="chip" onclick="filterByFiliere('sciences',this)">Sciences</button>
+        <button class="chip" onclick="filterByFiliere('lettres',this)">Lettres</button>
+        <button class="chip" onclick="filterByFiliere('economie',this)">Économie</button>
+      </div>
+    </div>
+  </div>
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="stat-card"><div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-num" id="statDocCount">0</div><div class="stat-label">Documents disponibles</div></div>
+      <div class="stat-card"><div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-num" id="statUserCount">0</div><div class="stat-label">Étudiants inscrits</div></div>
+      <div class="stat-card"><div class="stat-icon amber"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="stat-num" id="statFiliereCount">6</div><div class="stat-label">Filières couvertes</div></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-header"><h2 class="section-title">Documents récents</h2><span class="section-link" onclick="showPage('catalogue')">Voir tout →</span></div>
+      <div class="docs-grid" id="homeDocsGrid"><div class="loading">Chargement des documents...</div></div>
+    </div>
+  </section>
+  <section class="section" style="background:var(--gray-50);margin:0">
+    <div class="section-inner">
+      <div class="section-header"><h2 class="section-title">Parcourir par filière</h2><span class="section-link" onclick="showPage('filieres')">Toutes les filières →</span></div>
+      <div class="filieres-grid" id="homeFilieres"></div>
+    </div>
+  </section>
+  <section class="cta">
+    <h2>Prêt à réussir vos examens ?</h2>
+    <p>Créez votre compte gratuitement et accédez aux meilleures ressources pédagogiques de la RDC.</p>
+    <div class="cta-btns">
+      <button class="btn-primary" onclick="showPage('register')">Créer un compte gratuit</button>
+      <button class="btn-outline-white" onclick="showPage('catalogue')">Parcourir le catalogue</button>
+    </div>
+  </section>
+</div>
+
+<!-- CATALOGUE -->
+<div id="page-catalogue" style="display:none">
+  <div style="background:var(--gray-50);padding:2.5rem 1.5rem;border-bottom:1px solid var(--gray-200)">
+    <div style="max-width:1200px;margin:0 auto"><h1 style="font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:0.5rem">Catalogue des documents</h1><p style="color:var(--gray-600)">Tous nos documents pédagogiques disponibles</p></div>
+  </div>
+  <section class="section"><div class="section-inner"><div class="docs-grid" id="catDocsGrid"><div class="loading">Chargement...</div></div></div></section>
+</div>
+
+<!-- FILIERES -->
+<div id="page-filieres" style="display:none">
+  <div style="background:var(--gray-50);padding:2.5rem 1.5rem;border-bottom:1px solid var(--gray-200)">
+    <div style="max-width:1200px;margin:0 auto"><h1 style="font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:0.5rem">Toutes les filières</h1><p style="color:var(--gray-600)">Choisissez votre domaine d'études</p></div>
+  </div>
+  <section class="section">
+    <div class="section-inner">
+      <div class="filieres-grid" id="allFilieres" style="margin-bottom:3rem"></div>
+      <div class="section-header"><h2 class="section-title" id="filiereTitle">Tous les documents</h2></div>
+      <div class="docs-grid" id="filiereDocsGrid"><div class="loading">Chargement...</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- LOGIN -->
+<div id="page-login" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">EduLib RDC</div>
+      <div class="auth-logo-sub">Accédez à vos ressources pédagogiques</div>
+      <div class="auth-title">Connexion</div>
+      <div class="auth-error" id="loginError"></div>
+      <div class="fg">
+        <div class="fg-grp"><label class="fg-lbl">Email</label><input class="fg-inp" type="email" id="loginEmail" placeholder="votre@email.com"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Mot de passe</label><input class="fg-inp" type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      </div>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()">Se connecter</button>
+      <span class="auth-link" onclick="showPage('register')">Pas encore de compte ? S'inscrire</span>
+      <span class="auth-link" onclick="showPage('home')" style="color:var(--gray-400)">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="page-register" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">EduLib RDC</div>
+      <div class="auth-logo-sub">Rejoignez plus de 5000 étudiants</div>
+      <div class="auth-title">Créer un compte</div>
+      <div class="auth-error" id="registerError"></div>
+      <div class="fg">
+        <div class="fg-grp"><label class="fg-lbl">Nom complet</label><input class="fg-inp" type="text" id="regName" placeholder="Votre nom complet"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Email</label><input class="fg-inp" type="email" id="regEmail" placeholder="votre@email.com"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Filière</label>
+          <select class="fg-sel" id="regFiliere">
+            <option value="">Sélectionner votre filière...</option>
+            <option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option>
+          </select>
+        </div>
+        <div class="fg-grp"><label class="fg-lbl">Mot de passe</label><input class="fg-inp" type="password" id="regPass" placeholder="Minimum 6 caractères"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Confirmer le mot de passe</label><input class="fg-inp" type="password" id="regPass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()"/></div>
+      </div>
+      <button class="auth-btn" id="registerBtn" onclick="doRegister()">Créer mon compte</button>
+      <span class="auth-link" onclick="showPage('login')">Déjà un compte ? Se connecter</span>
+      <span class="auth-link" onclick="showPage('home')" style="color:var(--gray-400)">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD ETUDIANT -->
+<div id="page-dashboard" style="display:none">
+  <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:2rem 1.5rem">
+    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div><h1 style="font-family:var(--font-display);font-size:1.75rem;font-weight:700">Mon espace</h1><p style="color:var(--gray-600);font-size:0.9rem" id="dashWelcome">Bienvenue !</p></div>
+    </div>
+  </div>
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+    <div class="dashboard-tabs">
+      <button class="dtab active" onclick="showDashTab('bought',this)">📚 Mes documents</button>
+      <button class="dtab" onclick="showDashTab('profile',this)">👤 Mon profil</button>
+    </div>
+    <div id="dash-bought">
+      <div class="bought-grid" id="boughtDocsGrid"><div class="loading">Chargement de vos documents...</div></div>
+    </div>
+    <div id="dash-profile" style="display:none">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar">?</div>
+        <div class="profile-name" id="profileName">-</div>
+        <div class="profile-email" id="profileEmail">-</div>
+        <div class="profile-stat">
+          <div class="profile-stat-item"><div class="profile-stat-num" id="profileDocCount">0</div><div class="profile-stat-label">Documents achetés</div></div>
+          <div class="profile-stat-item"><div class="profile-stat-num" id="profileFiliere">-</div><div class="profile-stat-label">Filière</div></div>
+        </div>
+        <button class="adm-btn-sec" onclick="doLogout()" style="width:100%">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="page-adminlogin" style="display:none">
+  <div class="login-page">
+    <div class="login-box">
+      <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue);text-align:center;margin-bottom:0.25rem">EduLib RDC</div>
+      <div style="font-size:0.8rem;color:var(--gray-400);text-align:center;margin-bottom:2rem">Espace Administrateur</div>
+      <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:1.5rem">Connexion Admin</div>
+      <div class="auth-error" id="adminLoginError"></div>
+      <div class="fg" style="margin-bottom:0">
+        <div class="fg-grp"><label class="fg-lbl">Identifiant</label><input class="fg-inp" type="text" id="adminUser" placeholder="admin"/></div>
+        <div class="fg-grp"><label class="fg-lbl">Mot de passe</label><input class="fg-inp" type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"/></div>
+      </div>
+      <button class="auth-btn" onclick="doAdminLogin()" style="margin-top:1rem">Se connecter</button>
+      <span class="auth-link" onclick="showPage('home')" style="color:var(--gray-400)">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" style="display:none">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-title">Principal</div>
+      <div class="admin-nav-item active" onclick="showAP('dashboard',this)"><span>📊</span>Tableau de bord</div>
+      <div class="admin-nav-item" onclick="showAP('documents',this)"><span>📚</span>Documents</div>
+      <div class="admin-nav-item" onclick="showAP('ajouter',this);resetForm()"><span>➕</span>Ajouter document</div>
+      <div class="admin-nav-item" onclick="showAP('utilisateurs',this)"><span>👥</span>Utilisateurs</div>
+      <div class="admin-nav-item" onclick="showAP('commandes',this)"><span>🛒</span>Commandes</div>
+      <div class="admin-sidebar-title">Compte</div>
+      <div class="admin-nav-item" onclick="showAP('parametres',this)"><span>⚙️</span>Paramètres</div>
+      <div class="admin-nav-item" style="color:#ef4444" onclick="adminLogout()"><span>🚪</span>Déconnexion</div>
+    </div>
+    <div class="admin-content">
+      <!-- DASHBOARD -->
+      <div class="admin-pg active" id="adm-dashboard">
+        <div class="admin-page-title">Tableau de bord</div>
+        <p class="admin-page-sub">Bienvenue, Serge ! Voici un résumé de votre plateforme.</p>
+        <div class="adm-stats">
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--blue-light)">📚</div><span class="adm-badge" id="dDocCount">0</span></div><div class="adm-num" id="dDocNum">0</div><div class="adm-lbl">Documents publiés</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--green-light)">👥</div><span class="adm-badge" id="dUserCount">0</span></div><div class="adm-num" id="dUserNum">0</div><div class="adm-lbl">Étudiants inscrits</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--amber-light)">🛒</div><span class="adm-badge" id="dOrderCount">0</span></div><div class="adm-num" id="dOrderNum">0</div><div class="adm-lbl">Commandes</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--purple-light,#f5f3ff)">💰</div><span class="adm-badge">Total</span></div><div class="adm-num" id="dRevenue">$0</div><div class="adm-lbl">Revenus estimés</div></div>
+        </div>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Documents récents</div><button class="act-btn act-edit" onclick="showAP('documents',null)">Voir tous</button></div><div style="overflow-x:auto"><table class="adm-tbl" id="dRecentDocs"><tr><td class="loading">Chargement...</td></tr></table></div></div>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Derniers utilisateurs inscrits</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="dRecentUsers"><tr><td class="loading">Chargement...</td></tr></table></div></div>
+      </div>
+      <!-- DOCUMENTS -->
+      <div class="admin-pg" id="adm-documents">
+        <div class="admin-page-title">Gestion des documents</div>
+        <p class="admin-page-sub">Gérez tous les documents de la plateforme.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="docListCount">Tous les documents</div><button class="adm-btn" onclick="showAP('ajouter',null);resetForm()">+ Ajouter</button></div><div style="overflow-x:auto"><table class="adm-tbl" id="aDocsTable"><tr><td class="loading">Chargement...</td></tr></table></div></div>
+      </div>
+      <!-- AJOUTER DOCUMENT -->
+      <div class="admin-pg" id="adm-ajouter">
+        <div class="admin-page-title" id="formTitle">Ajouter un document</div>
+        <p class="admin-page-sub" id="formSub">Remplissez toutes les informations du document.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Informations du document</div></div>
+        <div style="padding:1.5rem">
+          <input type="hidden" id="editDocId"/>
+          <div class="form-grid">
+            <div class="fg-grp form-full"><label class="fg-lbl">Titre du document *</label><input class="fg-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil Congolais"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Filière *</label><select class="fg-sel" id="fFiliere"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option></select></div>
+            <div class="fg-grp"><label class="fg-lbl">Type de document *</label><select class="fg-sel" id="fType"><option value="">Sélectionner...</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
+            <div class="fg-grp"><label class="fg-lbl">Professeur *</label><input class="fg-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Prix (USD) *</label><input class="fg-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Nombre de pages</label><input class="fg-inp" type="number" id="fPages" placeholder="100" min="1"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Année</label><input class="fg-inp" type="number" id="fAnnee" placeholder="2025" min="2000" max="2030"/></div>
+            <div class="fg-grp"><label class="fg-lbl">Badge</label><select class="fg-sel" id="fBadge"><option value="">Aucun</option><option value="new">Nouveau</option><option value="popular">Populaire</option></select></div>
+            <div class="fg-grp form-full"><label class="fg-lbl">Description</label><textarea class="fg-inp" id="fDesc" rows="3" placeholder="Décrivez le contenu de ce document..."></textarea></div>
+            <div class="fg-grp form-full">
+              <label class="fg-lbl">Lien Google Drive du PDF *</label>
+              <input class="fg-inp" type="url" id="fDriveLink" placeholder="https://drive.google.com/file/d/..."/>
+              <small style="color:var(--gray-400);font-size:0.78rem;margin-top:4px;display:block">💡 Sur Google Drive : clic droit sur le fichier → Partager → Copier le lien → coller ici</small>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap">
+            <button class="adm-btn" onclick="saveDoc()" id="saveDocBtn">Enregistrer le document</button>
+            <button class="adm-btn-sec" onclick="resetForm();showAP('documents',null)">Annuler</button>
+          </div>
+        </div></div>
+      </div>
+      <!-- UTILISATEURS -->
+      <div class="admin-pg" id="adm-utilisateurs">
+        <div class="admin-page-title">Utilisateurs</div>
+        <p class="admin-page-sub">Liste de tous les étudiants inscrits sur la plateforme.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="userListCount">Tous les utilisateurs</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="usersTable"><tr><td class="loading">Chargement...</td></tr></table></div></div>
+      </div>
+      <!-- COMMANDES -->
+      <div class="admin-pg" id="adm-commandes">
+        <div class="admin-page-title">Commandes</div>
+        <p class="admin-page-sub">Historique de toutes les commandes.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="orderListCount">Toutes les commandes</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="ordersTable"><tr><td class="loading">Chargement...</td></tr></table></div></div>
+      </div>
+      <!-- PARAMETRES -->
+      <div class="admin-pg" id="adm-parametres">
+        <div class="admin-page-title">Paramètres</div>
+        <p class="admin-page-sub">Gérez votre compte administrateur.</p>
+        <div class="adm-card" style="max-width:500px"><div class="adm-card-hd"><div class="adm-card-title">Changer le mot de passe admin</div></div>
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+          <div class="fg-grp"><label class="fg-lbl">Mot de passe actuel</label><input class="fg-inp" type="password" id="oldPass" placeholder="••••••••"/></div>
+          <div class="fg-grp"><label class="fg-lbl">Nouveau mot de passe</label><input class="fg-inp" type="password" id="newPass" placeholder="••••••••"/></div>
+          <div class="fg-grp"><label class="fg-lbl">Confirmer</label><input class="fg-inp" type="password" id="confirmPass" placeholder="••••••••"/></div>
+          <button class="adm-btn" style="align-self:flex-start" onclick="changeAdminPass()">Mettre à jour</button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer id="mainFooter">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div><div class="footer-brand-name">EduLib RDC</div><p class="footer-brand-desc">La plateforme de référence pour les ressources pédagogiques universitaires en RDC.</p></div>
+      <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="showPage('home')">Accueil</li><li onclick="showPage('catalogue')">Catalogue</li><li onclick="showPage('filieres')">Filières</li></ul></div>
+      <div><div class="footer-col-title">Filières</div><ul class="footer-links"><li>Droit</li><li>Médecine</li><li>Polytechnique</li><li>Sciences</li><li>Lettres</li></ul></div>
+      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:var(--gray-400)">contact@edulibrdc.com</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 EduLib RDC. Tous droits réservés.</span><span>Fait avec ❤️ pour les étudiants congolais</span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><div class="modal-header"><div class="modal-title" id="modalTitle"></div><button class="modal-close" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div>
+</div>
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-head"><div class="cart-head-title">Mon panier</div><button class="modal-close" onclick="closeCart()">✕</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total"><span>Total</span><span id="cartTotal">$0</span></div>
+    <button class="cart-checkout-btn" onclick="checkout()">Passer commande</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAoxL9c71QEhA1-TLdmiTDjnxWFhprWe44",
+  authDomain: "edulib-rdc.firebaseapp.com",
+  projectId: "edulib-rdc",
+  storageBucket: "edulib-rdc.firebasestorage.app",
+  messagingSenderId: "523092755243",
+  appId: "1:523092755243:web:eef7329b63c03e281ebb6e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// ===================== STATE =====================
+let allDocs = [];
+let allUsers = [];
+let allOrders = [];
+let cart = [];
+let currentUser = null;
+let boughtDocIds = [];
+let isAdminLoggedIn = false;
+let adminPassword = 'edulib2025';
+let currentFiliere = '';
+let currentSearch = '';
+
+const filieres = [
+  {id:"droit",name:"Droit",emoji:"⚖️"},
+  {id:"medecine",name:"Médecine",emoji:"🩺"},
+  {id:"polytechnique",name:"Polytechnique",emoji:"⚙️"},
+  {id:"sciences",name:"Sciences",emoji:"🔬"},
+  {id:"lettres",name:"Lettres",emoji:"📖"},
+  {id:"economie",name:"Économie",emoji:"📊"}
+];
+const emojiMap = {droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
+const getFLabel = f => filieres.find(x=>x.id===f)?.name||f;
+const getBdg = f => ({droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'})[f]||'bdg-blue';
+
+// ===================== AUTH STATE =====================
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  if(user){
+    document.getElementById('nav-auth-btns').style.display='none';
+    document.getElementById('nav-user-btns').style.display='flex';
+    document.getElementById('mob-auth').style.display='none';
+    document.getElementById('mob-reg').style.display='none';
+    document.getElementById('mob-dash').style.display='block';
+    document.getElementById('mob-logout').style.display='block';
+    await loadBoughtDocs();
+    updateProfileUI();
+  } else {
+    document.getElementById('nav-auth-btns').style.display='flex';
+    document.getElementById('nav-user-btns').style.display='none';
+    document.getElementById('mob-auth').style.display='block';
+    document.getElementById('mob-reg').style.display='block';
+    document.getElementById('mob-dash').style.display='none';
+    document.getElementById('mob-logout').style.display='none';
+    boughtDocIds = [];
+  }
+});
+
+// ===================== FIREBASE LOAD =====================
+async function loadDocs(){
+  try {
+    const q = query(collection(db,'documents'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    allDocs = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) {
+    const snap = await getDocs(collection(db,'documents'));
+    allDocs = snap.docs.map(d=>({id:d.id,...d.data()}));
+  }
+  updatePublicStats();
+  renderFilieres('homeFilieres', filieres);
+  renderFilieres('allFilieres', filieres);
+  renderDocs('homeDocsGrid', allDocs.slice(0,8));
+  renderDocs('catDocsGrid', allDocs);
+  renderDocs('filiereDocsGrid', allDocs);
+}
+
+async function loadUsers(){
+  try {
+    const snap = await getDocs(collection(db,'users'));
+    allUsers = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e){ allUsers=[]; }
+}
+
+async function loadOrders(){
+  try {
+    const snap = await getDocs(collection(db,'orders'));
+    allOrders = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e){ allOrders=[]; }
+}
+
+async function loadBoughtDocs(){
+  if(!currentUser) return;
+  try {
+    const snap = await getDocs(collection(db,'users',currentUser.uid,'purchases'));
+    boughtDocIds = snap.docs.map(d=>d.id);
+  } catch(e){ boughtDocIds=[]; }
+}
+
+function updatePublicStats(){
+  const n = allDocs.length;
+  ['heroDocCount','statDocCount'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});
+}
+
+async function updateUserStats(){
+  try {
+    const snap = await getDocs(collection(db,'users'));
+    const count = snap.size;
+    ['heroUserCount','statUserCount','dUserNum'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=count;});
+    const duc=document.getElementById('dUserCount');if(duc)duc.textContent=count+' inscrits';
+  } catch(e){}
+}
+
+// ===================== RENDER DOCS =====================
+function docCard(d){
+  const bought = boughtDocIds.includes(d.id);
+  const badge = d.badge==='new'?`<div class="doc-badge new">✦ Nouveau</div>`:d.badge==='popular'?`<div class="doc-badge popular">🔥 Populaire</div>`:'';
+  return `<div class="doc-card" onclick="openDoc('${d.id}')">
+    <div class="doc-card-thumb ${d.filiere}">${d.emoji||emojiMap[d.filiere]||'📄'}${badge}${bought?'<div class="doc-badge new" style="left:10px;right:auto">✓ Acheté</div>':''}</div>
+    <div class="doc-card-body">
+      <div class="doc-card-filiere ${d.filiere}">${getFLabel(d.filiere)}</div>
+      <div class="doc-card-title">${d.title}</div>
+      <div class="doc-card-prof">${d.prof}</div>
+      <div class="doc-card-footer">
+        <div class="doc-card-price">${bought?'<span style="color:var(--green);font-size:0.85rem">✓ Disponible</span>':`$${d.prix} <span>USD</span>`}</div>
+        ${bought?`<button class="doc-card-btn" style="background:var(--green-light);color:var(--green)" onclick="event.stopPropagation();downloadDoc('${d.id}')">⬇ Télécharger</button>`:`<button class="doc-card-btn" onclick="event.stopPropagation();addToCart('${d.id}')">+ Panier</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDocs(container, list){
+  const el=document.getElementById(container);if(!el)return;
+  el.innerHTML = list.length ? list.map(d=>docCard(d)).join('') : `<p style="color:var(--gray-400);grid-column:1/-1;text-align:center;padding:3rem">Aucun document trouvé.</p>`;
+}
+
+function renderFilieres(container, list){
+  const el=document.getElementById(container);if(!el)return;
+  el.innerHTML = list.map(f=>{
+    const count = allDocs.filter(d=>d.filiere===f.id).length;
+    return `<div class="filiere-card ${f.id}" onclick="filterByFiliereGlobal('${f.id}')">
+      <div class="filiere-icon">${f.emoji}</div>
+      <div class="filiere-name">${f.name}</div>
+      <div class="filiere-count">${count} document${count!==1?'s':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function filteredDocs(){
+  return allDocs.filter(d=>{
+    const mF = !currentFiliere||d.filiere===currentFiliere;
+    const mS = !currentSearch||d.title?.toLowerCase().includes(currentSearch.toLowerCase())||d.prof?.toLowerCase().includes(currentSearch.toLowerCase());
+    return mF&&mS;
+  });
+}
+
+window.filterDocs = ()=>{
+  currentSearch = document.getElementById('searchInput').value;
+  renderDocs('homeDocsGrid',filteredDocs().slice(0,8));
+  renderDocs('catDocsGrid',filteredDocs());
+};
+window.filterByFiliere = (f,el)=>{
+  currentFiliere=f;
+  document.querySelectorAll('.filter-chips .chip').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  window.filterDocs();
+};
+window.filterByFiliereGlobal = f=>{
+  showPage('filieres');
+  const found=filieres.find(x=>x.id===f);
+  document.getElementById('filiereTitle').textContent=found?`Documents — ${found.name}`:'Tous les documents';
+  renderDocs('filiereDocsGrid',allDocs.filter(d=>!f||d.filiere===f));
+};
+
+// ===================== DOC MODAL =====================
+window.openDoc = id=>{
+  const d=allDocs.find(x=>x.id===id);if(!d)return;
+  const bought=boughtDocIds.includes(id);
+  document.getElementById('modalTitle').textContent=d.title;
+  document.getElementById('modalBody').innerHTML=`
+    <div style="font-size:3rem;text-align:center;margin-bottom:1rem">${d.emoji||emojiMap[d.filiere]||'📄'}</div>
+    ${bought?`<div style="background:var(--green-light);color:var(--green);border-radius:10px;padding:10px;text-align:center;font-weight:600;margin-bottom:1rem">✓ Document déjà dans votre bibliothèque</div>`:`<div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem">$${d.prix} USD</div>`}
+    <div class="modal-detail"><span class="modal-detail-label">Filière</span><span class="modal-detail-value">${getFLabel(d.filiere)}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Professeur</span><span class="modal-detail-value">${d.prof}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Type</span><span class="modal-detail-value">${d.type||'-'}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Pages</span><span class="modal-detail-value">${d.pages||'-'}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Année</span><span class="modal-detail-value">${d.annee||'-'}</span></div>
+    ${d.desc?`<p style="margin-top:1rem;font-size:0.9rem;color:var(--gray-600);line-height:1.6">${d.desc}</p>`:''}
+    ${bought
+      ?`<button class="mbtn success" onclick="downloadDoc('${id}');closeModal()">⬇ Télécharger le PDF</button>`
+      :`<button class="mbtn primary" onclick="addToCart('${id}');closeModal()">🛒 Ajouter au panier</button>`
+    }
+    <button class="mbtn secondary" onclick="closeModal()">Fermer</button>`;
+  document.getElementById('modalOverlay').classList.add('open');
+};
+window.closeModal = ()=>document.getElementById('modalOverlay').classList.remove('open');
+
+// ===================== DOWNLOAD =====================
+window.downloadDoc = async id=>{
+  if(!currentUser){showToast('Connectez-vous pour télécharger','error');showPage('login');return;}
+  if(!boughtDocIds.includes(id)){showToast('Vous devez acheter ce document d\'abord','error');return;}
+  const d=allDocs.find(x=>x.id===id);if(!d)return;
+  if(d.driveLink){
+    // Convert Google Drive share link to direct download link
+    let url = d.driveLink;
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if(match){url=`https://drive.google.com/uc?export=download&id=${match[1]}`;}
+    window.open(url,'_blank');
+    showToast('Téléchargement en cours... 📥','success');
+  } else {
+    showToast('Lien de téléchargement non disponible','error');
+  }
+};
+
+// ===================== CART =====================
+window.addToCart = id=>{
+  if(!currentUser){showToast('Connectez-vous pour acheter des documents','error');showPage('login');return;}
+  const d=allDocs.find(x=>x.id===id);if(!d)return;
+  if(boughtDocIds.includes(id)){showToast('Document déjà dans votre bibliothèque','');return;}
+  if(cart.find(x=>x.id===id)){showToast('Déjà dans le panier !','');return;}
+  cart.push(d);updateCartUI();showToast(`"${d.title.substring(0,30)}..." ajouté 🛒`,'success');
+};
+window.removeFromCart = id=>{cart=cart.filter(x=>x.id!==id);updateCartUI();renderCartItems();};
+function updateCartUI(){
+  const c=document.getElementById('cart-count');c.textContent=cart.length;c.style.display=cart.length?'inline':'none';
+}
+function renderCartItems(){
+  const el=document.getElementById('cartItems'),footer=document.getElementById('cartFooter');
+  if(!cart.length){el.innerHTML='<div class="cart-empty">🛒<br><br>Votre panier est vide</div>';footer.style.display='none';return;}
+  const total=cart.reduce((s,d)=>s+(parseFloat(d.prix)||0),0);
+  el.innerHTML=cart.map(d=>`<div class="cart-item"><div class="cart-item-thumb ${d.filiere}">${d.emoji||'📄'}</div><div class="cart-item-info"><div class="cart-item-title">${d.title}</div><div class="cart-item-price">$${d.prix} USD</div></div><button class="cart-item-remove" onclick="removeFromCart('${d.id}')">✕</button></div>`).join('');
+  document.getElementById('cartTotal').textContent=`$${total.toFixed(2)}`;footer.style.display='block';
+}
+window.openCart = ()=>{renderCartItems();document.getElementById('cartOverlay').classList.add('open');document.getElementById('cartPanel').classList.add('open');};
+window.closeCart = ()=>{document.getElementById('cartOverlay').classList.remove('open');document.getElementById('cartPanel').classList.remove('open');};
+window.checkout = async()=>{
+  if(!currentUser){showToast('Connectez-vous pour passer commande','error');return;}
+  if(!cart.length)return;
+  try{
+    // Save order to Firestore
+    const orderData={
+      userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,userEmail:currentUser.email,
+      items:cart.map(d=>({id:d.id,title:d.title,prix:d.prix})),
+      total:cart.reduce((s,d)=>s+(parseFloat(d.prix)||0),0),
+      status:'En attente de paiement',
+      createdAt:Date.now()
+    };
+    await addDoc(collection(db,'orders'),orderData);
+    for(const d of cart){
+      await setDoc(doc(db,'users',currentUser.uid,'purchases',d.id),{docId:d.id,title:d.title,purchasedAt:Date.now()});
+    }
+    boughtDocIds=[...boughtDocIds,...cart.map(d=>d.id)];
+    cart=[];updateCartUI();closeCart();
+    showToast('Commande enregistree! Rendez-vous dans Mon espace','success');
+    renderDocs('homeDocsGrid',allDocs.slice(0,8));
+    renderDocs('catDocsGrid',allDocs);
+  }catch(e){showToast('Erreur: '+e.message,'error');}
+};
+
+window.doLogin=async()=>{
+  const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError'),btn=document.getElementById('loginBtn');
+  err.style.display='none';btn.disabled=true;btn.textContent='Connexion...';
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
+    showPage('dashboard');showToast('Bienvenue! ','success');
+  }catch(e){
+    err.textContent=(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
+    err.style.display='block';
+  }finally{btn.disabled=false;btn.textContent='Se connecter';}
+};
+
+window.doRegister=async()=>{
+  const name=document.getElementById('regName').value.trim(),email=document.getElementById('regEmail').value.trim(),filiere=document.getElementById('regFiliere').value,pass=document.getElementById('regPass').value,pass2=document.getElementById('regPass2').value;
+  const err=document.getElementById('registerError'),btn=document.getElementById('registerBtn');
+  err.style.display='none';
+  if(!name||!email||!filiere||!pass){err.textContent='Veuillez remplir tous les champs.';err.style.display='block';return;}
+  if(pass!==pass2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
+  if(pass.length<6){err.textContent='Minimum 6 caracteres.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Creation...';
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await updateProfile(cred.user,{displayName:name});
+    await setDoc(doc(db,'users',cred.user.uid),{name,email,filiere,createdAt:Date.now(),uid:cred.user.uid});
+    showPage('dashboard');showToast('Compte cree avec succes! Bienvenue','success');
+  }catch(e){
+    err.textContent=e.code==='auth/email-already-in-use'?'Cet email est deja utilise.':'Erreur: '+e.message;
+    err.style.display='block';
+  }finally{btn.disabled=false;btn.textContent='Creer mon compte';}
+};
+
+window.doLogout=async()=>{await signOut(auth);showPage('home');showToast('Deconnecte.','');};
+
+window.downloadDoc=async id=>{
+  if(!currentUser){showToast('Connectez-vous pour telecharger','error');showPage('login');return;}
+  if(!boughtDocIds.includes(id)){showToast('Achetez ce document dabord','error');return;}
+  const d=allDocs.find(x=>x.id===id);if(!d)return;
+  if(d.driveLink){
+    let url=d.driveLink;
+    const match=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if(match){url='https://drive.google.com/uc?export=download&id='+match[1];}
+    window.open(url,'_blank');
+    showToast('Telechargement en cours! 📥','success');
+  }else{showToast('Lien non disponible','error');}
+};
+
+window.showPage=p=>{
+  if(p==='admin'&&!isAdminLoggedIn){showPage('adminlogin');return;}
+  if(p==='dashboard'&&!currentUser){showPage('login');return;}
+  ['home','catalogue','filieres','login','register','dashboard','admin','adminlogin'].forEach(x=>{
+    const e=document.getElementById('page-'+x);if(e)e.style.display='none';
+  });
+  const target=document.getElementById('page-'+p);if(target)target.style.display='block';
+  const footer=document.getElementById('mainFooter');
+  if(footer)footer.style.display=['admin','adminlogin','login','register'].includes(p)?'none':'block';
+  window.scrollTo(0,0);
+  if(p==='catalogue')renderDocs('catDocsGrid',filteredDocs());
+  if(p==='filieres'){renderFilieres('allFilieres',filieres);renderDocs('filiereDocsGrid',allDocs);}
+  if(p==='dashboard')loadDashboard();
+  if(p==='admin')loadAdminData();
+};
+
+window.setActive=id=>{document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active'));const e=document.getElementById(id);if(e)e.classList.add('active');};
+window.toggleMobile=()=>document.getElementById('mobileMenu').classList.toggle('open');
+window.closeMobile=()=>document.getElementById('mobileMenu').classList.remove('open');
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;
+  t.className='toast show'+(type==='success'?' success':type==='error'?' error':'');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+window.showToast=showToast;
+
+onAuthStateChanged(auth,async user=>{
+  currentUser=user;
+  if(user){
+    document.getElementById('nav-auth-btns').style.display='none';
+    document.getElementById('nav-user-btns').style.display='flex';
+    document.getElementById('mob-auth').style.display='none';
+    document.getElementById('mob-reg').style.display='none';
+    document.getElementById('mob-dash').style.display='block';
+    document.getElementById('mob-logout').style.display='block';
+    await loadBoughtDocs();
+    renderDocs('homeDocsGrid',allDocs.slice(0,8));
+    renderDocs('catDocsGrid',allDocs);
+  }else{
+    document.getElementById('nav-auth-btns').style.display='flex';
+    document.getElementById('nav-user-btns').style.display='none';
+    document.getElementById('mob-auth').style.display='block';
+    document.getElementById('mob-reg').style.display='block';
+    document.getElementById('mob-dash').style.display='none';
+    document.getElementById('mob-logout').style.display='none';
+    boughtDocIds=[];
+    renderDocs('homeDocsGrid',allDocs.slice(0,8));
+  }
+});
+
+window.doAdminLogin=()=>{
+  const u=document.getElementById('adminUser').value.trim(),p=document.getElementById('adminPass').value;
+  const err=document.getElementById('adminLoginError');
+  if(u==='admin'&&p===adminPassword){
+    isAdminLoggedIn=true;err.style.display='none';
+    showPage('admin');showToast('Bienvenue Serge!','success');
+    loadAdminData();
+  }else{err.textContent='Identifiants incorrects.';err.style.display='block';}
+};
+window.adminLogout=()=>{isAdminLoggedIn=false;showPage('home');showToast('Deconnecte.','');};
+window.changeAdminPass=()=>{
+  const o=document.getElementById('oldPass').value,n=document.getElementById('newPass').value,c=document.getElementById('confirmPass').value;
+  if(o!==adminPassword){showToast('Mot de passe actuel incorrect.','error');return;}
+  if(n.length<6){showToast('Minimum 6 caracteres.','error');return;}
+  if(n!==c){showToast('Les mots de passe ne correspondent pas.','error');return;}
+  adminPassword=n;
+  ['oldPass','newPass','confirmPass'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  showToast('Mot de passe mis a jour!','success');
+};
+
+async function loadAdminData(){
+  await loadUsers();await loadOrders();
+  updateAdminStats();renderAdminRecentDocs();renderAdminRecentUsers();
+  await updateUserStats();
+}
+
+function updateAdminStats(){
+  const n=allDocs.length,oc=allOrders.length;
+  const totalRev=allOrders.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const ddn=document.getElementById('dDocNum');if(ddn)ddn.textContent=n;
+  const ddc=document.getElementById('dDocCount');if(ddc)ddc.textContent=n+' docs';
+  const don=document.getElementById('dOrderNum');if(don)don.textContent=oc;
+  const doc2=document.getElementById('dOrderCount');if(doc2)doc2.textContent=oc+' total';
+  const dr=document.getElementById('dRevenue');if(dr)dr.textContent='$'+totalRev.toFixed(2);
+}
+
+function renderAdminRecentDocs(){
+  const t=document.getElementById('dRecentDocs');if(!t)return;
+  if(!allDocs.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun document encore.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Titre</th><th>Filiere</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'+
+    allDocs.slice(0,5).map(d=>'<tr><td>'+(d.emoji||'📄')+' '+(d.title||'').substring(0,28)+'</td><td><span class="bdg '+getBdg(d.filiere)+'">'+getFLabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td><button class="act-btn act-edit" onclick="editDoc(\'' +d.id+ '\')">Modifier</button><button class="act-btn act-del" onclick="deleteDocAdmin(\'' +d.id+ '\')">Supprimer</button></td></tr>').join('')+'</tbody>';
+}
+
+function renderAdminRecentUsers(){
+  const t=document.getElementById('dRecentUsers');if(!t)return;
+  if(!allUsers.length){t.innerHTML='<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun utilisateur inscrit encore.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filiere</th></tr></thead><tbody>'+
+    allUsers.slice(0,5).map(u=>'<tr><td><b>'+(u.name||'—')+'</b></td><td>'+u.email+'</td><td><span class="bdg '+getBdg(u.filiere)+'">'+getFLabel(u.filiere)+'</span></td></tr>').join('')+'</tbody>';
+}
+
+window.showAP=(p,el)=>{
+  document.querySelectorAll('.admin-pg').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-item').forEach(x=>x.classList.remove('active'));
+  const pg=document.getElementById('adm-'+p);if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');
+  if(p==='documents')renderAllAdminDocs();
+  if(p==='utilisateurs')renderAllUsers();
+  if(p==='commandes')renderAllOrders();
+  if(p==='dashboard')loadAdminData();
+};
+
+function renderAllAdminDocs(){
+  const t=document.getElementById('aDocsTable');if(!t)return;
+  const lbl=document.getElementById('docListCount');if(lbl)lbl.textContent='Tous les documents ('+allDocs.length+')';
+  if(!allDocs.length){t.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun document. Cliquez sur + Ajouter.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>#</th><th>Titre</th><th>Filiere</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'+
+    allDocs.map((d,i)=>'<tr><td style="color:var(--gray-400)">'+(i+1)+'</td><td>'+(d.emoji||'📄')+' '+(d.title||'').substring(0,25)+'</td><td><span class="bdg '+getBdg(d.filiere)+'">'+getFLabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td><button class="act-btn act-edit" onclick="editDoc(\'' +d.id+ '\')">Modifier</button><button class="act-btn act-del" onclick="deleteDocAdmin(\'' +d.id+ '\')">Supprimer</button></td></tr>').join('')+'</tbody>';
+}
+
+function renderAllUsers(){
+  const t=document.getElementById('usersTable');if(!t)return;
+  const lbl=document.getElementById('userListCount');if(lbl)lbl.textContent='Tous les utilisateurs ('+allUsers.length+')';
+  if(!allUsers.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun utilisateur inscrit.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filiere</th><th>Inscrit le</th></tr></thead><tbody>'+
+    allUsers.map(u=>'<tr><td><b>'+(u.name||'—')+'</b></td><td>'+u.email+'</td><td><span class="bdg '+getBdg(u.filiere)+'">'+getFLabel(u.filiere)+'</span></td><td style="color:var(--gray-400)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'—')+'</td></tr>').join('')+'</tbody>';
+}
+
+function renderAllOrders(){
+  const t=document.getElementById('ordersTable');if(!t)return;
+  const lbl=document.getElementById('orderListCount');if(lbl)lbl.textContent='Toutes les commandes ('+allOrders.length+')';
+  if(!allOrders.length){t.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucune commande encore.</td></tr>';return;}
+  t.innerHTML='<thead><tr><th>Etudiant</th><th>Docs</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'+
+    allOrders.map(o=>'<tr><td><b>'+(o.userName||'—')+'</b></td><td>'+(o.items&&o.items.length||0)+'</td><td><b>$'+(o.total||0)+'</b></td><td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td><td style="color:var(--gray-400)">'+(o.createdAt?new Date(o.createdAt).toLocaleDateString('fr-FR'):'—')+'</td></tr>').join('')+'</tbody>';
+}
+
+window.saveDoc=async()=>{
+  const title=document.getElementById('fTitle').value.trim(),filiere=document.getElementById('fFiliere').value,type=document.getElementById('fType').value,prof=document.getElementById('fProf').value.trim(),prix=parseFloat(document.getElementById('fPrix').value),driveLink=document.getElementById('fDriveLink').value.trim();
+  if(!title||!filiere||!type||!prof||isNaN(prix)||!driveLink){showToast('Champs obligatoires manquants (*)','error');return;}
+  const data={title,filiere,type,prof,prix,driveLink,pages:parseInt(document.getElementById('fPages').value)||null,annee:parseInt(document.getElementById('fAnnee').value)||null,desc:document.getElementById('fDesc').value||'',badge:document.getElementById('fBadge').value||'',emoji:emojiMap[filiere]||'📄',createdAt:Date.now()};
+  const btn=document.getElementById('saveDocBtn');btn.disabled=true;btn.textContent='Enregistrement...';
+  try{
+    const eid=document.getElementById('editDocId').value;
+    if(eid){await updateDoc(doc(db,'documents',eid),data);showToast('Document mis a jour!','success');}
+    else{await addDoc(collection(db,'documents'),data);showToast('Document ajoute! 🎉','success');}
+    await loadDocs();renderAllAdminDocs();renderAdminRecentDocs();updateAdminStats();
+    resetForm();showAP('documents',null);
+  }catch(e){showToast('Erreur: '+e.message,'error');}
+  finally{btn.disabled=false;btn.textContent='Enregistrer le document';}
+};
+
+window.editDoc=id=>{
+  const d=allDocs.find(x=>x.id===id);if(!d)return;
+  document.getElementById('editDocId').value=id;
+  const map={fTitle:'title',fFiliere:'filiere',fType:'type',fProf:'prof',fPrix:'prix',fPages:'pages',fAnnee:'annee',fDesc:'desc',fBadge:'badge',fDriveLink:'driveLink'};
+  Object.entries(map).forEach(([fid,key])=>{const e=document.getElementById(fid);if(e)e.value=d[key]||'';});
+  document.getElementById('formTitle').textContent='Modifier le document';
+  document.getElementById('formSub').textContent='Mettez a jour les informations.';
+  document.getElementById('saveDocBtn').textContent='Mettre a jour';
+  showAP('ajouter',null);
+};
+
+window.deleteDocAdmin=id=>{
+  const d=allDocs.find(x=>x.id===id);if(!d)return;
+  document.getElementById('modalTitle').textContent='Supprimer le document';
+  document.getElementById('modalBody').innerHTML='<p style="margin-bottom:1.5rem;color:var(--gray-600)">Supprimer <b>'+d.title+'</b> ? Irreversible.</p><button onclick="confirmDeleteDoc(\'' +id+ '\' )" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.5rem">Oui, supprimer</button><button class="mbtn secondary" onclick="closeModal()">Annuler</button>';
+  document.getElementById('modalOverlay').classList.add('open');
+};
+
+window.confirmDeleteDoc=async id=>{
+  try{
+    await deleteDoc(doc(db,'documents',id));
+    closeModal();await loadDocs();renderAllAdminDocs();renderAdminRecentDocs();updateAdminStats();
+    showToast('Document supprime.','');
+  }catch(e){showToast('Erreur: '+e.message,'error');}
+};
+
+window.resetForm=()=>{
+  document.getElementById('editDocId').value='';
+  ['fTitle','fProf','fPrix','fPages','fAnnee','fDesc','fDriveLink'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['fFiliere','fType','fBadge'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const ft=document.getElementById('formTitle');if(ft)ft.textContent='Ajouter un document';
+  const fs=document.getElementById('formSub');if(fs)fs.textContent='Remplissez toutes les informations du document.';
+  const sb=document.getElementById('saveDocBtn');if(sb)sb.textContent='Enregistrer le document';
+};
+
+async function loadDashboard(){
+  if(!currentUser){showPage('login');return;}
+  document.getElementById('dashWelcome').textContent='Bienvenue, '+(currentUser.displayName||'Etudiant')+' !';
+  await loadBoughtDocs();
+  renderBoughtDocs();
+  updateProfileUI();
+}
+
+function renderBoughtDocs(){
+  const el=document.getElementById('boughtDocsGrid');if(!el)return;
+  const bought=allDocs.filter(d=>boughtDocIds.includes(d.id));
+  if(!bought.length){
+    el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📚</div><div class="empty-state-title">Aucun document achete pour linstant</div><p style="font-size:0.9rem;color:var(--gray-400);margin-top:0.5rem">Parcourez notre catalogue et achetez vos premiers documents.</p><button class="adm-btn" style="margin-top:1rem" onclick="showPage('catalogue')">Parcourir le catalogue</button></div>';
+    return;
+  }
+  const pdc=document.getElementById('profileDocCount');if(pdc)pdc.textContent=bought.length;
+  el.innerHTML=bought.map(d=>'<div class="bought-card"><div class="bought-card-top"><div class="bought-card-emoji">'+(d.emoji||emojiMap[d.filiere]||'📄')+'</div><div class="bought-card-info"><div class="bought-card-title">'+d.title+'</div><div class="bought-card-prof">'+d.prof+'</div></div></div><button class="download-btn" onclick="downloadDoc(\'' +d.id+ '\')">⬇ Telecharger le PDF</button></div>').join('');
+}
+
+function updateProfileUI(){
+  if(!currentUser)return;
+  const name=currentUser.displayName||'Etudiant';
+  const initials=name.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+  const pa=document.getElementById('profileAvatar');if(pa)pa.textContent=initials;
+  const pn=document.getElementById('profileName');if(pn)pn.textContent=name;
+  const pe=document.getElementById('profileEmail');if(pe)pe.textContent=currentUser.email;
+}
+
+window.showDashTab=(tab,el)=>{
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('dash-bought').style.display=tab==='bought'?'block':'none';
+  document.getElementById('dash-profile').style.display=tab==='profile'?'block':'none';
+  if(tab==='profile')updateProfileUI();
+};
+
+async function updateUserStats(){
+  try{
+    const snap=await getDocs(collection(db,'users'));
+    const count=snap.size;
+    ['heroUserCount','statUserCount','dUserNum'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=count;});
+    const duc=document.getElementById('dUserCount');if(duc)duc.textContent=count+' inscrits';
+  }catch(e){}
+}
+
+function checkRoute(){if(window.location.hash==='#admin-edulib2025')showPage('adminlogin');}
+window.addEventListener('hashchange',checkRoute);
+checkRoute();
+
+renderFilieres('homeFilieres',filieres);
+loadDocs();
+
+</script>
+</body>
+</html>
