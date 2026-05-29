@@ -888,12 +888,12 @@ function docCard(d){
   var footer;
   if(bought){
     footer='<div style="color:var(--green);font-size:0.8rem;font-weight:700">✓ Acheté</div>'
-      +'<button class="doc-btn dl" onclick="event.stopPropagation();dlDoc(''+d.id+'')">⬇ Télécharger</button>';
+      +'<button class="doc-btn dl" data-id="'+d.id+'" onclick="event.stopPropagation();dlDoc(this.dataset.id)">⬇ Télécharger</button>';
   }else{
     footer='<div class="doc-price">$'+d.prix+' <small>USD</small></div>'
-      +'<button class="doc-btn buy" onclick="event.stopPropagation();addCart(''+d.id+'')">+ Panier</button>';
+      +'<button class="doc-btn buy" data-id="'+d.id+'" onclick="event.stopPropagation();addCart(this.dataset.id)">+ Panier</button>';
   }
-  return '<div class="doc-card" onclick="openDoc(''+d.id+'''+')">'
+  return '<div class="doc-card" data-id="'+d.id+'" onclick="openDoc(this.dataset.id)">' +
     +'<div class="doc-thumb '+(d.filiere||'')+'">'
     +emoji+badge
     +'</div>'
@@ -914,7 +914,7 @@ function renderFil(id){
   var el=document.getElementById(id);if(!el)return;
   el.innerHTML=FILIERES.map(function(f){
     var cnt=docs.filter(function(d){return d.filiere===f.id;}).length;
-    return '<div class="fil-card '+f.id+'" onclick="goFiliere(''+f.id+'''+')">'
+    return '<div class="fil-card '+f.id+'" data-id="'+f.id+'" onclick="goFiliere(this.dataset.id)">'
       +'<span class="fil-icon">'+f.emoji+'</span>'
       +'<div class="fil-name">'+f.name+'</div>'
       +'<div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div>'
@@ -993,8 +993,8 @@ function openDoc(id){
     ?'<div style="background:var(--green-light);color:var(--green);border-radius:10px;padding:12px;text-align:center;font-weight:700;margin-bottom:1rem;font-size:0.95rem">✓ Document dans votre bibliothèque</div>'
     :'<div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem">$'+d.prix+' USD</div>';
   var actionBtn=bought
-    ?'<button class="mbtn success" onclick="dlDoc(''+id+'');closeModal()">⬇ Télécharger le PDF</button>'
-    :'<button class="mbtn primary" onclick="addCart(''+id+'');closeModal()">🛒 Ajouter au panier</button>';
+    ?'<button class="mbtn success" onclick="dlDoc(this.dataset.id);closeModal()" data-id="'+id+'">⬇ Télécharger le PDF</button>'
+    :'<button class="mbtn primary" onclick="addCart(this.dataset.id);closeModal()" data-id="'+id+'">🛒 Ajouter au panier</button>';
   document.getElementById('modalTit').textContent=d.title;
   document.getElementById('modalBdy').innerHTML=
     '<div style="font-size:3.5rem;text-align:center;margin-bottom:1rem;padding:1.5rem;background:var(--surface-2);border-radius:14px">'+emoji+'</div>'
@@ -1057,7 +1057,7 @@ function renderCartItems(){
       +'<div class="cart-item-title">'+d.title+'</div>'
       +'<div class="cart-item-price">$'+d.prix+' USD</div>'
       +'</div>'
-      +'<button class="cart-item-rm" onclick="rmCart(''+d.id+'')">✕</button>'
+      +'<button class="cart-item-rm" data-id="'+d.id+'" onclick="rmCart(this.dataset.id)">✕</button>'
       +'</div>';
   }).join('');
   document.getElementById('cartTot').textContent='$'+tot.toFixed(2);
@@ -1174,7 +1174,7 @@ function renderBought(){
       +(d.type?'<span class="bought-tag">'+d.type+'</span>':'')
       +(d.pages?'<span class="bought-tag">'+d.pages+' pages</span>':'')
       +'</div>'
-      +'<button class="dl-btn" onclick="dlDoc(''+d.id+'')">⬇ Télécharger le PDF</button>'
+      +'<button class="dl-btn" data-id="'+d.id+'" onclick="dlDoc(this.dataset.id)">⬇ Télécharger le PDF</button>'
       +'</div>';
   }).join('');
 }
@@ -1328,8 +1328,8 @@ function renderAdmRecentDocs(){
       return '<tr><td>'+(d.emoji||'📄')+' '+d.title.substring(0,28)+'</td>'
         +'<td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td>'
         +'<td><b>$'+d.prix+'</b></td>'
-        +'<td><button class="act-btn act-edit" onclick="editDoc(''+d.id+'')">Modifier</button>'
-        +'<button class="act-btn act-del" onclick="delDoc(''+d.id+'')">Supprimer</button></td></tr>';
+        +'<td><button class="act-btn act-edit" data-id="'+d.id+'" onclick="editDoc(this.dataset.id)">Modifier</button>'
+        +'<button class="act-btn act-del" data-id="'+d.id+'" onclick="delDoc(this.dataset.id)">Supprimer</button></td></tr>';
     }).join('')+'</tbody>';
 }
 
@@ -1353,8 +1353,8 @@ function renderAdmAllDocs(){
         +'<td>'+(d.emoji||'📄')+' '+d.title.substring(0,25)+'</td>'
         +'<td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td>'
         +'<td><b>$'+d.prix+'</b></td>'
-        +'<td><button class="act-btn act-edit" onclick="editDoc(''+d.id+'')">Modifier</button>'
-        +'<button class="act-btn act-del" onclick="delDoc(''+d.id+'')">Supprimer</button></td></tr>';
+        +'<td><button class="act-btn act-edit" data-id="'+d.id+'" onclick="editDoc(this.dataset.id)">Modifier</button>'
+        +'<button class="act-btn act-del" data-id="'+d.id+'" onclick="delDoc(this.dataset.id)">Supprimer</button></td></tr>';
     }).join('')+'</tbody>';
 }
 
@@ -1437,7 +1437,7 @@ function delDoc(id){
   document.getElementById('modalTit').textContent='Supprimer le document';
   document.getElementById('modalBdy').innerHTML=
     '<p style="margin-bottom:1.5rem;color:var(--text-muted);line-height:1.6">Supprimer <b>'+d.title+'</b> ? Cette action est irréversible.</p>'
-    +'<button onclick="confirmDel(''+id+'')" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem">Oui, supprimer</button>'
+    +'<button data-id="'+id+'" onclick="confirmDel(this.dataset.id)" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem">Oui, supprimer</button>'
     +'<button class="mbtn secondary" onclick="closeModal()">Annuler</button>';
   document.getElementById('modalOv').classList.add('open');
 }
