@@ -558,7 +558,7 @@ var docs = [];
 var users = [];
 var orders = [];
 var cart = [];
-var curUser = null; // {uid, name, email, filiere}
+var curUser = null;
 var boughtIds = [];
 var isAdmin = false;
 var adminPwd = 'edulib2025';
@@ -566,21 +566,22 @@ var curFil = '';
 var curSearch = '';
 
 var FILIERES = [
-  {id:'droit',name:'Droit',emoji:'\u2696\uFE0F'},
-  {id:'medecine',name:'M\u00e9decine',emoji:'\uD83E\uDE7A'},
-  {id:'polytechnique',name:'Polytechnique',emoji:'\u2699\uFE0F'},
-  {id:'sciences',name:'Sciences',emoji:'\uD83D\uDD2C'},
-  {id:'lettres',name:'Lettres',emoji:'\uD83D\uDCD6'},
-  {id:'economie',name:'\u00c9conomie',emoji:'\uD83D\uDCCA'}
+  {id:'droit',name:'Droit',emoji:'⚖️'},
+  {id:'medecine',name:'Médecine',emoji:'🩺'},
+  {id:'polytechnique',name:'Polytechnique',emoji:'⚙️'},
+  {id:'sciences',name:'Sciences',emoji:'🔬'},
+  {id:'lettres',name:'Lettres',emoji:'📖'},
+  {id:'economie',name:'Économie',emoji:'📊'}
 ];
-var EMOJIS = {droit:'\u2696\uFE0F',medecine:'\uD83E\uDE7A',polytechnique:'\u2699\uFE0F',sciences:'\uD83D\uDD2C',lettres:'\uD83D\uDCD6',economie:'\uD83D\uDCCA'};
+var EMOJIS = {droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
 
 function flabel(f){
-  var x=FILIERES.find(function(i){return i.id===f;});
-  return x?x.name:f;
+  var x = FILIERES.find(function(i){return i.id===f;});
+  return x ? x.name : f;
 }
 function bdgClass(f){
-  return {droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'}[f]||'bdg-blue';
+  var map = {droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'};
+  return map[f] || 'bdg-blue';
 }
 
 // ===================== LOCAL STORAGE =====================
@@ -596,450 +597,686 @@ function saveState(){
 
 function loadState(){
   try{
-    var u=localStorage.getItem('edulib_users');
-    var d=localStorage.getItem('edulib_docs');
-    var o=localStorage.getItem('edulib_orders');
-    var s=localStorage.getItem('edulib_session');
-    if(u) users=JSON.parse(u);
-    if(d) docs=JSON.parse(d);
-    if(o) orders=JSON.parse(o);
+    var u = localStorage.getItem('edulib_users');
+    var d = localStorage.getItem('edulib_docs');
+    var o = localStorage.getItem('edulib_orders');
+    var s = localStorage.getItem('edulib_session');
+    if(u) users = JSON.parse(u);
+    if(d) docs = JSON.parse(d);
+    if(o) orders = JSON.parse(o);
     if(s){
-      curUser=JSON.parse(s);
-      var pu=users.find(function(x){return x.uid===curUser.uid;});
-      if(pu) boughtIds=pu.bought||[];
+      curUser = JSON.parse(s);
+      var pu = users.find(function(x){return x.uid === curUser.uid;});
+      if(pu) boughtIds = pu.bought || [];
       showUserNav();
     }
   }catch(e){}
 }
 
 function showUserNav(){
-  document.getElementById('guestNav').style.display='none';
-  document.getElementById('userNav').style.display='flex';
-  document.getElementById('mobGuest').style.display='none';
-  document.getElementById('mobUser').style.display='block';
+  document.getElementById('guestNav').style.display = 'none';
+  document.getElementById('userNav').style.display = 'flex';
+  document.getElementById('mobGuest').style.display = 'none';
+  document.getElementById('mobUser').style.display = 'block';
 }
 function showGuestNav(){
-  document.getElementById('guestNav').style.display='flex';
-  document.getElementById('userNav').style.display='none';
-  document.getElementById('mobGuest').style.display='block';
-  document.getElementById('mobUser').style.display='none';
+  document.getElementById('guestNav').style.display = 'flex';
+  document.getElementById('userNav').style.display = 'none';
+  document.getElementById('mobGuest').style.display = 'block';
+  document.getElementById('mobUser').style.display = 'none';
 }
 
 // ===================== RENDER DOCS =====================
 function docCard(d){
-  var bought=boughtIds.indexOf(d.id)>-1;
-  var badge=d.badge==='new'?'<div class="doc-badge new-badge">\u2736 Nouveau</div>':d.badge==='popular'?'<div class="doc-badge pop-badge">\uD83D\uDD25 Populaire</div>':'';
-  var footer=bought
-    ?'<div style="color:var(--green);font-size:0.85rem;font-weight:600">\u2713 Achet\u00e9</div><button class="doc-btn green" onclick="event.stopPropagation();dlDoc(''+d.id+'')">\u2B07 T\u00e9l.</button>'
-    :'<div class="doc-price">$'+d.prix+' <small>USD</small></div><button class="doc-btn" onclick="event.stopPropagation();addCart(''+d.id+'')">+ Panier</button>';
-  return '<div class="doc-card" onclick="openDoc(''+d.id+'''+')">'
-    +'<div class="doc-thumb '+(d.filiere||'')+'">'+(d.emoji||EMOJIS[d.filiere]||'\uD83D\uDCC4')+badge+'</div>'
-    +'<div class="doc-body">'
-    +'<div class="doc-filiere '+(d.filiere||'')+'">'+flabel(d.filiere)+'</div>'
-    +'<div class="doc-title">'+d.title+'</div>'
-    +'<div class="doc-prof">'+d.prof+'</div>'
-    +'<div class="doc-footer">'+footer+'</div>'
-    +'</div></div>';
+  var bought = boughtIds.indexOf(d.id) > -1;
+  var emoji = d.emoji || EMOJIS[d.filiere] || '📄';
+  var badge = '';
+  if(d.badge === 'new') badge = '<div class="doc-badge new-badge">✦ Nouveau</div>';
+  if(d.badge === 'popular') badge = '<div class="doc-badge pop-badge">🔥 Populaire</div>';
+  var footer;
+  if(bought){
+    footer = '<div style="color:var(--green);font-size:0.85rem;font-weight:600">✓ Acheté</div>'
+      + '<button class="doc-btn green" onclick="event.stopPropagation();dlDoc(\''+d.id+'\')">⬇ Tél.</button>';
+  } else {
+    footer = '<div class="doc-price">$'+d.prix+' <small>USD</small></div>'
+      + '<button class="doc-btn" onclick="event.stopPropagation();addCart(\''+d.id+'\')">+ Panier</button>';
+  }
+  return '<div class="doc-card" onclick="openDoc(\''+d.id+'\''+')">'
+    + '<div class="doc-thumb '+(d.filiere||'')+'">' + emoji + badge + '</div>'
+    + '<div class="doc-body">'
+    + '<div class="doc-filiere '+(d.filiere||'')+'">'+flabel(d.filiere)+'</div>'
+    + '<div class="doc-title">'+d.title+'</div>'
+    + '<div class="doc-prof">'+d.prof+'</div>'
+    + '<div class="doc-footer">'+footer+'</div>'
+    + '</div></div>';
 }
 
 function renderDocs(id, list){
-  var el=document.getElementById(id);if(!el)return;
-  el.innerHTML=list.length?list.map(docCard).join(''):'<p style="color:var(--gray-400);grid-column:1/-1;text-align:center;padding:3rem">Aucun document trouv\u00e9.</p>';
+  var el = document.getElementById(id);
+  if(!el) return;
+  if(list.length){
+    el.innerHTML = list.map(docCard).join('');
+  } else {
+    el.innerHTML = '<p style="color:var(--gray-400);grid-column:1/-1;text-align:center;padding:3rem">Aucun document trouvé.</p>';
+  }
 }
 
 function renderFil(id){
-  var el=document.getElementById(id);if(!el)return;
-  el.innerHTML=FILIERES.map(function(f){
-    var cnt=docs.filter(function(d){return d.filiere===f.id;}).length;
-    return '<div class="fil-card '+f.id+'" onclick="goFiliere(''+f.id+'')">'
-      +'<div class="fil-icon">'+f.emoji+'</div>'
-      +'<div class="fil-name">'+f.name+'</div>'
-      +'<div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div>'
-      +'</div>';
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = FILIERES.map(function(f){
+    var cnt = docs.filter(function(d){return d.filiere === f.id;}).length;
+    return '<div class="fil-card '+f.id+'" onclick="goFiliere(\''+f.id+'\''+')">'
+      + '<div class="fil-icon">'+f.emoji+'</div>'
+      + '<div class="fil-name">'+f.name+'</div>'
+      + '<div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div>'
+      + '</div>';
   }).join('');
 }
 
 function filtered(){
   return docs.filter(function(d){
-    var mF=!curFil||d.filiere===curFil;
-    var q=curSearch.toLowerCase();
-    var mS=!q||(d.title&&d.title.toLowerCase().indexOf(q)>-1)||(d.prof&&d.prof.toLowerCase().indexOf(q)>-1);
-    return mF&&mS;
+    var mF = !curFil || d.filiere === curFil;
+    var q = curSearch.toLowerCase();
+    var mS = !q || (d.title && d.title.toLowerCase().indexOf(q) > -1) || (d.prof && d.prof.toLowerCase().indexOf(q) > -1);
+    return mF && mS;
   });
 }
 
 function refreshAllGrids(){
-  renderDocs('homeGrid',filtered().slice(0,8));
-  renderDocs('catGrid',filtered());
-  renderDocs('filGrid',docs.filter(function(d){return !curFil||d.filiere===curFil;}));
+  renderDocs('homeGrid', filtered().slice(0,8));
+  renderDocs('catGrid', filtered());
+  renderDocs('filGrid', docs.filter(function(d){return !curFil || d.filiere === curFil;}));
   renderFil('homeFil');
   renderFil('allFil');
   updateStats();
 }
 
 function updateStats(){
-  var n=docs.length, u=users.length;
-  ['cntDocs','statDocs','admDocN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=n;});
-  ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=u;});
-  var db=document.getElementById('admDocBadge');if(db)db.textContent=n+' docs';
-  var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
+  var n = docs.length;
+  var u = users.length;
+  ['cntDocs','statDocs','admDocN'].forEach(function(id){
+    var e = document.getElementById(id);
+    if(e) e.textContent = n;
+  });
+  ['cntUsers','statUsers','admUserN'].forEach(function(id){
+    var e = document.getElementById(id);
+    if(e) e.textContent = u;
+  });
+  var db = document.getElementById('admDocBadge');
+  if(db) db.textContent = n + ' docs';
+  var ub = document.getElementById('admUserBadge');
+  if(ub) ub.textContent = u + ' inscrits';
 }
 
 // ===================== FILTERS =====================
-function applyFilter(){curSearch=document.getElementById('searchQ').value;renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
-function setFiliere(f,el){curFil=f;document.querySelectorAll('.filter-chips .chip').forEach(function(c){c.classList.remove('active');});if(el)el.classList.add('active');renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
-function goFiliere(f){curFil=f;goPage('filieres');var found=FILIERES.find(function(x){return x.id===f;});var t=document.getElementById('filTitle');if(t)t.textContent=found?'Documents \u2014 '+found.name:'Tous les documents';renderDocs('filGrid',docs.filter(function(d){return !f||d.filiere===f;}));}
+function applyFilter(){
+  curSearch = document.getElementById('searchQ').value;
+  renderDocs('homeGrid', filtered().slice(0,8));
+  renderDocs('catGrid', filtered());
+}
+
+function setFiliere(f, el){
+  curFil = f;
+  document.querySelectorAll('.filter-chips .chip').forEach(function(c){c.classList.remove('active');});
+  if(el) el.classList.add('active');
+  renderDocs('homeGrid', filtered().slice(0,8));
+  renderDocs('catGrid', filtered());
+}
+
+function goFiliere(f){
+  curFil = f;
+  goPage('filieres');
+  var found = FILIERES.find(function(x){return x.id === f;});
+  var t = document.getElementById('filTitle');
+  if(t) t.textContent = found ? 'Documents — ' + found.name : 'Tous les documents';
+  renderDocs('filGrid', docs.filter(function(d){return !f || d.filiere === f;}));
+}
 
 // ===================== DOC MODAL =====================
 function openDoc(id){
-  var d=docs.find(function(x){return x.id===id;});if(!d)return;
-  var bought=boughtIds.indexOf(id)>-1;
-  document.getElementById('modalTit').textContent=d.title;
-  document.getElementById('modalBdy').innerHTML=
-    '<div style="font-size:3rem;text-align:center;margin-bottom:1rem">'+(d.emoji||EMOJIS[d.filiere]||'\uD83D\uDCC4')+'</div>'
-    +(bought?'<div style="background:var(--green-light);color:var(--green);border-radius:10px;padding:10px;text-align:center;font-weight:600;margin-bottom:1rem">\u2713 Document dans votre biblioth\u00e8que</div>'
-           :'<div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem">$'+d.prix+' USD</div>')
-    +'<div class="mdet"><span class="mdet-lbl">Fili\u00e8re</span><span class="mdet-val">'+flabel(d.filiere)+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Professeur</span><span class="mdet-val">'+(d.prof||'-')+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Type</span><span class="mdet-val">'+(d.type||'-')+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Pages</span><span class="mdet-val">'+(d.pages||'-')+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Ann\u00e9e</span><span class="mdet-val">'+(d.annee||'-')+'</span></div>'
-    +(d.desc?'<p style="margin-top:1rem;font-size:0.9rem;color:var(--gray-600);line-height:1.6">'+d.desc+'</p>':'')
-    +(bought
-      ?'<button class="mbtn success" onclick="dlDoc(''+id+'');closeModal()">\u2B07 T\u00e9l\u00e9charger le PDF</button>'
-      :'<button class="mbtn primary" onclick="addCart(''+id+'');closeModal()">\uD83D\uDED2 Ajouter au panier</button>')
-    +'<button class="mbtn secondary" onclick="closeModal()">Fermer</button>';
+  var d = docs.find(function(x){return x.id === id;});
+  if(!d) return;
+  var bought = boughtIds.indexOf(id) > -1;
+  var emoji = d.emoji || EMOJIS[d.filiere] || '📄';
+  var priceHtml = bought
+    ? '<div style="background:var(--green-light);color:var(--green);border-radius:10px;padding:10px;text-align:center;font-weight:600;margin-bottom:1rem">✓ Document dans votre bibliothèque</div>'
+    : '<div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem">$'+d.prix+' USD</div>';
+  var actionBtn = bought
+    ? '<button class="mbtn success" onclick="dlDoc(\''+id+'\');closeModal()">⬇ Télécharger le PDF</button>'
+    : '<button class="mbtn primary" onclick="addCart(\''+id+'\');closeModal()">🛒 Ajouter au panier</button>';
+  document.getElementById('modalTit').textContent = d.title;
+  document.getElementById('modalBdy').innerHTML =
+    '<div style="font-size:3rem;text-align:center;margin-bottom:1rem">'+emoji+'</div>'
+    + priceHtml
+    + '<div class="mdet"><span class="mdet-lbl">Filière</span><span class="mdet-val">'+flabel(d.filiere)+'</span></div>'
+    + '<div class="mdet"><span class="mdet-lbl">Professeur</span><span class="mdet-val">'+(d.prof||'-')+'</span></div>'
+    + '<div class="mdet"><span class="mdet-lbl">Type</span><span class="mdet-val">'+(d.type||'-')+'</span></div>'
+    + '<div class="mdet"><span class="mdet-lbl">Pages</span><span class="mdet-val">'+(d.pages||'-')+'</span></div>'
+    + '<div class="mdet"><span class="mdet-lbl">Année</span><span class="mdet-val">'+(d.annee||'-')+'</span></div>'
+    + (d.desc ? '<p style="margin-top:1rem;font-size:0.9rem;color:var(--gray-600);line-height:1.6">'+d.desc+'</p>' : '')
+    + actionBtn
+    + '<button class="mbtn secondary" onclick="closeModal()">Fermer</button>';
   document.getElementById('modalOv').classList.add('open');
 }
 function closeModal(){document.getElementById('modalOv').classList.remove('open');}
 
 // ===================== DOWNLOAD =====================
 function dlDoc(id){
-  if(!curUser){showToast('Connectez-vous pour t\u00e9l\u00e9charger','error');goPage('login');return;}
-  if(boughtIds.indexOf(id)<0){showToast('Achetez ce document d\'abord','error');return;}
-  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  if(!curUser){showToast('Connectez-vous pour télécharger','error');goPage('login');return;}
+  if(boughtIds.indexOf(id) < 0){showToast('Achetez ce document dabord','error');return;}
+  var d = docs.find(function(x){return x.id === id;});
+  if(!d) return;
   if(d.driveLink){
-    var url=d.driveLink;
-    var m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if(m)url='https://drive.google.com/uc?export=download&id='+m[1];
-    window.open(url,'_blank');
-    showToast('T\u00e9l\u00e9chargement en cours \uD83D\uDCE5','success');
-  }else{showToast('Lien non disponible','error');}
+    var url = d.driveLink;
+    var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if(m) url = 'https://drive.google.com/uc?export=download&id=' + m[1];
+    window.open(url, '_blank');
+    showToast('Téléchargement en cours 📥','success');
+  } else {
+    showToast('Lien non disponible','error');
+  }
 }
 
 // ===================== CART =====================
 function addCart(id){
   if(!curUser){showToast('Connectez-vous pour acheter','error');goPage('login');return;}
-  var d=docs.find(function(x){return x.id===id;});if(!d)return;
-  if(boughtIds.indexOf(id)>-1){showToast('D\u00e9j\u00e0 dans votre biblioth\u00e8que','');return;}
-  if(cart.find(function(x){return x.id===id;})){showToast('D\u00e9j\u00e0 dans le panier','');return;}
-  cart.push(d);updateCartBadge();showToast('"'+d.title.substring(0,30)+'..." ajout\u00e9 \uD83D\uDED2','success');
+  var d = docs.find(function(x){return x.id === id;});
+  if(!d) return;
+  if(boughtIds.indexOf(id) > -1){showToast('Déjà dans votre bibliothèque','');return;}
+  if(cart.find(function(x){return x.id === id;})){showToast('Déjà dans le panier','');return;}
+  cart.push(d);
+  updateCartBadge();
+  showToast('"'+d.title.substring(0,30)+'..." ajouté 🛒','success');
 }
-function rmCart(id){cart=cart.filter(function(x){return x.id!==id;});updateCartBadge();renderCartItems();}
-function updateCartBadge(){var c=document.getElementById('cartBadge');c.textContent=cart.length;c.style.display=cart.length?'inline':'none';}
+
+function rmCart(id){
+  cart = cart.filter(function(x){return x.id !== id;});
+  updateCartBadge();
+  renderCartItems();
+}
+
+function updateCartBadge(){
+  var c = document.getElementById('cartBadge');
+  c.textContent = cart.length;
+  c.style.display = cart.length ? 'inline' : 'none';
+}
+
 function renderCartItems(){
-  var el=document.getElementById('cartBdy'),ft=document.getElementById('cartFoot');
-  if(!cart.length){el.innerHTML='<div class="cart-empty-msg">\uD83D\uDED2<br><br>Votre panier est vide</div>';ft.style.display='none';return;}
-  var tot=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
-  el.innerHTML=cart.map(function(d){return '<div class="cart-item"><div class="cart-item-thumb '+(d.filiere||'')+'">'+(d.emoji||'\uD83D\uDCC4')+'</div><div class="cart-item-info"><div class="cart-item-title">'+d.title+'</div><div class="cart-item-price">$'+d.prix+'</div></div><button class="cart-item-rm" onclick="rmCart(''+d.id+'')">\u2715</button></div>';}).join('');
-  document.getElementById('cartTot').textContent='$'+tot.toFixed(2);ft.style.display='block';
+  var el = document.getElementById('cartBdy');
+  var ft = document.getElementById('cartFoot');
+  if(!cart.length){
+    el.innerHTML = '<div class="cart-empty-msg">🛒<br><br>Votre panier est vide</div>';
+    ft.style.display = 'none';
+    return;
+  }
+  var tot = cart.reduce(function(s,d){return s + (parseFloat(d.prix)||0);}, 0);
+  el.innerHTML = cart.map(function(d){
+    return '<div class="cart-item">'
+      + '<div class="cart-item-thumb '+(d.filiere||'')+'">'+(d.emoji||'📄')+'</div>'
+      + '<div class="cart-item-info">'
+      + '<div class="cart-item-title">'+d.title+'</div>'
+      + '<div class="cart-item-price">$'+d.prix+'</div>'
+      + '</div>'
+      + '<button class="cart-item-rm" onclick="rmCart(\''+d.id+'\')">✕</button>'
+      + '</div>';
+  }).join('');
+  document.getElementById('cartTot').textContent = '$' + tot.toFixed(2);
+  ft.style.display = 'block';
 }
-function openCart(){renderCartItems();document.getElementById('cartOv').classList.add('open');document.getElementById('cartPnl').classList.add('open');}
-function closeCart(){document.getElementById('cartOv').classList.remove('open');document.getElementById('cartPnl').classList.remove('open');}
+
+function openCart(){
+  renderCartItems();
+  document.getElementById('cartOv').classList.add('open');
+  document.getElementById('cartPnl').classList.add('open');
+}
+function closeCart(){
+  document.getElementById('cartOv').classList.remove('open');
+  document.getElementById('cartPnl').classList.remove('open');
+}
+
 function checkout(){
   if(!curUser){showToast('Connectez-vous pour commander','error');return;}
-  if(!cart.length)return;
-  var tot=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
-  var ord={id:'CMD-'+Date.now(),userId:curUser.uid,userName:curUser.name,userEmail:curUser.email,items:cart.slice(),total:tot,status:'En attente de paiement',createdAt:Date.now()};
+  if(!cart.length) return;
+  var tot = cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);}, 0);
+  var ord = {
+    id:'CMD-'+Date.now(),
+    userId:curUser.uid,
+    userName:curUser.name,
+    userEmail:curUser.email,
+    items:cart.slice(),
+    total:tot,
+    status:'En attente de paiement',
+    createdAt:Date.now()
+  };
   orders.push(ord);
-  var pu=users.find(function(x){return x.uid===curUser.uid;});
+  var pu = users.find(function(x){return x.uid === curUser.uid;});
   if(pu){
-    cart.forEach(function(d){if(pu.bought.indexOf(d.id)<0)pu.bought.push(d.id);});
-    boughtIds=pu.bought.slice();
+    cart.forEach(function(d){
+      if(pu.bought.indexOf(d.id) < 0) pu.bought.push(d.id);
+    });
+    boughtIds = pu.bought.slice();
   }
-  saveState();cart=[];updateCartBadge();closeCart();
+  saveState();
+  cart = [];
+  updateCartBadge();
+  closeCart();
   refreshAllGrids();
-  showToast('Commande enregistr\u00e9e ! Voir Mon espace \uD83C\uDF89','success');
+  showToast('Commande enregistrée ! Voir Mon espace 🎉','success');
 }
 
 // ===================== AUTH =====================
 function doLogin(){
-  var email=document.getElementById('loginEmail').value.trim();
-  var pass=document.getElementById('loginPass').value;
-  var err=document.getElementById('loginErr');
-  var btn=document.getElementById('loginBtn');
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPass').value;
+  var err = document.getElementById('loginErr');
+  var btn = document.getElementById('loginBtn');
   err.classList.remove('show');
-  if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
-  var found=users.find(function(u){return u.email===email&&u.password===pass;});
-  if(!found){err.textContent='Email ou mot de passe incorrect.';err.classList.add('show');return;}
-  curUser={uid:found.uid,name:found.name,email:found.email,filiere:found.filiere};
-  boughtIds=found.bought||[];
-  saveState();showUserNav();
-  document.getElementById('loginEmail').value='';
-  document.getElementById('loginPass').value='';
-  goPage('dashboard');showToast('Bienvenue '+found.name+' ! \uD83D\uDC4B','success');
+  if(!email || !pass){
+    err.textContent = 'Remplissez tous les champs.';
+    err.classList.add('show');
+    return;
+  }
+  var found = users.find(function(u){return u.email === email && u.password === pass;});
+  if(!found){
+    err.textContent = 'Email ou mot de passe incorrect.';
+    err.classList.add('show');
+    return;
+  }
+  curUser = {uid:found.uid, name:found.name, email:found.email, filiere:found.filiere};
+  boughtIds = found.bought || [];
+  saveState();
+  showUserNav();
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+  goPage('dashboard');
+  showToast('Bienvenue ' + found.name + ' ! 👋','success');
 }
 
 function doRegister(){
-  var name=document.getElementById('regName').value.trim();
-  var email=document.getElementById('regEmail').value.trim();
-  var fil=document.getElementById('regFil').value;
-  var pass=document.getElementById('regPass').value;
-  var pass2=document.getElementById('regPass2').value;
-  var err=document.getElementById('regErr');
-  var btn=document.getElementById('regBtn');
+  var name = document.getElementById('regName').value.trim();
+  var email = document.getElementById('regEmail').value.trim();
+  var fil = document.getElementById('regFil').value;
+  var pass = document.getElementById('regPass').value;
+  var pass2 = document.getElementById('regPass2').value;
+  var err = document.getElementById('regErr');
   err.classList.remove('show');
-  if(!name||!email||!fil||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
-  if(pass!==pass2){err.textContent='Les mots de passe ne correspondent pas.';err.classList.add('show');return;}
-  if(pass.length<6){err.textContent='Minimum 6 caract\u00e8res.';err.classList.add('show');return;}
-  if(users.find(function(u){return u.email===email;})){err.textContent='Cet email est d\u00e9j\u00e0 utilis\u00e9.';err.classList.add('show');return;}
-  var uid='user-'+Date.now();
-  var newUser={uid:uid,name:name,email:email,filiere:fil,password:pass,bought:[],createdAt:Date.now()};
+  if(!name || !email || !fil || !pass){
+    err.textContent = 'Remplissez tous les champs.';
+    err.classList.add('show');
+    return;
+  }
+  if(pass !== pass2){
+    err.textContent = 'Les mots de passe ne correspondent pas.';
+    err.classList.add('show');
+    return;
+  }
+  if(pass.length < 6){
+    err.textContent = 'Minimum 6 caractères.';
+    err.classList.add('show');
+    return;
+  }
+  if(users.find(function(u){return u.email === email;})){
+    err.textContent = 'Cet email est déjà utilisé.';
+    err.classList.add('show');
+    return;
+  }
+  var uid = 'user-' + Date.now();
+  var newUser = {uid:uid, name:name, email:email, filiere:fil, password:pass, bought:[], createdAt:Date.now()};
   users.push(newUser);
-  curUser={uid:uid,name:name,email:email,filiere:fil};
-  boughtIds=[];
-  saveState();showUserNav();
-  document.getElementById('regName').value='';document.getElementById('regEmail').value='';
-  document.getElementById('regFil').value='';document.getElementById('regPass').value='';document.getElementById('regPass2').value='';
-  goPage('dashboard');showToast('Compte cr\u00e9\u00e9 ! Bienvenue '+name+' \uD83C\uDF89','success');
+  curUser = {uid:uid, name:name, email:email, filiere:fil};
+  boughtIds = [];
+  saveState();
+  showUserNav();
+  document.getElementById('regName').value = '';
+  document.getElementById('regEmail').value = '';
+  document.getElementById('regFil').value = '';
+  document.getElementById('regPass').value = '';
+  document.getElementById('regPass2').value = '';
+  goPage('dashboard');
+  showToast('Compte créé ! Bienvenue ' + name + ' 🎉','success');
   updateStats();
 }
 
 function logoutUser(){
-  curUser=null;boughtIds=[];
+  curUser = null;
+  boughtIds = [];
   localStorage.removeItem('edulib_session');
-  showGuestNav();goPage('home');showToast('D\u00e9connect\u00e9.','');
+  showGuestNav();
+  goPage('home');
+  showToast('Déconnecté.','');
   refreshAllGrids();
 }
 
 // ===================== DASHBOARD =====================
 function loadDashboard(){
   if(!curUser){goPage('login');return;}
-  var w=document.getElementById('dashWelcome');if(w)w.textContent='Bienvenue, '+curUser.name+' !';
-  var pu=users.find(function(x){return x.uid===curUser.uid;});
-  boughtIds=pu?pu.bought||[]:[];
-  renderBought();updateProfileUI();
+  var w = document.getElementById('dashWelcome');
+  if(w) w.textContent = 'Bienvenue, ' + curUser.name + ' !';
+  var pu = users.find(function(x){return x.uid === curUser.uid;});
+  boughtIds = pu ? (pu.bought || []) : [];
+  renderBought();
+  updateProfileUI();
 }
 
 function renderBought(){
-  var el=document.getElementById('boughtGrid');if(!el)return;
-  var bought=docs.filter(function(d){return boughtIds.indexOf(d.id)>-1;});
-  var c=document.getElementById('profDocCnt');if(c)c.textContent=bought.length;
+  var el = document.getElementById('boughtGrid');
+  if(!el) return;
+  var bought = docs.filter(function(d){return boughtIds.indexOf(d.id) > -1;});
+  var c = document.getElementById('profDocCnt');
+  if(c) c.textContent = bought.length;
   if(!bought.length){
-    el.innerHTML='<div class="empty-state"><div class="empty-icon">\uD83D\uDCDA</div><div class="empty-title">Aucun document achet\u00e9 pour l\'instant</div><p style="font-size:0.9rem;margin-top:0.5rem">Parcourez notre catalogue.</p><button class="adm-btn" style="margin-top:1rem" onclick="goPage('catalogue')">Parcourir le catalogue</button></div>';
+    el.innerHTML = '<div class="empty-state">'
+      + '<div class="empty-icon">📚</div>'
+      + '<div class="empty-title">Aucun document acheté pour linstant</div>'
+      + '<p style="font-size:0.9rem;margin-top:0.5rem">Parcourez notre catalogue.</p>'
+      + '<button class="adm-btn" style="margin-top:1rem" onclick="goPage(\'catalogue\')">Parcourir le catalogue</button>'
+      + '</div>';
     return;
   }
-  el.innerHTML=bought.map(function(d){
-    return '<div class="bought-card"><div class="bought-card-top"><div class="bought-emoji">'+(d.emoji||EMOJIS[d.filiere]||'\uD83D\uDCC4')+'</div><div class="bought-info"><div class="bought-title">'+d.title+'</div><div class="bought-prof">'+d.prof+'</div></div></div><button class="dl-btn" onclick="dlDoc(''+d.id+'')">\u2B07 T\u00e9l\u00e9charger le PDF</button></div>';
+  el.innerHTML = bought.map(function(d){
+    return '<div class="bought-card">'
+      + '<div class="bought-card-top">'
+      + '<div class="bought-emoji">'+(d.emoji||EMOJIS[d.filiere]||'📄')+'</div>'
+      + '<div class="bought-info">'
+      + '<div class="bought-title">'+d.title+'</div>'
+      + '<div class="bought-prof">'+d.prof+'</div>'
+      + '</div></div>'
+      + '<button class="dl-btn" onclick="dlDoc(\''+d.id+'\')">⬇ Télécharger le PDF</button>'
+      + '</div>';
   }).join('');
 }
 
 function updateProfileUI(){
-  if(!curUser)return;
-  var initials=curUser.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().substring(0,2);
-  var pa=document.getElementById('profAv');if(pa)pa.textContent=initials;
-  var pn=document.getElementById('profNm');if(pn)pn.textContent=curUser.name;
-  var pe=document.getElementById('profEm');if(pe)pe.textContent=curUser.email;
+  if(!curUser) return;
+  var initials = curUser.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().substring(0,2);
+  var pa = document.getElementById('profAv'); if(pa) pa.textContent = initials;
+  var pn = document.getElementById('profNm'); if(pn) pn.textContent = curUser.name;
+  var pe = document.getElementById('profEm'); if(pe) pe.textContent = curUser.email;
 }
 
-function showDashTab(tab,el){
+function showDashTab(tab, el){
   document.querySelectorAll('.dtab').forEach(function(t){t.classList.remove('active');});
-  if(el)el.classList.add('active');
-  document.getElementById('tabBought').style.display=tab==='bought'?'block':'none';
-  document.getElementById('tabProfile').style.display=tab==='profile'?'block':'none';
-  if(tab==='bought')renderBought();
-  if(tab==='profile')updateProfileUI();
+  if(el) el.classList.add('active');
+  document.getElementById('tabBought').style.display = tab === 'bought' ? 'block' : 'none';
+  document.getElementById('tabProfile').style.display = tab === 'profile' ? 'block' : 'none';
+  if(tab === 'bought') renderBought();
+  if(tab === 'profile') updateProfileUI();
 }
 
 // ===================== ADMIN AUTH =====================
 function doAdminLogin(){
-  var u=document.getElementById('adminU').value.trim();
-  var p=document.getElementById('adminP').value;
-  var err=document.getElementById('adminErr');
-  if(u==='admin'&&p===adminPwd){
-    isAdmin=true;err.classList.remove('show');
-    goPage('admin');showToast('Bienvenue Serge ! \uD83D\uDC4B','success');
+  var u = document.getElementById('adminU').value.trim();
+  var p = document.getElementById('adminP').value;
+  var err = document.getElementById('adminErr');
+  if(u === 'admin' && p === adminPwd){
+    isAdmin = true;
+    err.classList.remove('show');
+    goPage('admin');
+    showToast('Bienvenue Serge ! 👋','success');
     refreshAdminData();
-  }else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
+  } else {
+    err.textContent = 'Identifiants incorrects.';
+    err.classList.add('show');
+  }
 }
-function adminOut(){isAdmin=false;goPage('home');showToast('D\u00e9connect\u00e9.','');}
+
+function adminOut(){
+  isAdmin = false;
+  goPage('home');
+  showToast('Déconnecté.','');
+}
+
 function changeAdminPwd(){
-  var o=document.getElementById('oldP').value,n=document.getElementById('newP').value,c=document.getElementById('confP').value;
-  if(o!==adminPwd){showToast('Mot de passe actuel incorrect.','error');return;}
-  if(n.length<6){showToast('Minimum 6 caract\u00e8res.','error');return;}
-  if(n!==c){showToast('Les mots de passe ne correspondent pas.','error');return;}
-  adminPwd=n;['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-  showToast('Mot de passe mis \u00e0 jour !','success');
+  var o = document.getElementById('oldP').value;
+  var n = document.getElementById('newP').value;
+  var c = document.getElementById('confP').value;
+  if(o !== adminPwd){showToast('Mot de passe actuel incorrect.','error');return;}
+  if(n.length < 6){showToast('Minimum 6 caractères.','error');return;}
+  if(n !== c){showToast('Les mots de passe ne correspondent pas.','error');return;}
+  adminPwd = n;
+  ['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  showToast('Mot de passe mis à jour !','success');
 }
 
-// ===================== ADMIN PAGES =====================
+// ===================== ADMIN DATA =====================
 function refreshAdminData(){
-  updateStats();renderAdmRecentDocs();renderAdmRecentUsers();
-  var ob=document.getElementById('admOrdBadge');if(ob)ob.textContent=orders.length+' total';
-  var on=document.getElementById('admOrdN');if(on)on.textContent=orders.length;
-  var rev=orders.reduce(function(s,o){return s+(parseFloat(o.total)||0);},0);
-  var rv=document.getElementById('admRev');if(rv)rv.textContent='$'+rev.toFixed(2);
+  updateStats();
+  renderAdmRecentDocs();
+  renderAdmRecentUsers();
+  var ob = document.getElementById('admOrdBadge'); if(ob) ob.textContent = orders.length + ' total';
+  var on = document.getElementById('admOrdN'); if(on) on.textContent = orders.length;
+  var rev = orders.reduce(function(s,o){return s+(parseFloat(o.total)||0);}, 0);
+  var rv = document.getElementById('admRev'); if(rv) rv.textContent = '$' + rev.toFixed(2);
 }
 
-function showAP(p,el){
+function showAP(p, el){
   document.querySelectorAll('.adm-pg').forEach(function(x){x.classList.remove('active');});
   document.querySelectorAll('.adm-nav-item').forEach(function(x){x.classList.remove('active');});
-  var pg=document.getElementById('adm-'+p);if(pg)pg.classList.add('active');
-  if(el)el.classList.add('active');
-  if(p==='documents')renderAdmAllDocs();
-  if(p==='utilisateurs')renderAdmUsers();
-  if(p==='commandes')renderAdmOrders();
-  if(p==='dashboard')refreshAdminData();
+  var pg = document.getElementById('adm-'+p);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  if(p === 'documents') renderAdmAllDocs();
+  if(p === 'utilisateurs') renderAdmUsers();
+  if(p === 'commandes') renderAdmOrders();
+  if(p === 'dashboard') refreshAdminData();
+}
+
+function emptyRow(cols, msg){
+  return '<tr><td colspan="'+cols+'" style="text-align:center;padding:2rem;color:var(--gray-400)">'+msg+'</td></tr>';
 }
 
 function renderAdmRecentDocs(){
-  var t=document.getElementById('tblRecentDocs');if(!t)return;
-  if(!docs.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun document encore.</td></tr>';return;}
-  t.innerHTML='<thead><tr><th>Titre</th><th>Fili\u00e8re</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
-    +docs.slice(0,5).map(function(d){return '<tr><td>'+(d.emoji||'\uD83D\uDCC4')+' '+d.title.substring(0,28)+'</td><td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td><button class="act-btn act-edit" onclick="editDoc(''+d.id+'')">Modifier</button><button class="act-btn act-del" onclick="delDoc(''+d.id+'')">Supprimer</button></td></tr>';}).join('')+'</tbody>';
+  var t = document.getElementById('tblRecentDocs');
+  if(!t) return;
+  if(!docs.length){t.innerHTML = emptyRow(4,'Aucun document encore.');return;}
+  t.innerHTML = '<thead><tr><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
+    + docs.slice(0,5).map(function(d){
+        return '<tr><td>'+(d.emoji||'📄')+' '+d.title.substring(0,28)+'</td>'
+          + '<td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td>'
+          + '<td><b>$'+d.prix+'</b></td>'
+          + '<td><button class="act-btn act-edit" onclick="editDoc(\''+d.id+'\')">Modifier</button>'
+          + '<button class="act-btn act-del" onclick="delDoc(\''+d.id+'\')">Supprimer</button></td></tr>';
+      }).join('') + '</tbody>';
 }
 
 function renderAdmRecentUsers(){
-  var t=document.getElementById('tblRecentUsers');if(!t)return;
-  if(!users.length){t.innerHTML='<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun utilisateur encore.</td></tr>';return;}
-  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Fili\u00e8re</th></tr></thead><tbody>'
-    +users.slice(0,5).map(function(u){return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td></tr>';}).join('')+'</tbody>';
+  var t = document.getElementById('tblRecentUsers');
+  if(!t) return;
+  if(!users.length){t.innerHTML = emptyRow(3,'Aucun utilisateur encore.');return;}
+  t.innerHTML = '<thead><tr><th>Nom</th><th>Email</th><th>Filière</th></tr></thead><tbody>'
+    + users.slice(0,5).map(function(u){
+        return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td>'
+          + '<td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td></tr>';
+      }).join('') + '</tbody>';
 }
 
 function renderAdmAllDocs(){
-  var t=document.getElementById('tblAllDocs');if(!t)return;
-  var lbl=document.getElementById('docListLbl');if(lbl)lbl.textContent='Tous les documents ('+docs.length+')';
-  if(!docs.length){t.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun document. Cliquez sur + Ajouter.</td></tr>';return;}
-  t.innerHTML='<thead><tr><th>#</th><th>Titre</th><th>Fili\u00e8re</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
-    +docs.map(function(d,i){return '<tr><td style="color:var(--gray-400)">'+(i+1)+'</td><td>'+(d.emoji||'\uD83D\uDCC4')+' '+d.title.substring(0,25)+'</td><td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td><button class="act-btn act-edit" onclick="editDoc(''+d.id+'')">Modifier</button><button class="act-btn act-del" onclick="delDoc(''+d.id+'')">Supprimer</button></td></tr>';}).join('')+'</tbody>';
+  var t = document.getElementById('tblAllDocs');
+  if(!t) return;
+  var lbl = document.getElementById('docListLbl');
+  if(lbl) lbl.textContent = 'Tous les documents (' + docs.length + ')';
+  if(!docs.length){t.innerHTML = emptyRow(5,'Aucun document. Cliquez sur + Ajouter.');return;}
+  t.innerHTML = '<thead><tr><th>#</th><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
+    + docs.map(function(d,i){
+        return '<tr><td style="color:var(--gray-400)">'+(i+1)+'</td>'
+          + '<td>'+(d.emoji||'📄')+' '+d.title.substring(0,25)+'</td>'
+          + '<td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td>'
+          + '<td><b>$'+d.prix+'</b></td>'
+          + '<td><button class="act-btn act-edit" onclick="editDoc(\''+d.id+'\')">Modifier</button>'
+          + '<button class="act-btn act-del" onclick="delDoc(\''+d.id+'\')">Supprimer</button></td></tr>';
+      }).join('') + '</tbody>';
 }
 
 function renderAdmUsers(){
-  var t=document.getElementById('tblUsers');if(!t)return;
-  var lbl=document.getElementById('userListLbl');if(lbl)lbl.textContent='Utilisateurs ('+users.length+')';
-  if(!users.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucun utilisateur inscrit.</td></tr>';return;}
-  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Fili\u00e8re</th><th>Inscrit le</th></tr></thead><tbody>'
-    +users.map(function(u){return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td><td style="color:var(--gray-400)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'x')+'</td></tr>';}).join('')+'</tbody>';
+  var t = document.getElementById('tblUsers');
+  if(!t) return;
+  var lbl = document.getElementById('userListLbl');
+  if(lbl) lbl.textContent = 'Utilisateurs (' + users.length + ')';
+  if(!users.length){t.innerHTML = emptyRow(4,'Aucun utilisateur inscrit.');return;}
+  t.innerHTML = '<thead><tr><th>Nom</th><th>Email</th><th>Filière</th><th>Date</th></tr></thead><tbody>'
+    + users.map(function(u){
+        return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td>'
+          + '<td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td>'
+          + '<td style="color:var(--gray-400)">'+(u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-')+'</td></tr>';
+      }).join('') + '</tbody>';
 }
 
 function renderAdmOrders(){
-  var t=document.getElementById('tblOrders');if(!t)return;
-  var lbl=document.getElementById('ordListLbl');if(lbl)lbl.textContent='Commandes ('+orders.length+')';
-  if(!orders.length){t.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-400)">Aucune commande encore.</td></tr>';return;}
-  t.innerHTML='<thead><tr><th>Etudiant</th><th>Docs</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
-    +orders.map(function(o){return '<tr><td><b>'+(o.userName||'x')+'</b></td><td>'+(o.items&&o.items.length||0)+'</td><td><b>$'+(o.total||0)+'</b></td><td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td><td style="color:var(--gray-400)">'+(o.createdAt?new Date(o.createdAt).toLocaleDateString('fr-FR'):'x')+'</td></tr>';}).join('')+'</tbody>';
+  var t = document.getElementById('tblOrders');
+  if(!t) return;
+  var lbl = document.getElementById('ordListLbl');
+  if(lbl) lbl.textContent = 'Commandes (' + orders.length + ')';
+  if(!orders.length){t.innerHTML = emptyRow(5,'Aucune commande encore.');return;}
+  t.innerHTML = '<thead><tr><th>Étudiant</th><th>Docs</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
+    + orders.map(function(o){
+        return '<tr><td><b>'+(o.userName||'-')+'</b></td>'
+          + '<td>'+(o.items && o.items.length || 0)+'</td>'
+          + '<td><b>$'+(o.total||0)+'</b></td>'
+          + '<td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td>'
+          + '<td style="color:var(--gray-400)">'+(o.createdAt ? new Date(o.createdAt).toLocaleDateString('fr-FR') : '-')+'</td></tr>';
+      }).join('') + '</tbody>';
 }
 
 // ===================== CRUD DOCS =====================
 function saveDoc(){
-  var title=document.getElementById('fTitle').value.trim();
-  var fil=document.getElementById('fFil').value;
-  var type=document.getElementById('fType').value;
-  var prof=document.getElementById('fProf').value.trim();
-  var prix=parseFloat(document.getElementById('fPrix').value);
-  var link=document.getElementById('fLink').value.trim();
-  if(!title||!fil||!type||!prof||isNaN(prix)||!link){showToast('Remplissez tous les champs obligatoires (*)','error');return;}
-  var data={title:title,filiere:fil,type:type,prof:prof,prix:prix,driveLink:link,
+  var title = document.getElementById('fTitle').value.trim();
+  var fil = document.getElementById('fFil').value;
+  var type = document.getElementById('fType').value;
+  var prof = document.getElementById('fProf').value.trim();
+  var prix = parseFloat(document.getElementById('fPrix').value);
+  var link = document.getElementById('fLink').value.trim();
+  if(!title || !fil || !type || !prof || isNaN(prix) || !link){
+    showToast('Remplissez tous les champs obligatoires (*)','error');
+    return;
+  }
+  var data = {
+    title:title, filiere:fil, type:type, prof:prof, prix:prix, driveLink:link,
     pages:parseInt(document.getElementById('fPages').value)||null,
     annee:parseInt(document.getElementById('fAnnee').value)||null,
     desc:document.getElementById('fDesc').value||'',
     badge:document.getElementById('fBadge').value||'',
-    emoji:EMOJIS[fil]||'\uD83D\uDCC4',createdAt:Date.now()};
-  var eid=document.getElementById('editId').value;
+    emoji:EMOJIS[fil]||'📄',
+    createdAt:Date.now()
+  };
+  var eid = document.getElementById('editId').value;
   if(eid){
-    var idx=docs.findIndex(function(x){return x.id===eid;});
-    if(idx>-1){data.id=eid;docs[idx]=data;}
-    showToast('Document mis \u00e0 jour !','success');
-  }else{
-    data.id='doc-'+Date.now();
+    var idx = docs.findIndex(function(x){return x.id === eid;});
+    if(idx > -1){data.id = eid; docs[idx] = data;}
+    showToast('Document mis à jour !','success');
+  } else {
+    data.id = 'doc-' + Date.now();
     docs.unshift(data);
-    showToast('Document ajout\u00e9 ! \uD83C\uDF89','success');
+    showToast('Document ajouté ! 🎉','success');
   }
-  saveState();refreshAllGrids();renderAdmAllDocs();renderAdmRecentDocs();
-  resetDocForm();showAP('documents',null);
+  saveState();
+  refreshAllGrids();
+  renderAdmAllDocs();
+  renderAdmRecentDocs();
+  resetDocForm();
+  showAP('documents', null);
 }
 
 function editDoc(id){
-  var d=docs.find(function(x){return x.id===id;});if(!d)return;
-  document.getElementById('editId').value=id;
-  document.getElementById('fTitle').value=d.title||'';
-  document.getElementById('fFil').value=d.filiere||'';
-  document.getElementById('fType').value=d.type||'';
-  document.getElementById('fProf').value=d.prof||'';
-  document.getElementById('fPrix').value=d.prix||'';
-  document.getElementById('fPages').value=d.pages||'';
-  document.getElementById('fAnnee').value=d.annee||'';
-  document.getElementById('fDesc').value=d.desc||'';
-  document.getElementById('fBadge').value=d.badge||'';
-  document.getElementById('fLink').value=d.driveLink||'';
-  var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Modifier le document';
-  var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Mettez \u00e0 jour les informations.';
-  var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Mettre \u00e0 jour';
-  showAP('ajouter',null);
+  var d = docs.find(function(x){return x.id === id;});
+  if(!d) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('fTitle').value = d.title || '';
+  document.getElementById('fFil').value = d.filiere || '';
+  document.getElementById('fType').value = d.type || '';
+  document.getElementById('fProf').value = d.prof || '';
+  document.getElementById('fPrix').value = d.prix || '';
+  document.getElementById('fPages').value = d.pages || '';
+  document.getElementById('fAnnee').value = d.annee || '';
+  document.getElementById('fDesc').value = d.desc || '';
+  document.getElementById('fBadge').value = d.badge || '';
+  document.getElementById('fLink').value = d.driveLink || '';
+  var ft = document.getElementById('docFormTitle'); if(ft) ft.textContent = 'Modifier le document';
+  var fs = document.getElementById('docFormSub'); if(fs) fs.textContent = 'Mettez à jour les informations.';
+  var sb = document.getElementById('saveBtn'); if(sb) sb.textContent = 'Mettre à jour';
+  showAP('ajouter', null);
 }
 
 function delDoc(id){
-  var d=docs.find(function(x){return x.id===id;});if(!d)return;
-  document.getElementById('modalTit').textContent='Supprimer le document';
-  document.getElementById('modalBdy').innerHTML='<p style="margin-bottom:1.5rem;color:var(--gray-600)">Supprimer <b>'+d.title+'</b> ? Irr\u00e9versible.</p><button onclick="confirmDel(''+id+'')" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem">Oui, supprimer</button><button class="mbtn secondary" onclick="closeModal()">Annuler</button>';
+  var d = docs.find(function(x){return x.id === id;});
+  if(!d) return;
+  document.getElementById('modalTit').textContent = 'Supprimer le document';
+  document.getElementById('modalBdy').innerHTML =
+    '<p style="margin-bottom:1.5rem;color:var(--gray-600)">Supprimer <b>'+d.title+'</b> ? Irréversible.</p>'
+    + '<button onclick="confirmDel(\''+id+'\')" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem">Oui, supprimer</button>'
+    + '<button class="mbtn secondary" onclick="closeModal()">Annuler</button>';
   document.getElementById('modalOv').classList.add('open');
 }
 
 function confirmDel(id){
-  docs=docs.filter(function(x){return x.id!==id;});
-  saveState();closeModal();refreshAllGrids();renderAdmAllDocs();renderAdmRecentDocs();
-  showToast('Document supprim\u00e9.','');
+  docs = docs.filter(function(x){return x.id !== id;});
+  saveState();
+  closeModal();
+  refreshAllGrids();
+  renderAdmAllDocs();
+  renderAdmRecentDocs();
+  showToast('Document supprimé.','');
 }
 
 function resetDocForm(){
-  document.getElementById('editId').value='';
-  ['fTitle','fProf','fPrix','fPages','fAnnee','fDesc','fLink'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-  ['fFil','fType','fBadge'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-  var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Ajouter un document';
-  var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Remplissez toutes les informations du document.';
-  var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Enregistrer le document';
+  document.getElementById('editId').value = '';
+  ['fTitle','fProf','fPrix','fPages','fAnnee','fDesc','fLink'].forEach(function(id){
+    var e = document.getElementById(id); if(e) e.value = '';
+  });
+  ['fFil','fType','fBadge'].forEach(function(id){
+    var e = document.getElementById(id); if(e) e.value = '';
+  });
+  var ft = document.getElementById('docFormTitle'); if(ft) ft.textContent = 'Ajouter un document';
+  var fs = document.getElementById('docFormSub'); if(fs) fs.textContent = 'Remplissez toutes les informations du document.';
+  var sb = document.getElementById('saveBtn'); if(sb) sb.textContent = 'Enregistrer le document';
 }
 
 // ===================== NAVIGATION =====================
 function goPage(p){
-  if(p==='admin'&&!isAdmin){goPage('adminlogin');return;}
-  if(p==='dashboard'&&!curUser){goPage('login');return;}
+  if(p === 'admin' && !isAdmin){goPage('adminlogin');return;}
+  if(p === 'dashboard' && !curUser){goPage('login');return;}
   ['home','catalogue','filieres','login','register','dashboard','admin','adminlogin'].forEach(function(x){
-    var e=document.getElementById('pg-'+x);if(e)e.style.display='none';
+    var e = document.getElementById('pg-'+x);
+    if(e) e.style.display = 'none';
   });
-  var tg=document.getElementById('pg-'+p);if(tg)tg.style.display='block';
-  var ftr=document.getElementById('mainFtr');
-  if(ftr)ftr.style.display=['admin','adminlogin','login','register'].indexOf(p)>-1?'none':'block';
+  var tg = document.getElementById('pg-'+p);
+  if(tg) tg.style.display = 'block';
+  var ftr = document.getElementById('mainFtr');
+  if(ftr) ftr.style.display = ['admin','adminlogin','login','register'].indexOf(p) > -1 ? 'none' : 'block';
   window.scrollTo(0,0);
-  if(p==='catalogue')renderDocs('catGrid',filtered());
-  if(p==='filieres'){renderFil('allFil');renderDocs('filGrid',docs);}
-  if(p==='dashboard')loadDashboard();
-  if(p==='admin')refreshAdminData();
+  if(p === 'catalogue') renderDocs('catGrid', filtered());
+  if(p === 'filieres'){renderFil('allFil'); renderDocs('filGrid', docs);}
+  if(p === 'dashboard') loadDashboard();
+  if(p === 'admin') refreshAdminData();
 }
 
 function setNav(id){
   document.querySelectorAll('.nav-link').forEach(function(a){a.classList.remove('active');});
-  var e=document.getElementById(id);if(e)e.classList.add('active');
+  var e = document.getElementById(id);
+  if(e) e.classList.add('active');
 }
 
 function toggleMenu(){document.getElementById('mobMenu').classList.toggle('open');}
 function closeMenu(){document.getElementById('mobMenu').classList.remove('open');}
 
-function showToast(msg,type){
-  var t=document.getElementById('toastEl');
-  document.getElementById('toastTxt').textContent=msg;
-  t.className='toast show'+(type==='success'?' success':type==='error'?' error':'');
-  setTimeout(function(){t.classList.remove('show');},3500);
+function showToast(msg, type){
+  var t = document.getElementById('toastEl');
+  document.getElementById('toastTxt').textContent = msg;
+  t.className = 'toast show' + (type === 'success' ? ' success' : type === 'error' ? ' error' : '');
+  setTimeout(function(){t.classList.remove('show');}, 3500);
 }
 
 // ===================== SECRET ADMIN ROUTE =====================
-function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('adminlogin');}
-window.addEventListener('hashchange',checkHash);
+function checkHash(){
+  if(window.location.hash === '#admin-edulib2025') goPage('adminlogin');
+}
+window.addEventListener('hashchange', checkHash);
 checkHash();
 
 // ===================== INIT =====================
 loadState();
 refreshAllGrids();
 </script>
+
 </body>
 </html>
