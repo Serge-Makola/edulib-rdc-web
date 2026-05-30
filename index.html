@@ -799,144 +799,94 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 
 
 <script>
-// ===================== STATE =====================
-var docs = [];
-var users = [];
-var orders = [];
-var cart = [];
-var curUser = null;
-var boughtIds = [];
-var isAdmin = false;
-var adminPwd = 'edulib2025';
-var curFil = '';
-var curSearch = '';
-
-var FILIERES = [
-  {id:'droit',name:'Droit',emoji:'⚖️',color:'#2563eb'},
-  {id:'medecine',name:'Médecine',emoji:'🩺',color:'#059669'},
-  {id:'polytechnique',name:'Polytechnique',emoji:'⚙️',color:'#d97706'},
-  {id:'sciences',name:'Sciences',emoji:'🔬',color:'#16a34a'},
-  {id:'lettres',name:'Lettres',emoji:'📖',color:'#7c3aed'},
-  {id:'economie',name:'Économie',emoji:'📊',color:'#ea580c'}
-];
-var EMOJIS = {droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
-var COLORS = {droit:'#2563eb',medecine:'#059669',polytechnique:'#d97706',sciences:'#16a34a',lettres:'#7c3aed',economie:'#ea580c'};
-
+var docs=[],users=[],orders=[],cart=[],curUser=null,boughtIds=[],isAdmin=false,adminPwd='edulib2025',curFil='',curSearch='';
+var FILIERES=[{id:'droit',name:'Droit',emoji:'⚖️',color:'#2563eb'},{id:'medecine',name:'Médecine',emoji:'🩺',color:'#059669'},{id:'polytechnique',name:'Polytechnique',emoji:'⚙️',color:'#d97706'},{id:'sciences',name:'Sciences',emoji:'🔬',color:'#16a34a'},{id:'lettres',name:'Lettres',emoji:'📖',color:'#7c3aed'},{id:'economie',name:'Économie',emoji:'📊',color:'#ea580c'}];
+var EMOJIS={droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
+var COLORS={droit:'#2563eb',medecine:'#059669',polytechnique:'#d97706',sciences:'#16a34a',lettres:'#7c3aed',economie:'#ea580c'};
 function flabel(f){var x=FILIERES.find(function(i){return i.id===f;});return x?x.name:f;}
-function bdgClass(f){return {droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'}[f]||'bdg-blue';}
+function bdgClass(f){return ({droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'})[f]||'bdg-blue';}
 
-// ===================== LOCAL STORAGE =====================
-function saveState(){
-  try{
-    localStorage.setItem('edulib_users',JSON.stringify(users));
-    localStorage.setItem('edulib_docs',JSON.stringify(docs));
-    localStorage.setItem('edulib_orders',JSON.stringify(orders));
-    if(curUser)localStorage.setItem('edulib_session',JSON.stringify(curUser));
-    else localStorage.removeItem('edulib_session');
-  }catch(e){}
-}
-
-function loadState(){
-  try{
-    var u=localStorage.getItem('edulib_users');
-    var d=localStorage.getItem('edulib_docs');
-    var o=localStorage.getItem('edulib_orders');
-    var s=localStorage.getItem('edulib_session');
-    if(u)users=JSON.parse(u);
-    if(d)docs=JSON.parse(d);
-    if(o)orders=JSON.parse(o);
-    if(s){
-      curUser=JSON.parse(s);
-      var pu=users.find(function(x){return x.uid===curUser.uid;});
-      if(pu)boughtIds=pu.bought||[];
-      showUserNav();
-    }
-  }catch(e){}
-}
+// Storage
+function saveState(){try{localStorage.setItem('el_u',JSON.stringify(users));localStorage.setItem('el_d',JSON.stringify(docs));localStorage.setItem('el_o',JSON.stringify(orders));if(curUser)localStorage.setItem('el_s',JSON.stringify(curUser));else localStorage.removeItem('el_s');}catch(e){}}
+function loadState(){try{var u=localStorage.getItem('el_u'),d=localStorage.getItem('el_d'),o=localStorage.getItem('el_o'),s=localStorage.getItem('el_s');if(u)users=JSON.parse(u);if(d)docs=JSON.parse(d);if(o)orders=JSON.parse(o);if(s){curUser=JSON.parse(s);var pu=users.find(function(x){return x.uid===curUser.uid;});if(pu)boughtIds=pu.bought||[];showUserNav();}}catch(e){}}
 
 function showUserNav(){
   document.getElementById('guestNav').style.display='none';
   document.getElementById('userNav').style.display='flex';
   document.getElementById('mobGuest').style.display='none';
   document.getElementById('mobUser').style.display='block';
-  var heroCTA=document.getElementById('heroCTA');
-  if(heroCTA)heroCTA.style.display='none';
-  var ctaBtn=document.getElementById('ctaBtn');
-  if(ctaBtn)ctaBtn.textContent='Parcourir le catalogue';
-  if(ctaBtn)ctaBtn.onclick=function(){goPage('catalogue');};
+  var h=document.getElementById('heroCTA');if(h)h.style.display='none';
+  var c=document.getElementById('ctaBtn');if(c){c.textContent='Parcourir le catalogue';c.onclick=function(){goPage('catalogue');};}
 }
-
 function showGuestNav(){
   document.getElementById('guestNav').style.display='flex';
   document.getElementById('userNav').style.display='none';
   document.getElementById('mobGuest').style.display='block';
   document.getElementById('mobUser').style.display='none';
-  var heroCTA=document.getElementById('heroCTA');
-  if(heroCTA)heroCTA.style.display='inline-flex';
-  var ctaBtn=document.getElementById('ctaBtn');
-  if(ctaBtn)ctaBtn.textContent='Créer un compte gratuit';
-  if(ctaBtn)ctaBtn.onclick=function(){goPage('register');};
+  var h=document.getElementById('heroCTA');if(h)h.style.display='';
+  var c=document.getElementById('ctaBtn');if(c){c.textContent='Créer un compte gratuit';c.onclick=function(){goPage('register');};}
 }
 
-// ===================== RENDER DOCS =====================
-function docCard(d){
+// Create doc card element (no inline onclick)
+function makeDocCard(d){
   var bought=boughtIds.indexOf(d.id)>-1;
-  var emoji=d.emoji||EMOJIS[d.filiere]||'📄';
-  var badge='';
-  if(d.badge==='new')badge='<div class="doc-badge nb">✦ Nouveau</div>';
-  if(d.badge==='popular')badge='<div class="doc-badge pb">🔥 Populaire</div>';
-  var footer;
+  var div=document.createElement('div');
+  div.className='doc-card';
+  div.dataset.id=d.id;
+  var thumb=document.createElement('div');
+  thumb.className='doc-thumb '+(d.filiere||'');
+  thumb.innerHTML=(d.emoji||EMOJIS[d.filiere]||'📄');
+  if(d.badge==='new'){var b=document.createElement('div');b.className='doc-badge nb';b.textContent='✦ Nouveau';thumb.appendChild(b);}
+  if(d.badge==='popular'){var b=document.createElement('div');b.className='doc-badge pb';b.textContent='🔥 Populaire';thumb.appendChild(b);}
+  var body=document.createElement('div');body.className='doc-body';
+  var fil=document.createElement('div');fil.className='doc-fil '+(d.filiere||'');fil.textContent=flabel(d.filiere);
+  var title=document.createElement('div');title.className='doc-title';title.textContent=d.title;
+  var prof=document.createElement('div');prof.className='doc-prof';prof.textContent=d.prof;
+  var footer=document.createElement('div');footer.className='doc-footer';
   if(bought){
-    footer='<div style="color:var(--green);font-size:0.8rem;font-weight:700">✓ Acheté</div>'
-      +'<button class="doc-btn dl" data-id="'+d.id+'" onclick="event.stopPropagation();dlDoc(this.dataset.id)">⬇ Télécharger</button>';
+    var lbl=document.createElement('div');lbl.style.cssText='color:var(--green);font-size:0.8rem;font-weight:700';lbl.textContent='✓ Acheté';
+    var btn=document.createElement('button');btn.className='doc-btn dl';btn.textContent='⬇ Télécharger';btn.dataset.id=d.id;
+    btn.addEventListener('click',function(e){e.stopPropagation();dlDoc(this.dataset.id);});
+    footer.appendChild(lbl);footer.appendChild(btn);
   }else{
-    footer='<div class="doc-price">$'+d.prix+' <small>USD</small></div>'
-      +'<button class="doc-btn buy" data-id="'+d.id+'" onclick="event.stopPropagation();addCart(this.dataset.id)">+ Panier</button>';
+    var price=document.createElement('div');price.className='doc-price';price.innerHTML='$'+d.prix+' <small>USD</small>';
+    var btn=document.createElement('button');btn.className='doc-btn buy';btn.textContent='+ Panier';btn.dataset.id=d.id;
+    btn.addEventListener('click',function(e){e.stopPropagation();addCart(this.dataset.id);});
+    footer.appendChild(price);footer.appendChild(btn);
   }
-  return '<div class="doc-card" data-id="'+d.id+'" onclick="openDoc(this.dataset.id)">' +
-    +'<div class="doc-thumb '+(d.filiere||'')+'">'
-    +emoji+badge
-    +'</div>'
-    +'<div class="doc-body">'
-    +'<div class="doc-fil '+(d.filiere||'')+'">'+flabel(d.filiere)+'</div>'
-    +'<div class="doc-title">'+d.title+'</div>'
-    +'<div class="doc-prof">'+d.prof+'</div>'
-    +'<div class="doc-footer">'+footer+'</div>'
-    +'</div></div>';
+  body.appendChild(fil);body.appendChild(title);body.appendChild(prof);body.appendChild(footer);
+  div.appendChild(thumb);div.appendChild(body);
+  div.addEventListener('click',function(){openDoc(this.dataset.id);});
+  return div;
 }
 
 function renderDocs(id,list){
   var el=document.getElementById(id);if(!el)return;
-  el.innerHTML=list.length?list.map(docCard).join(''):'<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:3rem;font-size:0.95rem">Aucun document trouvé.</p>';
+  el.innerHTML='';
+  if(!list.length){var p=document.createElement('p');p.style.cssText='color:var(--text-muted);grid-column:1/-1;text-align:center;padding:3rem;font-size:0.95rem';p.textContent='Aucun document trouvé.';el.appendChild(p);return;}
+  list.forEach(function(d){el.appendChild(makeDocCard(d));});
 }
 
 function renderFil(id){
   var el=document.getElementById(id);if(!el)return;
-  el.innerHTML=FILIERES.map(function(f){
+  el.innerHTML='';
+  FILIERES.forEach(function(f){
     var cnt=docs.filter(function(d){return d.filiere===f.id;}).length;
-    return '<div class="fil-card '+f.id+'" data-id="'+f.id+'" onclick="goFiliere(this.dataset.id)">'
-      +'<span class="fil-icon">'+f.emoji+'</span>'
-      +'<div class="fil-name">'+f.name+'</div>'
-      +'<div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div>'
-      +'<div class="fil-arrow">→ Explorer</div>'
-      +'</div>';
-  }).join('');
-}
-
-function filtered(){
-  return docs.filter(function(d){
-    var mF=!curFil||d.filiere===curFil;
-    var q=curSearch.toLowerCase();
-    var mS=!q||(d.title&&d.title.toLowerCase().indexOf(q)>-1)||(d.prof&&d.prof.toLowerCase().indexOf(q)>-1);
-    return mF&&mS;
+    var div=document.createElement('div');
+    div.className='fil-card '+f.id;
+    div.dataset.id=f.id;
+    div.innerHTML='<span class="fil-icon">'+f.emoji+'</span><div class="fil-name">'+f.name+'</div><div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div><div class="fil-arrow">→ Explorer</div>';
+    div.addEventListener('click',function(){goFiliere(this.dataset.id);});
+    el.appendChild(div);
   });
 }
+
+function filtered(){return docs.filter(function(d){var mF=!curFil||d.filiere===curFil;var q=curSearch.toLowerCase();var mS=!q||(d.title&&d.title.toLowerCase().indexOf(q)>-1)||(d.prof&&d.prof.toLowerCase().indexOf(q)>-1);return mF&&mS;});}
 
 function refreshAllGrids(){
   renderDocs('homeGrid',filtered().slice(0,8));
   renderDocs('catGrid',filtered());
-  renderFil('homeFil');
-  renderFil('allFil');
+  renderFil('homeFil');renderFil('allFil');
   updateStats();
 }
 
@@ -948,125 +898,113 @@ function updateStats(){
   var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
 }
 
-// ===================== FILTERS =====================
-function applyFilter(){
-  curSearch=document.getElementById('searchQ').value;
-  renderDocs('homeGrid',filtered().slice(0,8));
-  renderDocs('catGrid',filtered());
-}
-
-function setFiliere(f,el){
-  curFil=f;
-  document.querySelectorAll('.chips .chip').forEach(function(c){c.classList.remove('active');});
-  if(el)el.classList.add('active');
-  renderDocs('homeGrid',filtered().slice(0,8));
-  renderDocs('catGrid',filtered());
-}
+function applyFilter(){curSearch=document.getElementById('searchQ').value;renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
+function setFiliere(f,el){curFil=f;document.querySelectorAll('.chips .chip').forEach(function(c){c.classList.remove('active');});if(el)el.classList.add('active');renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
 
 function goFiliere(f){
-  var found=FILIERES.find(function(x){return x.id===f;});
-  if(!found)return;
-  var hero=document.getElementById('filPageHero');
-  if(hero){
-    hero.style.background='linear-gradient(135deg,var(--ink),#1e3a8a)';
-  }
-  var icon=document.getElementById('filPageIcon');
-  if(icon){
-    icon.textContent=found.emoji;
-    icon.style.background=found.color+'22';
-  }
-  var title=document.getElementById('filPageTitle');
-  if(title)title.textContent=found.name;
-  var filDocs=docs.filter(function(d){return d.filiere===f;});
-  var sub=document.getElementById('filPageSub');
-  if(sub)sub.textContent=filDocs.length+' document'+(filDocs.length!==1?'s':'')+' disponible'+(filDocs.length!==1?'s':'');
-  renderDocs('filGrid',filDocs);
+  var found=FILIERES.find(function(x){return x.id===f;});if(!found)return;
+  var icon=document.getElementById('filPageIcon');if(icon){icon.textContent=found.emoji;icon.style.background=found.color+'22';}
+  var t=document.getElementById('filPageTitle');if(t)t.textContent=found.name;
+  var fDocs=docs.filter(function(d){return d.filiere===f;});
+  var sub=document.getElementById('filPageSub');if(sub)sub.textContent=fDocs.length+' document'+(fDocs.length!==1?'s':'')+' disponible'+(fDocs.length!==1?'s':'');
+  renderDocs('filGrid',fDocs);
   goPage('filiere');
 }
 
-// ===================== DOC MODAL =====================
 function openDoc(id){
   var d=docs.find(function(x){return x.id===id;});if(!d)return;
   var bought=boughtIds.indexOf(id)>-1;
   var emoji=d.emoji||EMOJIS[d.filiere]||'📄';
-  var priceHtml=bought
-    ?'<div style="background:var(--green-light);color:var(--green);border-radius:10px;padding:12px;text-align:center;font-weight:700;margin-bottom:1rem;font-size:0.95rem">✓ Document dans votre bibliothèque</div>'
-    :'<div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem">$'+d.prix+' USD</div>';
-  var actionBtn=bought
-    ?'<button class="mbtn success" onclick="dlDoc(this.dataset.id);closeModal()" data-id="'+id+'">⬇ Télécharger le PDF</button>'
-    :'<button class="mbtn primary" onclick="addCart(this.dataset.id);closeModal()" data-id="'+id+'">🛒 Ajouter au panier</button>';
-  document.getElementById('modalTit').textContent=d.title;
-  document.getElementById('modalBdy').innerHTML=
-    '<div style="font-size:3.5rem;text-align:center;margin-bottom:1rem;padding:1.5rem;background:var(--surface-2);border-radius:14px">'+emoji+'</div>'
-    +priceHtml
-    +'<div class="mdet"><span class="mdet-lbl">Filière</span><span class="mdet-val">'+flabel(d.filiere)+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Professeur</span><span class="mdet-val">'+(d.prof||'-')+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Type</span><span class="mdet-val">'+(d.type||'-')+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Pages</span><span class="mdet-val">'+(d.pages||'-')+'</span></div>'
-    +'<div class="mdet"><span class="mdet-lbl">Année</span><span class="mdet-val">'+(d.annee||'-')+'</span></div>'
-    +(d.desc?'<p style="margin-top:1rem;font-size:0.875rem;color:var(--text-muted);line-height:1.7;background:var(--surface-2);padding:1rem;border-radius:10px">'+d.desc+'</p>':'')
-    +actionBtn
-    +'<button class="mbtn secondary" onclick="closeModal()">Fermer</button>';
+  var body=document.getElementById('modalBdy');
+  var tit=document.getElementById('modalTit');
+  if(tit)tit.textContent=d.title;
+  if(!body)return;
+  body.innerHTML='';
+
+  var emojiDiv=document.createElement('div');
+  emojiDiv.style.cssText='font-size:3.5rem;text-align:center;margin-bottom:1rem;padding:1.5rem;background:var(--surface-2);border-radius:14px';
+  emojiDiv.textContent=emoji;
+  body.appendChild(emojiDiv);
+
+  if(bought){
+    var ok=document.createElement('div');
+    ok.style.cssText='background:var(--green-light);color:var(--green);border-radius:10px;padding:12px;text-align:center;font-weight:700;margin-bottom:1rem;font-size:0.95rem';
+    ok.textContent='✓ Document dans votre bibliothèque';
+    body.appendChild(ok);
+  }else{
+    var pr=document.createElement('div');
+    pr.style.cssText='font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem';
+    pr.textContent='$'+d.prix+' USD';
+    body.appendChild(pr);
+  }
+
+  var details=[['Filière',flabel(d.filiere)],['Professeur',d.prof||'-'],['Type',d.type||'-'],['Pages',d.pages||'-'],['Année',d.annee||'-']];
+  details.forEach(function(item){
+    var row=document.createElement('div');row.className='mdet';
+    row.innerHTML='<span class="mdet-lbl">'+item[0]+'</span><span class="mdet-val">'+item[1]+'</span>';
+    body.appendChild(row);
+  });
+
+  if(d.desc){
+    var desc=document.createElement('p');
+    desc.style.cssText='margin-top:1rem;font-size:0.875rem;color:var(--text-muted);line-height:1.7;background:var(--surface-2);padding:1rem;border-radius:10px';
+    desc.textContent=d.desc;
+    body.appendChild(desc);
+  }
+
+  var actionBtn=document.createElement('button');
+  actionBtn.className='mbtn '+(bought?'success':'primary');
+  actionBtn.textContent=bought?'⬇ Télécharger le PDF':'🛒 Ajouter au panier';
+  actionBtn.dataset.id=id;
+  actionBtn.addEventListener('click',function(){if(bought)dlDoc(this.dataset.id);else addCart(this.dataset.id);closeModal();});
+  body.appendChild(actionBtn);
+
+  var closeBtn=document.createElement('button');
+  closeBtn.className='mbtn secondary';closeBtn.textContent='Fermer';
+  closeBtn.addEventListener('click',closeModal);
+  body.appendChild(closeBtn);
+
   document.getElementById('modalOv').classList.add('open');
 }
 function closeModal(){document.getElementById('modalOv').classList.remove('open');}
 
-// ===================== DOWNLOAD =====================
 function dlDoc(id){
   if(!curUser){showToast('Connectez-vous pour télécharger','error');goPage('login');return;}
   if(boughtIds.indexOf(id)<0){showToast('Achetez ce document dabord','error');return;}
   var d=docs.find(function(x){return x.id===id;});if(!d)return;
-  if(d.driveLink){
-    var url=d.driveLink;
-    var m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if(m)url='https://drive.google.com/uc?export=download&id='+m[1];
-    window.open(url,'_blank');
-    showToast('Téléchargement en cours 📥','success');
-  }else{showToast('Lien non disponible','error');}
+  if(d.driveLink){var url=d.driveLink;var m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);if(m)url='https://drive.google.com/uc?export=download&id='+m[1];window.open(url,'_blank');showToast('Téléchargement en cours 📥','success');}
+  else{showToast('Lien non disponible','error');}
 }
 
-// ===================== CART =====================
 function addCart(id){
   if(!curUser){showToast('Connectez-vous pour acheter','error');goPage('login');return;}
   var d=docs.find(function(x){return x.id===id;});if(!d)return;
   if(boughtIds.indexOf(id)>-1){showToast('Déjà dans votre bibliothèque','');return;}
   if(cart.find(function(x){return x.id===id;})){showToast('Déjà dans le panier','');return;}
-  cart.push(d);updateCartBadge();
-  showToast('"'+d.title.substring(0,30)+'..." ajouté 🛒','success');
+  cart.push(d);updateCartBadge();showToast('"'+d.title.substring(0,30)+'..." ajouté 🛒','success');
 }
-
 function rmCart(id){cart=cart.filter(function(x){return x.id!==id;});updateCartBadge();renderCartItems();}
-
-function updateCartBadge(){
-  var c=document.getElementById('cartBadge');
-  c.textContent=cart.length;
-  c.style.display=cart.length?'inline':'none';
-}
-
+function updateCartBadge(){var c=document.getElementById('cartBadge');c.textContent=cart.length;c.style.display=cart.length?'inline':'none';}
 function renderCartItems(){
   var el=document.getElementById('cartBdy'),ft=document.getElementById('cartFoot');
-  if(!cart.length){
-    el.innerHTML='<div class="cart-empty-msg">🛒<br><br>Votre panier est vide</div>';
-    ft.style.display='none';return;
-  }
-  var tot=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
-  el.innerHTML=cart.map(function(d){
-    return '<div class="cart-item">'
-      +'<div class="cart-item-thumb '+(d.filiere||'')+'">'+(d.emoji||'📄')+'</div>'
-      +'<div class="cart-item-info">'
-      +'<div class="cart-item-title">'+d.title+'</div>'
-      +'<div class="cart-item-price">$'+d.prix+' USD</div>'
-      +'</div>'
-      +'<button class="cart-item-rm" data-id="'+d.id+'" onclick="rmCart(this.dataset.id)">✕</button>'
-      +'</div>';
-  }).join('');
-  document.getElementById('cartTot').textContent='$'+tot.toFixed(2);
-  ft.style.display='block';
+  if(!cart.length){el.innerHTML='<div class="cart-empty-msg">🛒<br><br>Votre panier est vide</div>';ft.style.display='none';return;}
+  el.innerHTML='';
+  var tot=0;
+  cart.forEach(function(d){
+    tot+=(parseFloat(d.prix)||0);
+    var item=document.createElement('div');item.className='cart-item';
+    var thumb=document.createElement('div');thumb.className='cart-item-thumb '+(d.filiere||'');thumb.textContent=d.emoji||'📄';
+    var info=document.createElement('div');info.className='cart-item-info';
+    info.innerHTML='<div class="cart-item-title">'+d.title+'</div><div class="cart-item-price">$'+d.prix+' USD</div>';
+    var rm=document.createElement('button');rm.className='cart-item-rm';rm.textContent='✕';rm.dataset.id=d.id;
+    rm.addEventListener('click',function(){rmCart(this.dataset.id);});
+    item.appendChild(thumb);item.appendChild(info);item.appendChild(rm);
+    el.appendChild(item);
+  });
+  document.getElementById('cartTot').textContent='$'+tot.toFixed(2);ft.style.display='block';
 }
-
 function openCart(){renderCartItems();document.getElementById('cartOv').classList.add('open');document.getElementById('cartPnl').classList.add('open');}
 function closeCart(){document.getElementById('cartOv').classList.remove('open');document.getElementById('cartPnl').classList.remove('open');}
-
 function checkout(){
   if(!curUser){showToast('Connectez-vous pour commander','error');return;}
   if(!cart.length)return;
@@ -1075,12 +1013,10 @@ function checkout(){
   orders.push(ord);
   var pu=users.find(function(x){return x.uid===curUser.uid;});
   if(pu){cart.forEach(function(d){if(pu.bought.indexOf(d.id)<0)pu.bought.push(d.id);});boughtIds=pu.bought.slice();}
-  saveState();cart=[];updateCartBadge();closeCart();
-  refreshAllGrids();
+  saveState();cart=[];updateCartBadge();closeCart();refreshAllGrids();
   showToast('Commande enregistrée ! Voir Mon espace 🎉','success');
 }
 
-// ===================== AUTH =====================
 function doLogin(){
   var email=document.getElementById('loginEmail').value.trim();
   var pass=document.getElementById('loginPass').value;
@@ -1122,30 +1058,21 @@ function doRegister(){
   updateStats();
 }
 
-function logoutUser(){
-  curUser=null;boughtIds=[];
-  localStorage.removeItem('edulib_session');
-  showGuestNav();goPage('home');
-  showToast('Déconnecté.','');
-  refreshAllGrids();
-}
+function logoutUser(){curUser=null;boughtIds=[];localStorage.removeItem('el_s');showGuestNav();goPage('home');showToast('Déconnecté.','');refreshAllGrids();}
 
-// ===================== DASHBOARD =====================
 function loadDashboard(){
   if(!curUser){goPage('login');return;}
   var pu=users.find(function(x){return x.uid===curUser.uid;});
   boughtIds=pu?(pu.bought||[]):[];
   var fil=FILIERES.find(function(f){return f.id===curUser.filiere;});
   var dn=document.getElementById('dashName');if(dn)dn.textContent=curUser.name;
-  var df=document.getElementById('dashFil');
-  if(df)df.textContent=(fil?fil.emoji+' ':'')+flabel(curUser.filiere);
+  var df=document.getElementById('dashFil');if(df)df.textContent=(fil?fil.emoji+' ':'')+flabel(curUser.filiere);
   var myOrders=orders.filter(function(o){return o.userId===curUser.uid;});
   var spent=myOrders.reduce(function(s,o){return s+(parseFloat(o.total)||0);},0);
   var dqd=document.getElementById('dqDocs');if(dqd)dqd.textContent=boughtIds.length;
   var dqo=document.getElementById('dqOrders');if(dqo)dqo.textContent=myOrders.length;
   var dqs=document.getElementById('dqSpent');if(dqs)dqs.textContent='$'+spent.toFixed(0);
-  renderBought();
-  updateProfileUI();
+  renderBought();updateProfileUI();
 }
 
 function renderBought(){
@@ -1153,30 +1080,27 @@ function renderBought(){
   var bought=docs.filter(function(d){return boughtIds.indexOf(d.id)>-1;});
   var c=document.getElementById('profDocCnt');if(c)c.textContent=bought.length;
   if(!bought.length){
-    el.innerHTML='<div class="empty-state">'
-      +'<span class="empty-icon">📚</span>'
-      +'<div class="empty-title">Aucun document acheté pour linstant</div>'
-      +'<p class="empty-desc">Parcourez notre catalogue et trouvez les ressources parfaites pour vos études.</p>'
-      +'<button class="adm-btn" onclick="goPage('catalogue')" style="font-family:var(--font-body)">Parcourir le catalogue</button>'
-      +'</div>';
+    el.innerHTML='<div class="empty-state"><span class="empty-icon">📚</span><div class="empty-title">Aucun document acheté pour linstant</div><p class="empty-desc">Parcourez notre catalogue et trouvez les ressources parfaites.</p></div>';
+    var btn=document.createElement('button');btn.className='adm-btn';btn.style.fontFamily='var(--font-body)';btn.textContent='Parcourir le catalogue';
+    btn.addEventListener('click',function(){goPage('catalogue');});
+    el.querySelector('.empty-state').appendChild(btn);
     return;
   }
-  el.innerHTML=bought.map(function(d){
-    return '<div class="bought-card">'
-      +'<div class="bought-card-top">'
-      +'<div class="bought-emoji '+(d.filiere||'')+'">'+(d.emoji||EMOJIS[d.filiere]||'📄')+'</div>'
-      +'<div class="bought-info">'
-      +'<div class="bought-title">'+d.title+'</div>'
-      +'<div class="bought-prof">'+d.prof+'</div>'
-      +'</div></div>'
-      +'<div class="bought-meta">'
-      +'<span class="bought-tag">'+flabel(d.filiere)+'</span>'
-      +(d.type?'<span class="bought-tag">'+d.type+'</span>':'')
-      +(d.pages?'<span class="bought-tag">'+d.pages+' pages</span>':'')
-      +'</div>'
-      +'<button class="dl-btn" data-id="'+d.id+'" onclick="dlDoc(this.dataset.id)">⬇ Télécharger le PDF</button>'
-      +'</div>';
-  }).join('');
+  el.innerHTML='';
+  bought.forEach(function(d){
+    var card=document.createElement('div');card.className='bought-card';
+    var top=document.createElement('div');top.className='bought-card-top';
+    var em=document.createElement('div');em.className='bought-emoji '+(d.filiere||'');em.textContent=d.emoji||EMOJIS[d.filiere]||'📄';
+    var info=document.createElement('div');info.className='bought-info';
+    info.innerHTML='<div class="bought-title">'+d.title+'</div><div class="bought-prof">'+d.prof+'</div>';
+    top.appendChild(em);top.appendChild(info);
+    var meta=document.createElement('div');meta.className='bought-meta';
+    meta.innerHTML='<span class="bought-tag">'+flabel(d.filiere)+'</span>'+(d.type?'<span class="bought-tag">'+d.type+'</span>':'')+(d.pages?'<span class="bought-tag">'+d.pages+' pages</span>':'');
+    var dlBtn=document.createElement('button');dlBtn.className='dl-btn';dlBtn.textContent='⬇ Télécharger le PDF';dlBtn.dataset.id=d.id;
+    dlBtn.addEventListener('click',function(){dlDoc(this.dataset.id);});
+    card.appendChild(top);card.appendChild(meta);card.appendChild(dlBtn);
+    el.appendChild(card);
+  });
 }
 
 function renderProgress(){
@@ -1185,22 +1109,14 @@ function renderProgress(){
   var bought=docs.filter(function(d){return boughtIds.indexOf(d.id)>-1;});
   var pbf=document.getElementById('progByFil');
   if(pbf){
-    if(!bought.length){
-      pbf.innerHTML='<p style="color:var(--text-muted);font-size:0.875rem">Aucun document acheté encore.</p>';
-    }else{
-      var maxCount=1;
-      var counts={};
-      FILIERES.forEach(function(f){counts[f.id]=bought.filter(function(d){return d.filiere===f.id;}).length;});
-      maxCount=Math.max.apply(null,Object.values(counts))||1;
+    if(!bought.length){pbf.innerHTML='<p style="color:var(--text-muted);font-size:0.875rem">Aucun document acheté encore.</p>';}
+    else{
+      var counts={};FILIERES.forEach(function(f){counts[f.id]=bought.filter(function(d){return d.filiere===f.id;}).length;});
+      var maxC=Math.max.apply(null,Object.values(counts).concat([1]));
       pbf.innerHTML=FILIERES.map(function(f){
-        var cnt=counts[f.id];
-        if(cnt===0)return '';
-        var pct=Math.round(cnt/maxCount*100);
-        return '<div class="prog-bar-item">'
-          +'<span class="prog-bar-label">'+f.emoji+' '+f.name+'</span>'
-          +'<div class="prog-bar-track"><div class="prog-bar-fill" style="width:'+pct+'%;background:'+f.color+'"></div></div>'
-          +'<span class="prog-bar-val">'+cnt+'</span>'
-          +'</div>';
+        var cnt=counts[f.id];if(!cnt)return '';
+        var pct=Math.round(cnt/maxC*100);
+        return '<div class="prog-bar-item"><span class="prog-bar-label">'+f.emoji+' '+f.name+'</span><div class="prog-bar-track"><div class="prog-bar-fill" style="width:'+pct+'%;background:'+f.color+'"></div></div><span class="prog-bar-val">'+cnt+'</span></div>';
       }).filter(Boolean).join('');
     }
   }
@@ -1208,41 +1124,22 @@ function renderProgress(){
   if(as){
     var myOrders=orders.filter(function(o){return o.userId===curUser.uid;});
     var spent=myOrders.reduce(function(s,o){return s+(parseFloat(o.total)||0);},0);
-    var fil=curUser.filiere;
-    var filDocs=docs.filter(function(d){return d.filiere===fil;}).length;
-    var filBought=bought.filter(function(d){return d.filiere===fil;}).length;
+    var filBought=bought.filter(function(d){return d.filiere===curUser.filiere;}).length;
+    var filTotal=docs.filter(function(d){return d.filiere===curUser.filiere;}).length;
     as.innerHTML='<div style="display:flex;flex-direction:column;gap:16px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">'
-      +'<span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Documents achetés</span>'
-      +'<span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--blue)">'+boughtIds.length+'</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">'
-      +'<span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Commandes passées</span>'
-      +'<span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--green)">'+myOrders.length+'</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">'
-      +'<span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Total dépensé</span>'
-      +'<span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--amber)">$'+spent.toFixed(2)+'</span>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">'
-      +'<span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Docs '+flabel(fil)+' achetés</span>'
-      +'<span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--purple)">'+filBought+'/'+filDocs+'</span>'
-      +'</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Documents achetés</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--blue)">'+boughtIds.length+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Commandes passées</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--green)">'+myOrders.length+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Total dépensé</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--amber)">$'+spent.toFixed(2)+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Docs '+flabel(curUser.filiere)+' achetés</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--purple)">'+filBought+'/'+filTotal+'</span></div>'
       +'</div>';
   }
   var rg=document.getElementById('recoGrid');
   if(rg){
     var notBought=docs.filter(function(d){return boughtIds.indexOf(d.id)<0;});
     var recos=notBought.filter(function(d){return d.filiere===curUser.filiere;}).slice(0,3);
-    if(recos.length<3){
-      var others=notBought.filter(function(d){return d.filiere!==curUser.filiere;});
-      recos=recos.concat(others.slice(0,3-recos.length));
-    }
-    if(!recos.length){
-      rg.innerHTML='<p style="color:var(--text-muted);font-size:0.875rem">Vous avez tout acheté ! Bravo 🎉</p>';
-    }else{
-      rg.innerHTML=recos.map(docCard).join('');
-    }
+    if(recos.length<3)recos=recos.concat(notBought.filter(function(d){return d.filiere!==curUser.filiere;}).slice(0,3-recos.length));
+    if(!recos.length){rg.innerHTML='<p style="color:var(--text-muted);font-size:0.875rem">Vous avez tout acheté ! Bravo 🎉</p>';}
+    else{rg.innerHTML='';recos.forEach(function(d){rg.appendChild(makeDocCard(d));});}
   }
 }
 
@@ -1252,15 +1149,13 @@ function updateProfileUI(){
   var pa=document.getElementById('profAv');if(pa)pa.textContent=initials;
   var pn=document.getElementById('profNm');if(pn)pn.textContent=curUser.name;
   var pe=document.getElementById('profEm');if(pe)pe.textContent=curUser.email;
-  var pu=users.find(function(x){return x.uid===curUser.uid;});
   var myOrders=orders.filter(function(o){return o.userId===curUser.uid;});
   var c1=document.getElementById('profDocCnt');if(c1)c1.textContent=boughtIds.length;
   var c2=document.getElementById('profOrderCnt');if(c2)c2.textContent=myOrders.length;
   var piN=document.getElementById('piName');if(piN)piN.textContent=curUser.name;
   var piE=document.getElementById('piEmail');if(piE)piE.textContent=curUser.email;
   var piF=document.getElementById('piFil');if(piF)piF.textContent=flabel(curUser.filiere);
-  var piD=document.getElementById('piDate');
-  if(piD)piD.textContent=curUser.createdAt?new Date(curUser.createdAt).toLocaleDateString('fr-FR'):'-';
+  var piD=document.getElementById('piDate');if(piD)piD.textContent=curUser.createdAt?new Date(curUser.createdAt).toLocaleDateString('fr-FR'):'-';
   var piDc=document.getElementById('piDocs');if(piDc)piDc.textContent=boughtIds.length;
 }
 
@@ -1275,27 +1170,20 @@ function showDashTab(tab,el){
   if(tab==='profile')updateProfileUI();
 }
 
-// ===================== ADMIN AUTH =====================
 function doAdminLogin(){
   var u=document.getElementById('adminU').value.trim();
   var p=document.getElementById('adminP').value;
   var err=document.getElementById('adminErr');
-  if(u==='admin'&&p===adminPwd){
-    isAdmin=true;err.classList.remove('show');
-    goPage('admin');showToast('Bienvenue Serge ! 👋','success');
-    refreshAdminData();
-  }else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
+  if(u==='admin'&&p===adminPwd){isAdmin=true;err.classList.remove('show');goPage('admin');showToast('Bienvenue Serge ! 👋','success');refreshAdminData();}
+  else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
 }
 function adminOut(){isAdmin=false;goPage('home');showToast('Déconnecté.','');}
 function changeAdminPwd(){
-  var o=document.getElementById('oldP').value;
-  var n=document.getElementById('newP').value;
-  var c=document.getElementById('confP').value;
+  var o=document.getElementById('oldP').value,n=document.getElementById('newP').value,c=document.getElementById('confP').value;
   if(o!==adminPwd){showToast('Mot de passe actuel incorrect.','error');return;}
   if(n.length<6){showToast('Minimum 6 caractères.','error');return;}
   if(n!==c){showToast('Les mots de passe ne correspondent pas.','error');return;}
-  adminPwd=n;
-  ['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  adminPwd=n;['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   showToast('Mot de passe mis à jour !','success');
 }
 
@@ -1320,42 +1208,48 @@ function showAP(p,el){
 
 function emptyRow(cols,msg){return '<tr><td colspan="'+cols+'" style="text-align:center;padding:2rem;color:var(--text-muted)">'+msg+'</td></tr>';}
 
+function makeAdmRow(d,i){
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td style="color:var(--text-muted)">'+(i+1)+'</td><td>'+(d.emoji||'📄')+' '+d.title.substring(0,25)+'</td><td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td></td>';
+  var td=tr.cells[4];
+  var edit=document.createElement('button');edit.className='act-btn act-edit';edit.textContent='Modifier';edit.dataset.id=d.id;
+  edit.addEventListener('click',function(){editDoc(this.dataset.id);});
+  var del=document.createElement('button');del.className='act-btn act-del';del.textContent='Supprimer';del.dataset.id=d.id;
+  del.addEventListener('click',function(){delDoc(this.dataset.id);});
+  td.appendChild(edit);td.appendChild(del);
+  return tr;
+}
+
 function renderAdmRecentDocs(){
   var t=document.getElementById('tblRecentDocs');if(!t)return;
   if(!docs.length){t.innerHTML=emptyRow(4,'Aucun document encore.');return;}
-  t.innerHTML='<thead><tr><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
-    +docs.slice(0,5).map(function(d){
-      return '<tr><td>'+(d.emoji||'📄')+' '+d.title.substring(0,28)+'</td>'
-        +'<td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td>'
-        +'<td><b>$'+d.prix+'</b></td>'
-        +'<td><button class="act-btn act-edit" data-id="'+d.id+'" onclick="editDoc(this.dataset.id)">Modifier</button>'
-        +'<button class="act-btn act-del" data-id="'+d.id+'" onclick="delDoc(this.dataset.id)">Supprimer</button></td></tr>';
-    }).join('')+'</tbody>';
+  t.innerHTML='<thead><tr><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody></tbody>';
+  var tbody=t.querySelector('tbody');
+  docs.slice(0,5).forEach(function(d){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(d.emoji||'📄')+' '+d.title.substring(0,28)+'</td><td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td></td>';
+    var td=tr.cells[3];
+    var edit=document.createElement('button');edit.className='act-btn act-edit';edit.textContent='Modifier';edit.dataset.id=d.id;edit.addEventListener('click',function(){editDoc(this.dataset.id);});
+    var del=document.createElement('button');del.className='act-btn act-del';del.textContent='Supprimer';del.dataset.id=d.id;del.addEventListener('click',function(){delDoc(this.dataset.id);});
+    td.appendChild(edit);td.appendChild(del);
+    tbody.appendChild(tr);
+  });
 }
 
 function renderAdmRecentUsers(){
   var t=document.getElementById('tblRecentUsers');if(!t)return;
   if(!users.length){t.innerHTML=emptyRow(3,'Aucun utilisateur encore.');return;}
   t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filière</th></tr></thead><tbody>'
-    +users.slice(0,5).map(function(u){
-      return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td>'
-        +'<td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td></tr>';
-    }).join('')+'</tbody>';
+    +users.slice(0,5).map(function(u){return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td></tr>';}).join('')+'</tbody>';
 }
 
 function renderAdmAllDocs(){
   var t=document.getElementById('tblAllDocs');if(!t)return;
   var lbl=document.getElementById('docListLbl');if(lbl)lbl.textContent='Tous les documents ('+docs.length+')';
   if(!docs.length){t.innerHTML=emptyRow(5,'Aucun document. Cliquez sur + Ajouter.');return;}
-  t.innerHTML='<thead><tr><th>#</th><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody>'
-    +docs.map(function(d,i){
-      return '<tr><td style="color:var(--text-muted)">'+(i+1)+'</td>'
-        +'<td>'+(d.emoji||'📄')+' '+d.title.substring(0,25)+'</td>'
-        +'<td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td>'
-        +'<td><b>$'+d.prix+'</b></td>'
-        +'<td><button class="act-btn act-edit" data-id="'+d.id+'" onclick="editDoc(this.dataset.id)">Modifier</button>'
-        +'<button class="act-btn act-del" data-id="'+d.id+'" onclick="delDoc(this.dataset.id)">Supprimer</button></td></tr>';
-    }).join('')+'</tbody>';
+  t.innerHTML='<thead><tr><th>#</th><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody></tbody>';
+  var tbody=t.querySelector('tbody');
+  docs.forEach(function(d,i){tbody.appendChild(makeAdmRow(d,i));});
 }
 
 function renderAdmUsers(){
@@ -1363,11 +1257,7 @@ function renderAdmUsers(){
   var lbl=document.getElementById('userListLbl');if(lbl)lbl.textContent='Utilisateurs ('+users.length+')';
   if(!users.length){t.innerHTML=emptyRow(4,'Aucun utilisateur inscrit.');return;}
   t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filière</th><th>Date</th></tr></thead><tbody>'
-    +users.map(function(u){
-      return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td>'
-        +'<td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td>'
-        +'<td style="color:var(--text-muted)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';
-    }).join('')+'</tbody>';
+    +users.map(function(u){return '<tr><td><b>'+u.name+'</b></td><td>'+u.email+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td><td style="color:var(--text-muted)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
 }
 
 function renderAdmOrders(){
@@ -1375,16 +1265,9 @@ function renderAdmOrders(){
   var lbl=document.getElementById('ordListLbl');if(lbl)lbl.textContent='Commandes ('+orders.length+')';
   if(!orders.length){t.innerHTML=emptyRow(5,'Aucune commande encore.');return;}
   t.innerHTML='<thead><tr><th>Étudiant</th><th>Docs</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
-    +orders.map(function(o){
-      return '<tr><td><b>'+(o.userName||'-')+'</b><br><small style="color:var(--text-muted)">'+(o.userEmail||'')+'</small></td>'
-        +'<td>'+(o.items&&o.items.length||0)+'</td>'
-        +'<td><b>$'+(o.total||0)+'</b></td>'
-        +'<td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td>'
-        +'<td style="color:var(--text-muted)">'+(o.createdAt?new Date(o.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';
-    }).join('')+'</tbody>';
+    +orders.map(function(o){return '<tr><td><b>'+(o.userName||'-')+'</b><br><small style="color:var(--text-muted)">'+(o.userEmail||'')+'</small></td><td>'+(o.items&&o.items.length||0)+'</td><td><b>$'+(o.total||0)+'</b></td><td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td><td style="color:var(--text-muted)">'+(o.createdAt?new Date(o.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
 }
 
-// ===================== CRUD DOCS =====================
 function saveDoc(){
   var title=document.getElementById('fTitle').value.trim();
   var fil=document.getElementById('fFil').value;
@@ -1400,32 +1283,19 @@ function saveDoc(){
     badge:document.getElementById('fBadge').value||'',
     emoji:EMOJIS[fil]||'📄',createdAt:Date.now()};
   var eid=document.getElementById('editId').value;
-  if(eid){
-    var idx=docs.findIndex(function(x){return x.id===eid;});
-    if(idx>-1){data.id=eid;docs[idx]=data;}
-    showToast('Document mis à jour !','success');
-  }else{
-    data.id='doc-'+Date.now();
-    docs.unshift(data);
-    showToast('Document ajouté ! 🎉','success');
-  }
-  saveState();refreshAllGrids();renderAdmAllDocs();renderAdmRecentDocs();
-  resetDocForm();showAP('documents',null);
+  if(eid){var idx=docs.findIndex(function(x){return x.id===eid;});if(idx>-1){data.id=eid;docs[idx]=data;}showToast('Document mis à jour !','success');}
+  else{data.id='doc-'+Date.now();docs.unshift(data);showToast('Document ajouté ! 🎉','success');}
+  saveState();refreshAllGrids();renderAdmAllDocs();renderAdmRecentDocs();resetDocForm();showAP('documents',null);
 }
 
 function editDoc(id){
   var d=docs.find(function(x){return x.id===id;});if(!d)return;
   document.getElementById('editId').value=id;
-  document.getElementById('fTitle').value=d.title||'';
-  document.getElementById('fFil').value=d.filiere||'';
-  document.getElementById('fType').value=d.type||'';
-  document.getElementById('fProf').value=d.prof||'';
-  document.getElementById('fPrix').value=d.prix||'';
-  document.getElementById('fPages').value=d.pages||'';
-  document.getElementById('fAnnee').value=d.annee||'';
-  document.getElementById('fDesc').value=d.desc||'';
-  document.getElementById('fBadge').value=d.badge||'';
-  document.getElementById('fLink').value=d.driveLink||'';
+  document.getElementById('fTitle').value=d.title||'';document.getElementById('fFil').value=d.filiere||'';
+  document.getElementById('fType').value=d.type||'';document.getElementById('fProf').value=d.prof||'';
+  document.getElementById('fPrix').value=d.prix||'';document.getElementById('fPages').value=d.pages||'';
+  document.getElementById('fAnnee').value=d.annee||'';document.getElementById('fDesc').value=d.desc||'';
+  document.getElementById('fBadge').value=d.badge||'';document.getElementById('fLink').value=d.driveLink||'';
   var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Modifier le document';
   var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Mettez à jour les informations.';
   var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Mettre à jour';
@@ -1434,11 +1304,17 @@ function editDoc(id){
 
 function delDoc(id){
   var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  var body=document.getElementById('modalBdy');
   document.getElementById('modalTit').textContent='Supprimer le document';
-  document.getElementById('modalBdy').innerHTML=
-    '<p style="margin-bottom:1.5rem;color:var(--text-muted);line-height:1.6">Supprimer <b>'+d.title+'</b> ? Cette action est irréversible.</p>'
-    +'<button data-id="'+id+'" onclick="confirmDel(this.dataset.id)" style="width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem">Oui, supprimer</button>'
-    +'<button class="mbtn secondary" onclick="closeModal()">Annuler</button>';
+  body.innerHTML='';
+  var p=document.createElement('p');p.style.cssText='margin-bottom:1.5rem;color:var(--text-muted);line-height:1.6';
+  p.innerHTML='Supprimer <b>'+d.title+'</b> ? Cette action est irréversible.';
+  var yes=document.createElement('button');yes.className='mbtn danger';yes.textContent='Oui, supprimer';yes.dataset.id=id;
+  yes.style.cssText='width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem';
+  yes.addEventListener('click',function(){confirmDel(this.dataset.id);});
+  var no=document.createElement('button');no.className='mbtn secondary';no.textContent='Annuler';
+  no.addEventListener('click',closeModal);
+  body.appendChild(p);body.appendChild(yes);body.appendChild(no);
   document.getElementById('modalOv').classList.add('open');
 }
 
@@ -1457,28 +1333,21 @@ function resetDocForm(){
   var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Enregistrer le document';
 }
 
-// ===================== NAVIGATION =====================
 function goPage(p){
   if(p==='admin'&&!isAdmin){goPage('adminlogin');return;}
   if(p==='dashboard'&&!curUser){goPage('login');return;}
-  ['home','catalogue','filieres','filiere','login','register','dashboard','admin','adminlogin'].forEach(function(x){
-    var e=document.getElementById('pg-'+x);if(e)e.style.display='none';
-  });
+  ['home','catalogue','filieres','filiere','login','register','dashboard','admin','adminlogin'].forEach(function(x){var e=document.getElementById('pg-'+x);if(e)e.style.display='none';});
   var tg=document.getElementById('pg-'+p);if(tg)tg.style.display='block';
   var ftr=document.getElementById('mainFtr');
   if(ftr)ftr.style.display=['admin','adminlogin','login','register'].indexOf(p)>-1?'none':'block';
   window.scrollTo(0,0);
   if(p==='catalogue')renderDocs('catGrid',filtered());
-  if(p==='filieres'){renderFil('allFil');}
+  if(p==='filieres')renderFil('allFil');
   if(p==='dashboard')loadDashboard();
   if(p==='admin')refreshAdminData();
 }
 
-function setNav(id){
-  document.querySelectorAll('.nav-link').forEach(function(a){a.classList.remove('active');});
-  var e=document.getElementById(id);if(e)e.classList.add('active');
-}
-
+function setNav(id){document.querySelectorAll('.nav-link').forEach(function(a){a.classList.remove('active');});var e=document.getElementById(id);if(e)e.classList.add('active');}
 function toggleMenu(){document.getElementById('mobMenu').classList.toggle('open');}
 function closeMenu(){document.getElementById('mobMenu').classList.remove('open');}
 
@@ -1489,24 +1358,15 @@ function showToast(msg,type){
   setTimeout(function(){t.classList.remove('show');},3500);
 }
 
-// Search with debounce
-var searchTimer=null;
 document.addEventListener('DOMContentLoaded',function(){
   var sq=document.getElementById('searchQ');
-  if(sq){
-    sq.addEventListener('input',function(){
-      clearTimeout(searchTimer);
-      searchTimer=setTimeout(applyFilter,300);
-    });
-  }
+  if(sq){var timer=null;sq.addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(applyFilter,300);});}
 });
 
-// ===================== SECRET ADMIN ROUTE =====================
 function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('adminlogin');}
 window.addEventListener('hashchange',checkHash);
 checkHash();
 
-// ===================== INIT =====================
 loadState();
 refreshAllGrids();
 </script>
