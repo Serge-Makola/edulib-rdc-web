@@ -403,6 +403,10 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         <button class="btn btn-ghost" onclick="goPage('login')">Connexion</button>
         <button class="btn btn-primary" onclick="goPage('register')">S'inscrire</button>
       </span>
+      <span id="adminNav" style="display:none;align-items:center;gap:8px">
+        <span class="nav-link active">⚙️ Admin</span>
+        <button class="btn btn-ghost" onclick="adminOut()">Déconnexion</button>
+      </span>
       <span id="userNav" style="display:none;align-items:center;gap:8px;position:relative">
         <span class="nav-link active" onclick="goPage('dashboard')">👤 Mon espace</span>
         <button class="btn btn-ghost" onclick="toggleUserMenu()" id="userMenuBtn">▾</button>
@@ -421,7 +425,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
   <span class="nav-link" onclick="goPage('home');closeMenu()">🏠 Accueil</span>
   <span class="nav-link" onclick="goPage('catalogue');closeMenu()">📚 Catalogue</span>
   <span class="nav-link" onclick="goPage('filieres');closeMenu()">🎓 Filières</span>
-  <span class="nav-link" onclick="openCart();closeMenu()">🛒 Panier</span>
+  <span class="nav-link" onclick="openCart();closeMenu()">🛒 Panier <span class="cart-badge" id="cartBadgeMob" style="background:var(--red);color:#fff;font-size:0.6rem;font-weight:700;border-radius:99px;padding:2px 5px;margin-left:2px;display:none;vertical-align:middle">0</span></span>
   <div id="mobGuest">
     <span class="nav-link" onclick="goPage('login');closeMenu()">🔐 Connexion</span>
     <span class="nav-link" onclick="goPage('register');closeMenu()">📝 S'inscrire</span>
@@ -782,7 +786,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       </div>
       <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="goPage('home')">Accueil</li><li onclick="goPage('catalogue')">Catalogue</li><li onclick="goPage('filieres')">Filières</li></ul></div>
       <div><div class="footer-col-title">Filières</div><ul class="footer-links"><li onclick="goFiliere('droit')">Droit</li><li onclick="goFiliere('medecine')">Médecine</li><li onclick="goFiliere('polytechnique')">Polytechnique</li><li onclick="goFiliere('sciences')">Sciences</li><li onclick="goFiliere('lettres')">Lettres</li></ul></div>
-      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:rgba(255,255,255,0.5)">contact@edulibrdc.com</a></li><li><a href="tel:+243000000000" style="color:rgba(255,255,255,0.5)" id="footerPhone">+243 000 000 000</a></li><li><a href="https://wa.me/243000000000" style="color:rgba(255,255,255,0.5)" id="footerWhatsapp">WhatsApp</a></li></ul></div>
+      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:rgba(255,255,255,0.5)">contact@edulibrdc.com</a></li><li><a href="tel:+243840021963" style="color:rgba(255,255,255,0.5)" id="footerPhone">+243 840 021 963</a></li><li><a href="https://wa.me/243840021963" style="color:rgba(255,255,255,0.5)" id="footerWhatsapp">WhatsApp</a></li></ul></div>
     </div>
     <div class="footer-bottom"><span>© 2025 EduLib RDC. Tous droits réservés.</span><span style="color:rgba(255,255,255,0.25);font-size:0.75rem">Kinshasa, République Démocratique du Congo</span></div>
   </div>
@@ -862,10 +866,18 @@ function showUserNav(){
 function showGuestNav(){
   document.getElementById('guestNav').style.display='flex';
   document.getElementById('userNav').style.display='none';
+  var an=document.getElementById('adminNav');if(an)an.style.display='none';
   document.getElementById('mobGuest').style.display='block';
   document.getElementById('mobUser').style.display='none';
   var h=document.getElementById('heroCTA');if(h)h.style.display='';
   var c=document.getElementById('ctaBtn');if(c){c.textContent='Créer un compte gratuit';c.onclick=function(){goPage('register');};}
+}
+function showAdminNav(){
+  document.getElementById('guestNav').style.display='none';
+  document.getElementById('userNav').style.display='none';
+  var an=document.getElementById('adminNav');if(an)an.style.display='flex';
+  document.getElementById('mobGuest').style.display='none';
+  document.getElementById('mobUser').style.display='none';
 }
 
 // Load data from Firebase
@@ -1020,7 +1032,10 @@ function addCart(id){
   cart.push(d);updateCartBadge();showToast('"'+d.title.substring(0,30)+'..." ajouté 🛒','success');
 }
 function rmCart(id){cart=cart.filter(function(x){return x.id!==id;});updateCartBadge();renderCartItems();}
-function updateCartBadge(){var c=document.getElementById('cartBadge');c.textContent=cart.length;c.style.display=cart.length?'inline':'none';}
+function updateCartBadge(){
+  var c=document.getElementById('cartBadge');if(c){c.textContent=cart.length;c.style.display=cart.length?'inline':'none';}
+  var cm=document.getElementById('cartBadgeMob');if(cm){cm.textContent=cart.length;cm.style.display=cart.length?'inline':'none';}
+}
 function renderCartItems(){
   var el=document.getElementById('cartBdy'),ft=document.getElementById('cartFoot');
   if(!cart.length){el.innerHTML='<div class="cart-empty-msg">🛒<br><br>Votre panier est vide</div>';ft.style.display='none';return;}
@@ -1212,10 +1227,14 @@ function doAdminLogin(){
   var u=document.getElementById('adminU').value.trim();
   var p=document.getElementById('adminP').value;
   var err=document.getElementById('adminErr');
-  if(u==='admin'&&p===adminPwd){isAdmin=true;err.classList.remove('show');goPage('admin');showToast('Bienvenue Serge ! 👋','success');refreshAdminData();}
-  else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
+  if(u==='admin'&&p===adminPwd){
+    isAdmin=true;err.classList.remove('show');
+    sessionStorage.setItem('el_admin','1');
+    showAdminNav();
+    goPage('admin');showToast('Bienvenue Serge ! 👋','success');refreshAdminData();
+  }else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
 }
-function adminOut(){isAdmin=false;goPage('home');showToast('Déconnecté.','');}
+function adminOut(){isAdmin=false;sessionStorage.removeItem('el_admin');showGuestNav();goPage('home');showToast('Déconnecté.','');}
 function changeAdminPwd(){
   var o=document.getElementById('oldP').value,n=document.getElementById('newP').value,c=document.getElementById('confP').value;
   if(o!==adminPwd){showToast('Mot de passe actuel incorrect.','error');return;}
@@ -1373,6 +1392,9 @@ function goPage(p){
   ['home','catalogue','filieres','filiere','login','register','dashboard','admin','adminlogin'].forEach(function(x){var e=document.getElementById('pg-'+x);if(e)e.style.display='none';});
   var tg=document.getElementById('pg-'+p);if(tg)tg.style.display='block';
   var ftr=document.getElementById('mainFtr');if(ftr)ftr.style.display=['admin','adminlogin','login','register'].indexOf(p)>-1?'none':'block';
+  // Show correct nav
+  if(p==='admin')showAdminNav();
+  else if(isAdmin)showAdminNav();
   window.scrollTo(0,0);
   if(p==='catalogue')renderDocs('catGrid',filtered());
   if(p==='filieres')renderFil('allFil');
@@ -1403,7 +1425,12 @@ function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('admin
 window.addEventListener('hashchange',checkHash);
 checkHash();
 
-// INIT - load docs when Firebase is ready
+// INIT - restore admin session and load docs
+if(sessionStorage.getItem('el_admin')==='1'){
+  isAdmin=true;
+  showAdminNav();
+}
+
 loadDocs();
 </script>
 </body>
