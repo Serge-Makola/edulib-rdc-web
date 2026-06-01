@@ -1355,7 +1355,7 @@ function renderAdmUsers(){
   var t=document.getElementById('tblUsers');if(!t)return;
   var lbl=document.getElementById('userListLbl');if(lbl)lbl.textContent='Utilisateurs ('+users.length+')';
   if(!users.length){t.innerHTML=emptyRow(4,'Aucun utilisateur inscrit.');return;}
-  var roleLabel={'etudiant':'🎓 Étudiant','assistant':'📝 Assistant','ct':'🏫 CT','professeur':'👨‍🏫 Professeur'};
+  var roleLabel={etudiant:'Etudiant',assistant:'Assistant',ct:'CT',professeur:'Professeur'};
   t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Filière</th><th>Date</th></tr></thead><tbody>'+users.map(function(u){return '<tr><td><b>'+(u.name||'-')+'</b></td><td>'+u.email+'</td><td>'+(roleLabel[u.role]||u.role||'-')+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td><td style="color:var(--text-muted)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
 }
 
@@ -1507,7 +1507,7 @@ function sendAI(){
   
   // Build context about available docs
   var docsList = docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
-  var systemPrompt = 'Tu es lassistant IA de EduLib RDC, une plateforme de ressources pédagogiques pour étudiants universitaires en République Démocratique du Congo. Tu aides les étudiants à trouver des documents, comprendre des concepts académiques et naviguer sur la plateforme. Voici les documents disponibles sur le site: '+docsList+'. Réponds toujours en français, de manière concise et utile. Si un étudiant cherche un document, indique-lui sil est disponible sur le site et son prix.';
+  var systemPrompt = "Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: " + docsList + ". Reponds en francais, de facon concise. Si un etudiant cherche un document, dis-lui s'il est disponible et son prix.";
 
   aiHistory.push({role:'user',parts:[{text:msg}]});
   
