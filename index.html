@@ -64,8 +64,9 @@ nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur
 .btn-primary{background:#fff;color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 .btn-primary:hover{background:rgba(255,255,255,0.9);transform:translateY(-1px)}
 .cart-badge{background:var(--red);color:#fff;font-size:0.6rem;font-weight:700;border-radius:99px;padding:2px 5px;margin-left:2px;display:none;vertical-align:middle}
-.hamburger{display:none;flex-direction:column;gap:4px;padding:8px;cursor:pointer;background:none;border:none}
-.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;transition:all 0.2s}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer;background:none;border:none;margin-left:4px}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;transition:all 0.2s}
+@media(max-width:768px){.hamburger{display:flex!important}}
 .mob-nav{display:none;position:fixed;inset:68px 0 0 0;background:var(--ink);z-index:199;padding:1.25rem 1.5rem;flex-direction:column;gap:4px;overflow-y:auto;border-top:1px solid rgba(255,255,255,0.08)}
 .mob-nav.open{display:flex}
 .mob-nav .nav-link{font-size:1rem;padding:12px 16px;color:rgba(255,255,255,0.7)}
@@ -378,7 +379,25 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 /* ===== RESPONSIVE ===== */
 @media(max-width:1024px){.hero-inner{grid-template-columns:1fr}.hero-stats{display:none}.footer-top{grid-template-columns:1fr 1fr}.profile-layout{grid-template-columns:1fr}}
 @media(max-width:768px){.adm-layout{flex-direction:column}.adm-sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;padding:0.75rem}.adm-nav-item{padding:8px 12px;font-size:0.8rem;border-left:none;border-bottom:3px solid transparent;flex:1;justify-content:center}.adm-nav-item.active{border-left:none;border-bottom-color:var(--blue)}.adm-sidebar-title{display:none}.form-grid{grid-template-columns:1fr}.stats-bar-inner{grid-template-columns:1fr}}
-@media(max-width:640px){.nav-links{display:none}.hamburger{display:flex}.footer-top{grid-template-columns:1fr}.hero{padding:4rem 1.25rem 3rem;min-height:auto}.dash-hero-inner{flex-direction:column;align-items:flex-start}.dash-quick-stats{width:100%}.dash-qstat{flex:1}}
+@media(max-width:640px){.nav-links{display:none}.hamburger{display:flex!important}.footer-top{grid-column:1fr}.hero{padding:4rem 1.25rem 3rem;min-height:auto}.dash-hero-inner{flex-direction:column;align-items:flex-start}.dash-quick-stats{width:100%}.dash-qstat{flex:1}}
+.ai-fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;background:linear-gradient(135deg,var(--blue),#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(37,99,235,0.4);z-index:400;border:none;font-size:1.5rem;transition:all 0.2s}
+.ai-fab:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(37,99,235,0.5)}
+.ai-panel{position:fixed;bottom:92px;right:24px;width:min(380px,calc(100vw - 32px));background:#fff;border-radius:20px;box-shadow:0 12px 48px rgba(0,0,0,0.18);z-index:400;display:none;flex-direction:column;overflow:hidden;border:1px solid var(--border);max-height:70vh}
+.ai-panel.open{display:flex}
+.ai-panel-hd{background:linear-gradient(135deg,var(--blue),#7c3aed);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.ai-panel-title{color:#fff;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px}
+.ai-panel-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.ai-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;min-height:200px}
+.ai-msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:0.875rem;line-height:1.5}
+.ai-msg.user{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.ai-msg.bot{background:var(--surface-2);color:var(--ink);align-self:flex-start;border-bottom-left-radius:4px}
+.ai-msg.loading{background:var(--surface-2);color:var(--text-muted);align-self:flex-start}
+.ai-input-wrap{padding:1rem;border-top:1px solid var(--border);display:flex;gap:8px}
+.ai-input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.875rem;outline:none;font-family:var(--font-body)}
+.ai-input:focus{border-color:var(--blue)}
+.ai-send{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 16px;cursor:pointer;font-size:0.875rem;font-weight:600;font-family:var(--font-body);transition:background 0.15s}
+.ai-send:hover{background:var(--blue-dark)}
+.ai-send:disabled{opacity:0.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -599,6 +618,15 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       <div class="auth-err" id="regErr"></div>
       <div class="form-grp"><label class="form-lbl">Nom complet *</label><input class="form-inp" type="text" id="regName" placeholder="Votre nom complet"/></div>
       <div class="form-grp"><label class="form-lbl">Email *</label><input class="form-inp" type="email" id="regEmail" placeholder="votre@email.com"/></div>
+      <div class="form-grp"><label class="form-lbl">Rôle *</label>
+        <select class="form-sel" id="regRole">
+          <option value="">Sélectionner votre rôle...</option>
+          <option value="etudiant">🎓 Étudiant</option>
+          <option value="assistant">📝 Assistant</option>
+          <option value="ct">🏫 Chargé de Travaux (CT)</option>
+          <option value="professeur">👨‍🏫 Professeur</option>
+        </select>
+      </div>
       <div class="form-grp"><label class="form-lbl">Filière *</label>
         <select class="form-sel" id="regFil">
           <option value="">Sélectionner votre filière...</option>
@@ -774,6 +802,22 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         </div></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<button class="ai-fab" onclick="toggleAI()" title="Assistant IA EduLib">🤖</button>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-hd">
+    <div class="ai-panel-title">🤖 Assistant EduLib IA</div>
+    <button class="ai-panel-close" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="ai-messages" id="aiMessages">
+    <div class="ai-msg bot">Bonjour ! Je suis votre assistant IA EduLib RDC. Je peux vous aider à trouver des documents, expliquer des concepts ou répondre à vos questions académiques. Comment puis-je vous aider ? 😊</div>
+  </div>
+  <div class="ai-input-wrap">
+    <input class="ai-input" type="text" id="aiInput" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')sendAI()"/>
+    <button class="ai-send" id="aiSendBtn" onclick="sendAI()">Envoyer</button>
   </div>
 </div>
 
@@ -1090,19 +1134,20 @@ function doLogin(){
 function doRegister(){
   var name=document.getElementById('regName').value.trim();
   var email=document.getElementById('regEmail').value.trim();
+  var role=document.getElementById('regRole').value;
   var fil=document.getElementById('regFil').value;
   var pass=document.getElementById('regPass').value;
   var pass2=document.getElementById('regPass2').value;
   var err=document.getElementById('regErr');
   var btn=document.getElementById('regBtn');
   err.classList.remove('show');
-  if(!name||!email||!fil||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
+  if(!name||!email||!role||!fil||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
   if(pass!==pass2){err.textContent='Les mots de passe ne correspondent pas.';err.classList.add('show');return;}
   if(pass.length<6){err.textContent='Minimum 6 caractères.';err.classList.add('show');return;}
   btn.disabled=true;btn.textContent='Création...';
   auth.createUserWithEmailAndPassword(email,pass).then(function(cred){
     return cred.user.updateProfile({displayName:name}).then(function(){
-      return db.collection('users').doc(cred.user.uid).set({name:name,email:email,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
+      return db.collection('users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
     });
   }).then(function(){
     goPage('dashboard');showToast('Bienvenue '+name+' ! Compte créé 🎉','success');
@@ -1310,7 +1355,8 @@ function renderAdmUsers(){
   var t=document.getElementById('tblUsers');if(!t)return;
   var lbl=document.getElementById('userListLbl');if(lbl)lbl.textContent='Utilisateurs ('+users.length+')';
   if(!users.length){t.innerHTML=emptyRow(4,'Aucun utilisateur inscrit.');return;}
-  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filière</th><th>Date</th></tr></thead><tbody>'+users.map(function(u){return '<tr><td><b>'+(u.name||'-')+'</b></td><td>'+u.email+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td><td style="color:var(--text-muted)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
+  var roleLabel={'etudiant':'🎓 Étudiant','assistant':'📝 Assistant','ct':'🏫 CT','professeur':'👨‍🏫 Professeur'};
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Filière</th><th>Date</th></tr></thead><tbody>'+users.map(function(u){return '<tr><td><b>'+(u.name||'-')+'</b></td><td>'+u.email+'</td><td>'+(roleLabel[u.role]||u.role||'-')+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td><td style="color:var(--text-muted)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
 }
 
 function renderAdmOrders(){
@@ -1422,6 +1468,77 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('adminlogin');}
+
+// AI CHAT
+var GEMINI_KEY = 'AQ.Ab8RN6LC9yFINn0zUI0pTyiqhAtOoOT3Wnot_CVw51hdKCE5vQ';
+var aiHistory = [];
+
+function toggleAI(){
+  var panel = document.getElementById('aiPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    document.getElementById('aiInput').focus();
+  }
+}
+
+function sendAI(){
+  var input = document.getElementById('aiInput');
+  var msg = input.value.trim();
+  if(!msg) return;
+  
+  var messages = document.getElementById('aiMessages');
+  var btn = document.getElementById('aiSendBtn');
+  
+  // Add user message
+  var userMsg = document.createElement('div');
+  userMsg.className = 'ai-msg user';
+  userMsg.textContent = msg;
+  messages.appendChild(userMsg);
+  
+  // Add loading
+  var loading = document.createElement('div');
+  loading.className = 'ai-msg loading';
+  loading.textContent = '...';
+  messages.appendChild(loading);
+  messages.scrollTop = messages.scrollHeight;
+  
+  input.value = '';
+  btn.disabled = true;
+  
+  // Build context about available docs
+  var docsList = docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
+  var systemPrompt = 'Tu es lassistant IA de EduLib RDC, une plateforme de ressources pédagogiques pour étudiants universitaires en République Démocratique du Congo. Tu aides les étudiants à trouver des documents, comprendre des concepts académiques et naviguer sur la plateforme. Voici les documents disponibles sur le site: '+docsList+'. Réponds toujours en français, de manière concise et utile. Si un étudiant cherche un document, indique-lui sil est disponible sur le site et son prix.';
+
+  aiHistory.push({role:'user',parts:[{text:msg}]});
+  
+  var body = JSON.stringify({
+    contents: [{role:'user',parts:[{text:systemPrompt+'
+
+Question: '+msg}]}]
+  });
+  
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+GEMINI_KEY, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: body
+  }).then(function(r){return r.json();}).then(function(data){
+    loading.remove();
+    var reply = 'Désolé, je ne peux pas répondre maintenant.';
+    try{reply = data.candidates[0].content.parts[0].text;}catch(e){}
+    var botMsg = document.createElement('div');
+    botMsg.className = 'ai-msg bot';
+    botMsg.textContent = reply;
+    messages.appendChild(botMsg);
+    messages.scrollTop = messages.scrollHeight;
+  }).catch(function(){
+    loading.remove();
+    var errMsg = document.createElement('div');
+    errMsg.className = 'ai-msg bot';
+    errMsg.textContent = 'Erreur de connexion. Vérifiez votre connexion internet.';
+    messages.appendChild(errMsg);
+    messages.scrollTop = messages.scrollHeight;
+  }).finally(function(){btn.disabled=false;});
+}
 window.addEventListener('hashchange',checkHash);
 checkHash();
 
