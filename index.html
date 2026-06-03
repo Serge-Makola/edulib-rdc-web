@@ -43,7 +43,7 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--font-body);color:var(--ink);background:var(--surface);line-height:1.6;-webkit-font-smoothing:antialiased}
 button{cursor:pointer;font-family:var(--font-body);border:none;background:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-input,select,textarea{font-family:var(--font-body);-webkit-appearance:none;appearance:none}
+input,select,textarea{font-family:var(--font-body)}
 img{max-width:100%;display:block}
 
 /* ===== NAV ===== */
@@ -54,7 +54,7 @@ nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur
 .nav-logo-text{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:-0.04em;white-space:nowrap}
 .nav-logo-sub{font-size:0.68rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;font-weight:500;line-height:1}
 .nav-links{display:flex;align-items:center;gap:2px}
-.nav-link{padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nav-link{padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .nav-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
 .nav-link.active{color:#fff;background:rgba(255,255,255,0.12)}
 .nav-actions{display:flex;align-items:center;gap:8px}
@@ -211,7 +211,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 .toast.error{background:var(--red)}
 
 /* ===== MODAL ===== */
-.modal-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:800;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;-webkit-transition:opacity 0.25s;transition:opacity 0.25s}
+.modal-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:800;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .modal-overlay.open{opacity:1;pointer-events:auto}
 .modal{background:#fff;border-radius:24px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;box-shadow:var(--shadow-lg)}
 .modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem}
@@ -229,7 +229,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 .mbtn.danger{background:var(--red);color:#fff}
 
 /* ===== CART ===== */
-.cart-panel-ov{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.5);z-index:600;opacity:0;pointer-events:none;-webkit-transition:opacity 0.25s;transition:opacity 0.25s}
+.cart-panel-ov{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.5);z-index:600;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .cart-panel-ov.open{opacity:1;pointer-events:auto}
 .cart-panel{position:fixed;right:0;top:0;bottom:0;width:min(400px,100vw);background:#fff;z-index:601;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.34,1.15,0.64,1);display:flex;flex-direction:column;box-shadow:-12px 0 48px rgba(0,0,0,0.15)}
 .cart-panel.open{transform:translateX(0)}
@@ -889,6 +889,13 @@ auth.onAuthStateChanged(function(user) {
       loadBoughtIds(function() {
         showUserNav();
         refreshAllGrids();
+        // Si l'utilisateur vient de se connecter depuis la page login/register → aller au dashboard
+        var cur = document.getElementById('pg-login');
+        var cur2 = document.getElementById('pg-register');
+        if((cur && cur.style.display!=='none') || (cur2 && cur2.style.display!=='none')){
+          goPage('dashboard');
+          showToast('Bienvenue ! 👋','success');
+        }
       });
     });
   } else {
@@ -899,17 +906,16 @@ auth.onAuthStateChanged(function(user) {
   }
 });
 
-function setFlex(el){if(!el)return;el.style.display='-webkit-flex';el.style.display='flex';}
 function showUserNav(){
   document.getElementById('guestNav').style.display='none';
-  setFlex(document.getElementById('userNav'));
+  document.getElementById('userNav').style.display='flex';
   document.getElementById('mobGuest').style.display='none';
   document.getElementById('mobUser').style.display='block';
   var h=document.getElementById('heroCTA');if(h)h.style.display='none';
   var c=document.getElementById('ctaBtn');if(c){c.textContent='Parcourir le catalogue';c.onclick=function(){goPage('catalogue');};}
 }
 function showGuestNav(){
-  setFlex(document.getElementById('guestNav'));
+  document.getElementById('guestNav').style.display='flex';
   document.getElementById('userNav').style.display='none';
   var an=document.getElementById('adminNav');if(an)an.style.display='none';
   document.getElementById('mobGuest').style.display='block';
@@ -920,7 +926,7 @@ function showGuestNav(){
 function showAdminNav(){
   document.getElementById('guestNav').style.display='none';
   document.getElementById('userNav').style.display='none';
-  var an=document.getElementById('adminNav');if(an)setFlex(an);
+  var an=document.getElementById('adminNav');if(an)an.style.display='flex';
   document.getElementById('mobGuest').style.display='none';
   document.getElementById('mobUser').style.display='none';
 }
@@ -1124,8 +1130,8 @@ function doLogin(){
   if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
   btn.disabled=true;btn.textContent='Connexion...';
   auth.signInWithEmailAndPassword(email,pass).then(function(){
-    goPage('dashboard');showToast('Bienvenue ! 👋','success');
     document.getElementById('loginEmail').value='';document.getElementById('loginPass').value='';
+    // navigation handled by onAuthStateChanged
   }).catch(function(e){
     btn.disabled=false;btn.textContent='Se connecter';
     err.textContent=e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
@@ -1152,9 +1158,9 @@ function doRegister(){
       return db.collection('users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
     });
   }).then(function(){
-    goPage('dashboard');showToast('Bienvenue '+name+' ! Compte créé 🎉','success');
     ['regName','regEmail','regPass','regPass2'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
     document.getElementById('regFil').value='';
+    // navigation handled by onAuthStateChanged
   }).catch(function(e){
     btn.disabled=false;btn.textContent='Créer mon compte';
     err.textContent=e.code==='auth/email-already-in-use'?'Email déjà utilisé.':'Erreur: '+e.message;
@@ -1473,7 +1479,6 @@ document.addEventListener('DOMContentLoaded',function(){
 function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('adminlogin');}
 
 // AI CHAT
-var GEMINI_KEY = 'AQ.Ab8RN6LC9yFINn0zUI0pTyiqhAtOoOT3Wnot_CVw51hdKCE5vQ';
 var aiHistory = [];
 
 function toggleAI(){
@@ -1488,57 +1493,62 @@ function sendAI(){
   var input = document.getElementById('aiInput');
   var msg = input.value.trim();
   if(!msg) return;
-  
-  var messages = document.getElementById('aiMessages');
+
+  var msgsEl = document.getElementById('aiMessages');
   var btn = document.getElementById('aiSendBtn');
-  
-  // Add user message
+
   var userMsg = document.createElement('div');
   userMsg.className = 'ai-msg user';
   userMsg.textContent = msg;
-  messages.appendChild(userMsg);
-  
-  // Add loading
+  msgsEl.appendChild(userMsg);
+
   var loading = document.createElement('div');
   loading.className = 'ai-msg loading';
   loading.textContent = '...';
-  messages.appendChild(loading);
-  messages.scrollTop = messages.scrollHeight;
-  
+  msgsEl.appendChild(loading);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+
   input.value = '';
   btn.disabled = true;
-  
-  // Build context about available docs
-  var docsList = docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
-  var systemPrompt = "Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: " + docsList + ". Reponds en francais, de facon concise. Si un etudiant cherche un document, dis-lui s'il est disponible et son prix.";
 
-  aiHistory.push({role:'user',parts:[{text:msg}]});
-  
-  var body = JSON.stringify({
-    contents: [{role:'user',parts:[{text:systemPrompt+'\n\nQuestion: '+msg}]}]
-  });
-  
-  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+GEMINI_KEY, {
+  var docsList = docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
+  var systemPrompt = "Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: " + docsList + ". Reponds en francais, de facon concise et utile.";
+
+  aiHistory.push({role:'user', content: msg});
+  if(aiHistory.length > 20) aiHistory = aiHistory.slice(-20);
+
+  fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: body
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': '',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-allow-browser': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 512,
+      system: systemPrompt,
+      messages: aiHistory
+    })
   }).then(function(r){return r.json();}).then(function(data){
     loading.remove();
     var reply = 'Désolé, je ne peux pas répondre maintenant.';
-    try{reply = data.candidates[0].content.parts[0].text;}catch(e){}
+    try{reply = data.content[0].text;}catch(e){}
     var botMsg = document.createElement('div');
     botMsg.className = 'ai-msg bot';
     botMsg.textContent = reply;
-    messages.appendChild(botMsg);
-    messages.scrollTop = messages.scrollHeight;
+    msgsEl.appendChild(botMsg);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    aiHistory.push({role:'assistant', content: reply});
   }).catch(function(){
     loading.remove();
     var errMsg = document.createElement('div');
     errMsg.className = 'ai-msg bot';
-    errMsg.textContent = 'Erreur de connexion. Vérifiez votre connexion internet.';
-    messages.appendChild(errMsg);
-    messages.scrollTop = messages.scrollHeight;
-  }).catch(function(){btn.disabled=false;}).then(function(){btn.disabled=false;});
+    errMsg.textContent = 'Erreur de connexion. Verifiez votre connexion internet.';
+    msgsEl.appendChild(errMsg);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }).then(function(){btn.disabled=false;});
 }
 window.addEventListener('hashchange',checkHash);
 checkHash();
