@@ -1130,8 +1130,7 @@ function doLogin(){
     btn.disabled=false;btn.textContent='Se connecter';
     err.textContent=e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
     err.classList.add('show');
-    return;
-  }).then(function(){btn.disabled=false;btn.textContent='Se connecter';});
+  });
 }
 
 function doRegister(){
@@ -1160,8 +1159,7 @@ function doRegister(){
     btn.disabled=false;btn.textContent='Créer mon compte';
     err.textContent=e.code==='auth/email-already-in-use'?'Email déjà utilisé.':'Erreur: '+e.message;
     err.classList.add('show');
-    return;
-  }).then(function(){btn.disabled=false;btn.textContent='Créer mon compte';});
+  });
 }
 
 function logoutUser(){auth.signOut().then(function(){goPage('home');showToast('Déconnecté.','');});}
@@ -1393,7 +1391,7 @@ function saveDoc(){
     showToast(eid?'Document mis à jour !':'Document ajouté ! 🎉','success');
     loadDocs(function(){renderAdmAllDocs();renderAdmRecentDocs();});
     resetDocForm();showAP('documents',null);
-  }).catch(function(e){btn.disabled=false;btn.textContent='Enregistrer le document';showToast('Erreur: '+e.message,'error');return;}).then(function(){btn.disabled=false;btn.textContent='Enregistrer le document';});
+  }).catch(function(e){btn.disabled=false;btn.textContent='Enregistrer le document';showToast('Erreur: '+e.message,'error');});
 }
 
 function editDoc(id){
@@ -1517,9 +1515,7 @@ function sendAI(){
   aiHistory.push({role:'user',parts:[{text:msg}]});
   
   var body = JSON.stringify({
-    contents: [{role:'user',parts:[{text:systemPrompt+'
-
-Question: '+msg}]}]
+    contents: [{role:'user',parts:[{text:systemPrompt+'\n\nQuestion: '+msg}]}]
   });
   
   fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+GEMINI_KEY, {
@@ -1542,7 +1538,7 @@ Question: '+msg}]}]
     errMsg.textContent = 'Erreur de connexion. Vérifiez votre connexion internet.';
     messages.appendChild(errMsg);
     messages.scrollTop = messages.scrollHeight;
-  }).then(function(){btn.disabled=false;}).catch(function(){btn.disabled=false;});
+  }).catch(function(){btn.disabled=false;}).then(function(){btn.disabled=false;});
 }
 window.addEventListener('hashchange',checkHash);
 checkHash();
