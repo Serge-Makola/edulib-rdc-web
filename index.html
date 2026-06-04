@@ -1558,8 +1558,8 @@ function sendAI(){
   var systemPrompt="Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: "+docsList+". Reponds en francais, de facon concise et bienveillante.";
   aiHistory.push({role:'user',content:msg});
   if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);
-  var GEMINI_KEY = 'VOTRE_CLE_GEMINI_ICI';
-  // Convertir l'historique au format Gemini (parts au lieu de content)
+  var GEMINI_KEY = 'AQ.Ab8RN6KNrpbRWiwUYzIvPPS0NOMMkym25CyXFAdHwM7oJmXdhg';
+  // Format Gemini avec Bearer token (format AQ.)
   var geminiHistory = aiHistory.slice(0,-1).map(function(m){
     return {role: m.role==='assistant'?'model':'user', parts:[{text:m.content}]};
   });
@@ -1568,9 +1568,9 @@ function sendAI(){
     contents: geminiHistory.concat([{role:'user',parts:[{text:msg}]}]),
     generationConfig:{maxOutputTokens:512,temperature:0.7}
   };
-  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+GEMINI_KEY},
     body:JSON.stringify(geminiBody)
   }).then(function(r){return r.json();}).then(function(data){
     loading.remove();
