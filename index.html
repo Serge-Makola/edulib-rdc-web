@@ -1574,8 +1574,10 @@ function sendAI(){
     body:JSON.stringify(geminiBody)
   }).then(function(r){return r.json();}).then(function(data){
     loading.remove();
-    var reply='Desolee, je ne peux pas repondre maintenant.';
-    try{reply=data.candidates[0].content.parts[0].text;}catch(e){}
+    var reply='Erreur: '+JSON.stringify(data);
+    try{reply=data.candidates[0].content.parts[0].text;}catch(e){
+      if(data.error)reply='Erreur API: '+data.error.message;
+    }
     var botMsg=document.createElement('div');
     botMsg.className='ai-msg bot';botMsg.textContent=reply;
     msgsEl.appendChild(botMsg);msgsEl.scrollTop=msgsEl.scrollHeight;
