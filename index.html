@@ -1535,22 +1535,7 @@ function toggleAI(){
   }
 }
 
-function mdToHtml(text){
-  return text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/### (.+)/g,'<strong style="font-size:0.95em;display:block;margin:8px 0 4px">$1</strong>')
-    .replace(/## (.+)/g,'<strong style="font-size:1em;display:block;margin:8px 0 4px">$1</strong>')
-    .replace(/# (.+)/g,'<strong style="font-size:1.05em;display:block;margin:8px 0 4px">$1</strong>')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*([^*
-]+)\*/g,'<em>$1</em>')
-    .replace(/^\s*[-*]\s+(.+)/gm,'<div style="padding-left:12px;margin:2px 0">• $1</div>')
-    .replace(/
-
-/g,'<br><br>')
-    .replace(/
-/g,'<br>');
-}
+function mdToHtml(t){t=t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/[#][#][#] (.+)/g,"<b>$1</b><br>").replace(/[#][#] (.+)/g,"<b>$1</b><br>").replace(/[#] (.+)/g,"<b>$1</b><br>").replace(/[*][*]([^*]+)[*][*]/g,"<b>$1</b>").replace(/[*]([^*\n]+)[*]/g,"<i>$1</i>").replace(/^[ ]*[-] (.+)/gm,"<br>• $1").replace(/\n\n/g,"<br><br>").replace(/\n/g,"<br>");return t;}
 function sendAI(){
   var input=document.getElementById('aiInput');
   var msg=input.value.trim();
