@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>EduLib RDC — Plateforme de Ressources Pédagogiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1117;
+  --ink-soft:#1c2333;
+  --surface:#ffffff;
+  --surface-2:#f6f8ff;
+  --surface-3:#eef1f8;
+  --blue:#2563eb;
+  --blue-dark:#1d4ed8;
+  --blue-light:#dbeafe;
+  --blue-glow:rgba(37,99,235,0.15);
+  --green:#059669;
+  --green-light:#d1fae5;
+  --amber:#d97706;
+  --amber-light:#fef3c7;
+  --red:#dc2626;
+  --red-light:#fee2e2;
+  --purple:#7c3aed;
+  --purple-light:#ede9fe;
+  --border:#e2e8f0;
+  --border-strong:#cbd5e1;
+  --text-muted:#64748b;
+  --text-soft:#94a3b8;
+  --gold:#f59e0b;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --radius:12px;
+  --radius-lg:20px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.12),0 4px 12px rgba(0,0,0,0.06);
+  --shadow-blue:0 8px 32px rgba(37,99,235,0.2);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--surface);line-height:1.6;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:var(--font-body);border:none;background:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+input,select,textarea{font-family:var(--font-body)}
+img{max-width:100%;display:block}
+
+/* ===== NAV ===== */
+nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 1.5rem}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px;gap:1rem}
+.nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
+.nav-logo-mark{width:36px;height:36px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0}
+.nav-logo-text{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:-0.04em;white-space:nowrap}
+.nav-logo-sub{font-size:0.68rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;font-weight:500;line-height:1}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.nav-link.active{color:#fff;background:rgba(255,255,255,0.12)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn{padding:9px 20px;border-radius:9px;font-size:0.875rem;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;font-family:var(--font-body);white-space:nowrap}
+.btn-ghost{background:transparent;color:rgba(255,255,255,0.8);border:1.5px solid rgba(255,255,255,0.25)}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.4)}
+.btn-primary{background:#fff;color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.btn-primary:hover{background:rgba(255,255,255,0.9);transform:translateY(-1px)}
+.cart-badge{background:var(--red);color:#fff;font-size:0.6rem;font-weight:700;border-radius:99px;padding:2px 5px;margin-left:2px;display:none;vertical-align:middle}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer;background:none;border:none;margin-left:4px}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;transition:all 0.2s}
+@media(max-width:768px){.hamburger{display:flex!important}}
+.mob-nav{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;position:fixed;top:68px;right:0;bottom:0;left:0;background:var(--ink);z-index:199;padding:1.25rem 1.5rem;gap:4px;overflow-y:auto;border-top:1px solid rgba(255,255,255,0.08);visibility:hidden;pointer-events:none;opacity:0;-webkit-transform:translateY(-10px);transform:translateY(-10px);-webkit-transition:opacity 0.22s,visibility 0.22s,-webkit-transform 0.22s;transition:opacity 0.22s,visibility 0.22s,transform 0.22s}
+.mob-nav.open{visibility:visible;pointer-events:auto;opacity:1;-webkit-transform:translateY(0);transform:translateY(0)}
+.mob-nav .nav-link{font-size:1rem;padding:12px 16px;color:rgba(255,255,255,0.7)}
+.mob-nav .nav-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+
+/* ===== HERO ===== */
+.hero{background:var(--ink);color:#fff;padding:5rem 1.5rem 4rem;position:relative;overflow:hidden;min-height:92vh;display:flex;align-items:center}
+.hero-bg{position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(ellipse 80% 60% at 60% 40%,#1e3a8a 0%,#0d1117 70%);z-index:0}
+.hero-dots{position:absolute;top:0;right:0;bottom:0;left:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;z-index:0;pointer-events:none}
+.hero-glow{position:absolute;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,0.25) 0%,transparent 70%);z-index:0;pointer-events:none}
+.hero-inner{max-width:1280px;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1fr 420px;gap:4rem;align-items:center;width:100%}
+.hero-label{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:99px;padding:6px 16px;font-size:0.78rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:1.75rem;color:rgba(255,255,255,0.85)}
+.hero-label-dot{width:6px;height:6px;border-radius:50%;background:#34d399;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.5rem,5.5vw,4rem);font-weight:900;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1.5rem;color:#fff}
+.hero h1 em{font-style:italic;color:#93c5fd}
+.hero-desc{font-size:1.1rem;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:2.5rem;max-width:520px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.hero-btn-main{background:#fff;color:var(--blue);padding:14px 32px;border-radius:10px;font-weight:700;font-size:1rem;border:none;cursor:pointer;font-family:var(--font-body);box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:all 0.2s}
+.hero-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.hero-btn-sec{background:rgba(255,255,255,0.1);color:#fff;padding:14px 32px;border-radius:10px;font-weight:600;font-size:1rem;border:1.5px solid rgba(255,255,255,0.2);cursor:pointer;font-family:var(--font-body);transition:all 0.2s;backdrop-filter:blur(8px)}
+.hero-btn-sec:hover{background:rgba(255,255,255,0.15)}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hero-stat-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.25rem 1.5rem;backdrop-filter:blur(10px);transition:background 0.2s}
+.hero-stat-card:hover{background:rgba(255,255,255,0.1)}
+.hero-stat-card.wide{grid-column:1/-1}
+.hero-stat-label{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:0.4rem}
+.hero-stat-value{font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:#fff;line-height:1}
+.hero-stat-desc{font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:0.3rem}
+
+/* ===== SEARCH ===== */
+.search-bar{background:#fff;border-bottom:1px solid var(--border);padding:1.5rem 1.5rem}
+.search-bar-inner{max-width:860px;margin:0 auto}
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-soft);pointer-events:none}
+.search-wrap input{width:100%;padding:14px 18px 14px 52px;border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;background:var(--surface-2);outline:none;transition:all 0.2s;color:var(--ink)}
+.search-wrap input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px var(--blue-glow)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border);background:#fff;font-size:0.82rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.15s}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ===== STATS BAR ===== */
+.stats-bar{background:var(--surface-2);border-bottom:1px solid var(--border);padding:2.5rem 1.5rem}
+.stats-bar-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.stat-item{display:flex;align-items:center;gap:1rem;padding:1.5rem;background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border);transition:all 0.2s}
+.stat-item:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.25rem}
+.stat-icon.blue{background:var(--blue-light);color:var(--blue)}
+.stat-icon.green{background:var(--green-light);color:var(--green)}
+.stat-icon.amber{background:var(--amber-light);color:var(--amber)}
+.stat-num{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--ink);line-height:1}
+.stat-lbl{font-size:0.8rem;color:var(--text-muted);margin-top:3px;font-weight:500}
+
+/* ===== SECTIONS ===== */
+.section{padding:4rem 1.5rem}
+.section-inner{max-width:1280px;margin:0 auto}
+.section-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.section-title{font-family:var(--font-display);font-size:1.85rem;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.section-sub{font-size:0.875rem;color:var(--text-muted);margin-top:4px}
+.section-link{color:var(--blue);font-size:0.875rem;font-weight:600;cursor:pointer;white-space:nowrap;padding:8px 16px;border-radius:8px;border:1.5px solid var(--blue-light);transition:all 0.15s}
+.section-link:hover{background:var(--blue-light)}
+
+/* ===== DOC CARDS ===== */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.25rem}
+.doc-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.25s;cursor:pointer;display:flex;flex-direction:column;position:relative}
+.doc-card:hover{border-color:var(--blue);box-shadow:0 12px 40px rgba(37,99,235,0.12);transform:translateY(-4px)}
+.doc-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
+.doc-thumb::after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.06) 100%)}
+.doc-thumb.droit{background:linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%)}
+.doc-thumb.medecine{background:linear-gradient(135deg,#d1fae5 0%,#a7f3d0 100%)}
+.doc-thumb.polytechnique{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%)}
+.doc-thumb.sciences{background:linear-gradient(135deg,#dcfce7 0%,#bbf7d0 100%)}
+.doc-thumb.lettres{background:linear-gradient(135deg,#fce7f3 0%,#fbcfe8 100%)}
+.doc-thumb.economie{background:linear-gradient(135deg,#ffedd5 0%,#fed7aa 100%)}
+.doc-body{padding:1.125rem 1.25rem;flex:1;display:flex;flex-direction:column}
+.doc-fil{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem}
+.doc-fil.droit{color:var(--blue)}.doc-fil.medecine{color:var(--green)}.doc-fil.polytechnique{color:var(--amber)}.doc-fil.sciences{color:#16a34a}.doc-fil.lettres{color:var(--purple)}.doc-fil.economie{color:#ea580c}
+.doc-title{font-weight:700;font-size:0.95rem;color:var(--ink);margin-bottom:0.3rem;line-height:1.4;flex:1}
+.doc-prof{font-size:0.78rem;color:var(--text-muted);margin-bottom:0.875rem;font-weight:500}
+.doc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:0.75rem;border-top:1px solid var(--border)}
+.doc-price{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--ink)}
+.doc-price small{font-size:0.72rem;font-weight:500;color:var(--text-soft);font-family:var(--font-body)}
+.doc-btn{padding:7px 16px;border-radius:8px;font-size:0.78rem;font-weight:700;border:none;cursor:pointer;font-family:var(--font-body);transition:all 0.15s}
+.doc-btn.buy{background:var(--blue-light);color:var(--blue)}
+.doc-btn.buy:hover{background:var(--blue);color:#fff}
+.doc-btn.dl{background:var(--green-light);color:var(--green)}
+.doc-btn.dl:hover{background:var(--green);color:#fff}
+.doc-badge{position:absolute;top:12px;right:12px;background:#fff;border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;box-shadow:var(--shadow-sm)}
+.doc-badge.nb{color:var(--green)}.doc-badge.pb{color:var(--amber)}
+
+/* ===== FILIERE CARDS ===== */
+.fil-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.25rem}
+.fil-card{border-radius:var(--radius-lg);padding:2rem 1.5rem;cursor:pointer;transition:all 0.25s;text-align:center;border:1.5px solid transparent;position:relative;overflow:hidden}
+.fil-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.15);pointer-events:none}
+.fil-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.fil-card.droit{background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:var(--blue)}
+.fil-card.medecine{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:var(--green)}
+.fil-card.polytechnique{background:linear-gradient(135deg,#fef3c7,#fde68a);color:var(--amber)}
+.fil-card.sciences{background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a}
+.fil-card.lettres{background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:var(--purple)}
+.fil-card.economie{background:linear-gradient(135deg,#ffedd5,#fed7aa);color:#ea580c}
+.fil-icon{font-size:2.75rem;margin-bottom:0.875rem;display:block}
+.fil-name{font-family:var(--font-display);font-weight:700;font-size:1.1rem;margin-bottom:0.35rem}
+.fil-count{font-size:0.8rem;opacity:0.7;font-weight:500}
+.fil-arrow{font-size:0.8rem;margin-top:0.5rem;opacity:0.5}
+
+/* ===== FILIERE PAGE ===== */
+.fil-page-hero{padding:3rem 1.5rem;border-bottom:1px solid var(--border)}
+.fil-page-hero-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.fil-page-icon{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.25rem;flex-shrink:0}
+.fil-page-title{font-family:var(--font-display);font-size:2.25rem;font-weight:900;letter-spacing:-0.02em}
+.fil-page-sub{font-size:0.95rem;color:var(--text-muted);margin-top:4px}
+.fil-back{display:inline-flex;align-items:center;gap:6px;color:var(--text-muted);font-size:0.875rem;font-weight:500;cursor:pointer;margin-bottom:1rem;transition:color 0.15s}
+.fil-back:hover{color:var(--blue)}
+
+/* ===== CTA ===== */
+.cta{background:var(--ink);color:#fff;padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.cta::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse 50% 60% at 50% 50%,#1e3a8a,transparent);pointer-events:none}
+.cta-inner{position:relative;z-index:1;max-width:600px;margin:0 auto}
+.cta h2{font-family:var(--font-display);font-size:clamp(2rem,4vw,2.75rem);font-weight:900;margin-bottom:1.125rem;letter-spacing:-0.02em;line-height:1.1}
+.cta h2 em{font-style:italic;color:#93c5fd}
+.cta p{color:rgba(255,255,255,0.6);font-size:1rem;line-height:1.75;margin-bottom:2.5rem}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ===== FOOTER ===== */
+footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5rem 2rem}
+.footer-inner{max-width:1280px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand-name{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:0.5rem;letter-spacing:-0.02em}
+.footer-brand-desc{font-size:0.85rem;line-height:1.7;max-width:260px}
+.footer-col-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35);margin-bottom:1rem}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:0.6rem}
+.footer-links li{font-size:0.875rem;cursor:pointer;transition:color 0.15s}
+.footer-links li:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:2rem;display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;flex-wrap:wrap;gap:0.75rem}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:#fff;padding:14px 22px;border-radius:12px;font-size:0.875rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:340px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:800;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:#fff;border-radius:24px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;box-shadow:var(--shadow-lg)}
+.modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem}
+.modal-title{font-family:var(--font-display);font-size:1.35rem;font-weight:700;letter-spacing:-0.02em}
+.mclosebtn{background:var(--surface-2);border:none;border-radius:8px;width:34px;height:34px;cursor:pointer;color:var(--text-muted);font-size:1rem;font-family:var(--font-body);flex-shrink:0;transition:background 0.15s}
+.mclosebtn:hover{background:var(--border)}
+.mdet{display:flex;gap:10px;margin-bottom:0.65rem;font-size:0.9rem;align-items:flex-start}
+.mdet-lbl{color:var(--text-muted);min-width:90px;flex-shrink:0;font-weight:500}
+.mdet-val{font-weight:600;color:var(--ink)}
+.mbtn{width:100%;padding:14px;border-radius:10px;font-size:0.95rem;font-weight:700;margin-top:0.75rem;cursor:pointer;border:none;font-family:var(--font-body);transition:all 0.15s}
+.mbtn.primary{background:var(--blue);color:#fff}
+.mbtn.primary:hover{background:var(--blue-dark)}
+.mbtn.secondary{background:var(--surface-2);color:var(--ink)}
+.mbtn.success{background:var(--green);color:#fff}
+.mbtn.danger{background:var(--red);color:#fff}
+
+/* ===== CART ===== */
+.cart-panel-ov{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.5);z-index:600;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.cart-panel-ov.open{opacity:1;pointer-events:auto}
+.cart-panel{position:fixed;right:0;top:0;bottom:0;width:min(400px,100vw);background:#fff;z-index:601;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.34,1.15,0.64,1);display:flex;flex-direction:column;box-shadow:-12px 0 48px rgba(0,0,0,0.15)}
+.cart-panel.open{transform:translateX(0)}
+.cart-hd{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-hd-title{font-family:var(--font-display);font-size:1.2rem;font-weight:700;letter-spacing:-0.01em}
+.cart-body{flex:1;overflow-y:auto;padding:1rem}
+.cart-empty-msg{text-align:center;color:var(--text-soft);padding:3rem 1rem;font-size:0.95rem}
+.cart-item{display:flex;gap:0.875rem;padding:0.875rem 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.cart-item-thumb{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-title{font-weight:600;font-size:0.875rem;line-height:1.35;color:var(--ink)}
+.cart-item-price{font-weight:700;font-size:0.875rem;color:var(--blue);margin-top:3px}
+.cart-item-rm{color:var(--text-soft);cursor:pointer;background:none;border:none;font-size:1rem;padding:4px;border-radius:6px;transition:all 0.15s}
+.cart-item-rm:hover{color:var(--red);background:var(--red-light)}
+.cart-foot{padding:1.5rem;border-top:1px solid var(--border)}
+.cart-total-row{display:flex;justify-content:space-between;font-weight:700;font-size:1rem;margin-bottom:1rem;color:var(--ink)}
+.cart-checkout-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all 0.15s;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
+.cart-checkout-btn:hover{background:var(--blue-dark);transform:translateY(-1px)}
+
+/* ===== AUTH PAGES ===== */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);padding:1.5rem;position:relative;overflow:hidden}
+.auth-page::before{content:'';position:absolute;top:-30%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,0.2),transparent 70%);pointer-events:none}
+.auth-box{background:#fff;border-radius:24px;padding:2.5rem;width:100%;max-width:460px;box-shadow:var(--shadow-lg);position:relative;z-index:1}
+.auth-logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:0.25rem}
+.auth-logo-mark{width:40px;height:40px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem}
+.auth-logo-name{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.auth-sub{font-size:0.8rem;color:var(--text-muted);text-align:center;margin-bottom:2rem}
+.auth-title{font-family:var(--font-display);font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:1.75rem;letter-spacing:-0.02em;color:var(--ink)}
+.form-grp{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem}
+.form-lbl{font-size:0.82rem;font-weight:600;color:var(--ink);letter-spacing:0.01em}
+.form-inp{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none;transition:all 0.2s;color:var(--ink);background:#fff}
+.form-inp:focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-glow)}
+.form-sel{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none;background:#fff;color:var(--ink);cursor:pointer}
+.form-sel:focus{border-color:var(--blue)}
+.auth-err{background:var(--red-light);color:var(--red);border-radius:8px;padding:10px 14px;font-size:0.85rem;margin-bottom:1rem;display:none;font-weight:500}
+.auth-err.show{display:block}
+.auth-submit-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-top:0.5rem;transition:all 0.15s;box-shadow:0 4px 12px rgba(37,99,235,0.3);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.auth-submit-btn:hover{background:var(--blue-dark);transform:translateY(-1px)}
+.auth-submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.auth-link{color:var(--blue);cursor:pointer;font-size:0.875rem;text-align:center;margin-top:0.875rem;display:block;font-weight:500}
+.auth-link.gray{color:var(--text-muted)}
+.auth-divider{text-align:center;color:var(--text-soft);font-size:0.8rem;margin:1rem 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+
+/* ===== DASHBOARD ===== */
+.dash-hero{background:linear-gradient(135deg,var(--ink) 0%,#1e3a8a 100%);color:#fff;padding:2.5rem 1.5rem}
+.dash-hero-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.dash-greeting{font-size:0.85rem;color:rgba(255,255,255,0.55);font-weight:500;margin-bottom:0.4rem}
+.dash-name{font-family:var(--font-display);font-size:1.75rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.25rem}
+.dash-filiere-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:99px;padding:4px 14px;font-size:0.78rem;font-weight:600}
+.dash-quick-stats{display:flex;gap:1rem;flex-wrap:wrap}
+.dash-qstat{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:1rem 1.5rem;text-align:center;min-width:100px}
+.dash-qstat-num{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:#fff}
+.dash-qstat-lbl{font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em}
+.dash-body{max-width:1280px;margin:0 auto;padding:2.5rem 1.5rem}
+.dash-tabs{display:flex;gap:4px;margin-bottom:2.5rem;background:var(--surface-2);padding:4px;border-radius:12px;width:fit-content}
+.dtab{padding:9px 22px;border-radius:9px;border:none;background:transparent;font-size:0.875rem;font-weight:600;color:var(--text-muted);cursor:pointer;font-family:var(--font-body);transition:all 0.15s}
+.dtab.active{background:#fff;color:var(--blue);box-shadow:var(--shadow-sm)}
+
+/* dashboard tabs content */
+.bought-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.25rem}
+.bought-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.375rem;transition:all 0.2s}
+.bought-card:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.bought-card-top{display:flex;gap:0.875rem;margin-bottom:1.125rem;align-items:flex-start}
+.bought-emoji{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.75rem;flex-shrink:0}
+.bought-info{flex:1}
+.bought-title{font-weight:700;font-size:0.925rem;line-height:1.35;margin-bottom:0.25rem;color:var(--ink)}
+.bought-prof{font-size:0.78rem;color:var(--text-muted);font-weight:500}
+.bought-meta{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.bought-tag{background:var(--surface-2);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-size:0.72rem;font-weight:600}
+.dl-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:0.875rem;font-weight:700;cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.dl-btn:hover{background:#047857;transform:translateY(-1px)}
+.empty-state{grid-column:1/-1;text-align:center;padding:5rem 1rem}
+.empty-icon{font-size:3.5rem;margin-bottom:1.25rem;display:block}
+.empty-title{font-family:var(--font-display);font-weight:700;font-size:1.25rem;color:var(--ink);margin-bottom:0.5rem}
+.empty-desc{font-size:0.9rem;color:var(--text-muted);max-width:360px;margin:0 auto 1.5rem;line-height:1.6}
+
+/* progress tab */
+.progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;margin-bottom:2rem}
+.prog-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem}
+.prog-card-title{font-weight:700;font-size:0.95rem;margin-bottom:1.25rem;color:var(--ink);display:flex;align-items:center;gap:8px}
+.prog-bar-wrap{display:flex;flex-direction:column;gap:10px}
+.prog-bar-item{display:flex;align-items:center;gap:10px}
+.prog-bar-label{font-size:0.78rem;font-weight:500;color:var(--text-muted);min-width:90px}
+.prog-bar-track{flex:1;height:8px;background:var(--surface-3);border-radius:99px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:99px;transition:width 1s ease}
+.prog-bar-val{font-size:0.78rem;font-weight:700;color:var(--ink);min-width:30px;text-align:right}
+.reco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.25rem}
+
+/* profile tab */
+.profile-layout{display:grid;grid-template-columns:1fr 2fr;gap:1.5rem;align-items:start}
+.profile-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center}
+.profile-av{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blue),#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.75rem;font-weight:700;margin:0 auto 1.25rem}
+.profile-name{font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:0.25rem;letter-spacing:-0.01em}
+.profile-email{font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem}
+.profile-stats-row{display:flex;justify-content:center;gap:1.5rem;margin-bottom:1.5rem}
+.profile-stat-num{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--blue)}
+.profile-stat-lbl{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.profile-info-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem}
+.profile-info-title{font-weight:700;font-size:1rem;margin-bottom:1.25rem;color:var(--ink)}
+.profile-info-row{display:flex;justify-content:space-between;align-items:center;padding:0.875rem 0;border-bottom:1px solid var(--border)}
+.profile-info-row:last-child{border-bottom:none}
+.profile-info-key{font-size:0.85rem;color:var(--text-muted);font-weight:500}
+.profile-info-val{font-size:0.875rem;font-weight:600;color:var(--ink)}
+
+/* ===== ADMIN ===== */
+.adm-layout{display:flex;min-height:calc(100vh - 68px)}
+.adm-sidebar{width:248px;background:var(--ink);color:#fff;padding:1.5rem 0;flex-shrink:0;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto}
+.adm-sidebar-title{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.3);padding:0 1.5rem;margin-bottom:0.5rem;margin-top:1.5rem}
+.adm-sidebar-title:first-child{margin-top:0}
+.adm-nav-item{display:flex;align-items:center;gap:10px;padding:10px 1.5rem;font-size:0.875rem;color:rgba(255,255,255,0.5);cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;font-weight:500}
+.adm-nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9)}
+.adm-nav-item.active{background:rgba(37,99,235,0.2);color:#fff;border-left-color:var(--blue)}
+.adm-content{flex:1;padding:2rem;background:var(--surface-2);overflow-x:hidden}
+.adm-pg{display:none}.adm-pg.active{display:block}
+.adm-page-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--ink);margin-bottom:0.4rem;letter-spacing:-0.02em}
+.adm-page-sub{color:var(--text-muted);font-size:0.875rem;margin-bottom:2rem}
+.adm-stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:1.25rem;margin-bottom:2rem}
+.adm-stat{background:#fff;border-radius:var(--radius-lg);padding:1.5rem;border:1.5px solid var(--border);transition:all 0.2s}
+.adm-stat:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.adm-stat-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+.adm-stat-ic{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.adm-badge{font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--green-light);color:var(--green)}
+.adm-num{font-family:var(--font-display);font-size:1.85rem;font-weight:700;color:var(--ink);line-height:1}
+.adm-lbl{font-size:0.82rem;color:var(--text-muted);margin-top:0.25rem;font-weight:500}
+.adm-card{background:#fff;border-radius:var(--radius-lg);border:1.5px solid var(--border);overflow:hidden;margin-bottom:1.5rem}
+.adm-card-hd{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem}
+.adm-card-title{font-weight:700;font-size:0.95rem;color:var(--ink)}
+.adm-tbl{width:100%;border-collapse:collapse}
+.adm-tbl th{padding:11px 16px;text-align:left;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);background:var(--surface-2);border-bottom:1px solid var(--border)}
+.adm-tbl td{padding:12px 16px;font-size:0.875rem;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--ink)}
+.adm-tbl tr:last-child td{border-bottom:none}
+.adm-tbl tr:hover td{background:var(--surface-2)}
+.bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:0.72rem;font-weight:700}
+.bdg-blue{background:var(--blue-light);color:var(--blue)}.bdg-green{background:var(--green-light);color:var(--green)}.bdg-amber{background:var(--amber-light);color:var(--amber)}.bdg-purple{background:var(--purple-light);color:var(--purple)}
+.act-btn{padding:5px 13px;border-radius:7px;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;margin-right:4px;font-family:var(--font-body);transition:all 0.15s}
+.act-edit{background:var(--blue-light);color:var(--blue)}.act-edit:hover{background:var(--blue);color:#fff}
+.act-del{background:var(--red-light);color:var(--red)}.act-del:hover{background:var(--red);color:#fff}
+.adm-btn{background:var(--blue);color:#fff;padding:10px 22px;border-radius:9px;font-size:0.875rem;font-weight:700;border:none;cursor:pointer;font-family:var(--font-body);transition:all 0.15s}
+.adm-btn:hover{background:var(--blue-dark)}
+.adm-btn-sec{background:var(--surface-2);color:var(--ink);padding:10px 22px;border-radius:9px;font-size:0.875rem;font-weight:600;border:1.5px solid var(--border);cursor:pointer;font-family:var(--font-body)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-full{grid-column:1/-1}
+.form-grp-adm{display:flex;flex-direction:column;gap:0.4rem}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){.hero-inner{grid-template-columns:1fr}.hero-stats{display:none}.footer-top{grid-template-columns:1fr 1fr}.profile-layout{grid-template-columns:1fr}}
+@media(max-width:768px){.adm-layout{flex-direction:column}.adm-sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;padding:0.75rem}.adm-nav-item{padding:8px 12px;font-size:0.8rem;border-left:none;border-bottom:3px solid transparent;flex:1;justify-content:center}.adm-nav-item.active{border-left:none;border-bottom-color:var(--blue)}.adm-sidebar-title{display:none}.form-grid{grid-template-columns:1fr}.stats-bar-inner{grid-template-columns:1fr}}
+@media(max-width:640px){.nav-links{display:none}.hamburger{display:flex!important}.footer-top{grid-column:1fr}.hero{padding:4rem 1.25rem 3rem;min-height:auto}.dash-hero-inner{flex-direction:column;align-items:flex-start}.dash-quick-stats{width:100%}.dash-qstat{flex:1}}
+/* AI styles → voir section injected above */
+
+/* PAGE TRANSITIONS */
+[id^="pg-"]{transition:opacity 0.26s cubic-bezier(0.4,0,0.2,1),transform 0.26s cubic-bezier(0.4,0,0.2,1)}
+.pg-enter{opacity:0;transform:translateY(12px)}
+.pg-exit{opacity:0;transform:translateY(-6px);pointer-events:none;position:relative;z-index:-1}
+
+/* CART BUTTON VISIBLE ON MOBILE */
+.nav-cart-btn{display:none;-webkit-align-items:center;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);border-radius:9px;padding:7px 13px;cursor:pointer;color:#fff;font-size:0.875rem;font-weight:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nav-cart-btn:active{background:rgba(255,255,255,0.2)}
+.nav-cart-badge{background:var(--red);color:#fff;font-size:0.6rem;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;text-align:center;display:none}
+@media(max-width:640px){.nav-cart-btn{display:-webkit-flex;display:flex}.nav-links{display:none}}
+
+/* AI SIDEBAR */
+.ai-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:linear-gradient(135deg,var(--blue),#7c3aed);border-radius:50%;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(37,99,235,0.4);z-index:500;border:none;font-size:1.4rem;-webkit-transition:all 0.2s;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ai-fab:hover{-webkit-transform:scale(1.1);transform:scale(1.1);box-shadow:0 8px 32px rgba(37,99,235,0.5)}
+.ai-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(13,17,23,0.45);z-index:600;opacity:0;pointer-events:none;-webkit-transition:opacity 0.25s;transition:opacity 0.25s}
+.ai-overlay.open{opacity:1;pointer-events:auto}
+.ai-panel{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:#fff;z-index:601;-webkit-transform:translateX(100%);transform:translateX(100%);-webkit-transition:-webkit-transform 0.32s cubic-bezier(0.4,0,0.2,1);transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,0.15)}
+.ai-panel.open{-webkit-transform:translateX(0);transform:translateX(0)}
+.ai-panel-hd{background:linear-gradient(135deg,var(--blue),#7c3aed);padding:1.25rem 1.5rem;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;flex-shrink:0}
+.ai-panel-title{color:#fff;font-weight:700;font-size:1rem;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px}
+.ai-panel-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ai-messages{-webkit-flex:1;flex:1;overflow-y:auto;padding:1.25rem 1rem;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:0.875rem}
+.ai-msg{max-width:88%;padding:11px 15px;border-radius:16px;font-size:0.875rem;line-height:1.55;word-break:break-word}
+.ai-msg.user{background:linear-gradient(135deg,var(--blue),#4f46e5);color:#fff;-webkit-align-self:flex-end;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(37,99,235,0.25)}
+.ai-msg.bot{background:var(--surface-2);color:var(--ink);-webkit-align-self:flex-start;align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--border)}
+.ai-msg.loading{background:var(--surface-2);-webkit-align-self:flex-start;align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--border)}
+.ai-typing{display:inline-flex;gap:4px;-webkit-align-items:center;align-items:center;padding:4px 2px}
+.ai-typing span{width:7px;height:7px;background:var(--text-soft);border-radius:50%;animation:aiDot 1.2s infinite}
+.ai-typing span:nth-child(2){animation-delay:0.2s}.ai-typing span:nth-child(3){animation-delay:0.4s}
+@keyframes aiDot{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-5px);opacity:1}}
+.ai-input-wrap{padding:0.875rem 1rem;border-top:1px solid var(--border);display:-webkit-flex;display:flex;gap:8px;flex-shrink:0;background:#fff}
+.ai-input{-webkit-flex:1;flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;outline:none;font-family:var(--font-body);-webkit-appearance:none;appearance:none;background:#fff;color:var(--ink)}
+.ai-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
+.ai-send{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:11px 18px;cursor:pointer;font-size:1rem;font-weight:700;font-family:var(--font-body);-webkit-transition:background 0.15s;transition:background 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ai-send:hover{background:var(--blue-dark)}.ai-send:disabled{opacity:0.5;cursor:not-allowed}
+.ai-welcome{text-align:center;padding:3rem 1.5rem;color:var(--text-muted)}
+.ai-welcome-icon{font-size:2.75rem;margin-bottom:0.75rem}
+.ai-welcome-title{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:0.4rem}
+.ai-welcome-sub{font-size:0.82rem;line-height:1.6}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="goPage('home')">
+      <div class="nav-logo-mark">📚</div>
+      <div>
+        <div class="nav-logo-text">EduLib<span style="color:#93c5fd">RDC</span></div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <span class="nav-link active" id="nl-home" onclick="goPage('home');setNav('nl-home')">Accueil</span>
+      <span class="nav-link" id="nl-cat" onclick="goPage('catalogue');setNav('nl-cat')">Catalogue</span>
+      <span class="nav-link" id="nl-fil" onclick="goPage('filieres');setNav('nl-fil')">Filières</span>
+      <span class="nav-link" onclick="openCart()">🛒 Panier <span class="cart-badge" id="cartBadge">0</span></span>
+    </div>
+    <div class="nav-actions">
+      <span id="guestNav" style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-ghost" onclick="goPage('login')">Connexion</button>
+        <button class="btn btn-primary" onclick="goPage('register')">S'inscrire</button>
+      </span>
+      <span id="adminNav" style="display:none;align-items:center;gap:8px">
+        <span class="nav-link active">⚙️ Admin</span>
+        <button class="btn btn-ghost" onclick="adminOut()">Déconnexion</button>
+      </span>
+      <span id="userNav" style="display:none;align-items:center;gap:8px;position:relative">
+        <span class="nav-link active" onclick="goPage('dashboard')">👤 Mon espace</span>
+        <button class="btn btn-ghost" onclick="toggleUserMenu()" id="userMenuBtn">▾</button>
+        <div id="userDropdown" style="display:none;position:absolute;top:48px;right:0;background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);min-width:180px;z-index:300;border:1px solid var(--border);overflow:hidden">
+          <div onclick="goPage('dashboard');closeUserMenu()" style="padding:12px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:8px;transition:background 0.15s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''">👤 Mon espace</div>
+          <div onclick="logoutUser();closeUserMenu()" style="padding:12px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;color:var(--red);display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--red-light)'" onmouseout="this.style.background=''">🚪 Déconnexion</div>
+        </div>
+      </span>
+    </div>
+    <button class="nav-cart-btn" id="navCartBtn" onclick="openCart()" aria-label="Panier">🛒 <span class="nav-cart-badge" id="navCartBadgeMob">0</span></button>
+    <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-nav" id="mobMenu">
+  <span class="nav-link" onclick="goPage('home');closeMenu()">🏠 Accueil</span>
+  <span class="nav-link" onclick="goPage('catalogue');closeMenu()">📚 Catalogue</span>
+  <span class="nav-link" onclick="goPage('filieres');closeMenu()">🎓 Filières</span>
+  <span class="nav-link" onclick="openCart();closeMenu()">🛒 Panier <span class="cart-badge" id="cartBadgeMob" style="background:var(--red);color:#fff;font-size:0.6rem;font-weight:700;border-radius:99px;padding:2px 5px;margin-left:2px;display:none;vertical-align:middle">0</span></span>
+  <div id="mobGuest">
+    <span class="nav-link" onclick="goPage('login');closeMenu()">🔐 Connexion</span>
+    <span class="nav-link" onclick="goPage('register');closeMenu()">📝 S'inscrire</span>
+  </div>
+  <div id="mobUser" style="display:none">
+    <span class="nav-link" onclick="goPage('dashboard');closeMenu()">👤 Mon espace</span>
+    <span class="nav-link" style="color:var(--red)" onclick="logoutUser();closeMenu()">🚪 Déconnexion</span>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="pg-home">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-dots"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:5px 14px;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.75rem;color:rgba(255,255,255,0.5)">RESSOURCES PÉDAGOGIQUES</div>
+        <div class="hero-label"><span class="hero-label-dot"></span>Plateforme #1 en RDC</div>
+        <h1>Réussir vos études,<br><em>c'est notre mission</em></h1>
+        <p class="hero-desc">Syllabus, notes de cours, exercices corrigés — les meilleures ressources pédagogiques pour tous les étudiants universitaires de la République Démocratique du Congo.</p>
+        <div class="hero-btns">
+          <button class="hero-btn-main" onclick="goPage('catalogue')">Parcourir le catalogue</button>
+          <button class="hero-btn-sec" id="heroCTA" onclick="goPage('register')">S'inscrire gratuitement</button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat-card">
+          <div class="hero-stat-label">Documents</div>
+          <div class="hero-stat-value" id="cntDocs">0</div>
+          <div class="hero-stat-desc">Disponibles maintenant</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-label">Filières</div>
+          <div class="hero-stat-value">6</div>
+          <div class="hero-stat-desc">Facultés couvertes</div>
+        </div>
+        <div class="hero-stat-card wide">
+          <div class="hero-stat-label">Étudiants inscrits</div>
+          <div class="hero-stat-value" id="cntUsers">0</div>
+          <div class="hero-stat-desc">Font confiance à EduLib RDC</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="search-bar">
+    <div class="search-bar-inner">
+      <div class="search-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>
+        <input type="text" id="searchQ" placeholder="Rechercher un document, un cours, un professeur..."/>
+      </div>
+      <div class="chips">
+        <button class="chip active" onclick="setFiliere('',this)">Tous</button>
+        <button class="chip" onclick="setFiliere('droit',this)">⚖️ Droit</button>
+        <button class="chip" onclick="setFiliere('medecine',this)">🩺 Médecine</button>
+        <button class="chip" onclick="setFiliere('polytechnique',this)">⚙️ Polytechnique</button>
+        <button class="chip" onclick="setFiliere('sciences',this)">🔬 Sciences</button>
+        <button class="chip" onclick="setFiliere('lettres',this)">📖 Lettres</button>
+        <button class="chip" onclick="setFiliere('economie',this)">📊 Économie</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stats-bar-inner">
+      <div class="stat-item"><div class="stat-icon blue">📚</div><div><div class="stat-num" id="statDocs">0</div><div class="stat-lbl">Documents disponibles</div></div></div>
+      <div class="stat-item"><div class="stat-icon green">👥</div><div><div class="stat-num" id="statUsers">0</div><div class="stat-lbl">Étudiants inscrits</div></div></div>
+      <div class="stat-item"><div class="stat-icon amber">🎓</div><div><div class="stat-num">6</div><div class="stat-lbl">Filières couvertes</div></div></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-hd">
+        <div><h2 class="section-title">Documents récents</h2><p class="section-sub">Les dernières ressources ajoutées sur la plateforme</p></div>
+        <span class="section-link" onclick="goPage('catalogue')">Voir tout →</span>
+      </div>
+      <div class="docs-grid" id="homeGrid"><p style="color:var(--text-muted);padding:2rem;text-align:center">Chargement...</p></div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--surface-2);margin:0;padding-top:3rem;padding-bottom:3rem">
+    <div class="section-inner">
+      <div class="section-hd">
+        <div><h2 class="section-title">Choisir votre filière</h2><p class="section-sub">Accédez directement aux ressources de votre domaine</p></div>
+        <span class="section-link" onclick="goPage('filieres')">Toutes les filières →</span>
+      </div>
+      <div class="fil-grid" id="homeFil"></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="cta-inner">
+      <h2>Prêt à <em>exceller</em> ?</h2>
+      <p>Rejoignez des milliers d'étudiants congolais qui utilisent EduLib RDC pour accéder aux meilleures ressources pédagogiques.</p>
+      <div class="cta-btns">
+        <button class="hero-btn-main" id="ctaBtn" onclick="goPage('register')">Créer un compte gratuit</button>
+        <button class="hero-btn-sec" onclick="goPage('catalogue')">Parcourir le catalogue</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== CATALOGUE ===== -->
+<div id="pg-catalogue" style="display:none">
+  <div style="background:var(--surface-2);padding:2.5rem 1.5rem;border-bottom:1px solid var(--border)">
+    <div style="max-width:1280px;margin:0 auto">
+      <h1 style="font-family:var(--font-display);font-size:2.25rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.5rem">Catalogue</h1>
+      <p style="color:var(--text-muted)">Tous nos documents pédagogiques disponibles</p>
+    </div>
+  </div>
+  <section class="section"><div class="section-inner"><div class="docs-grid" id="catGrid"><p style="color:var(--text-muted);padding:2rem;text-align:center">Chargement...</p></div></div></section>
+</div>
+
+<!-- ===== FILIERES LIST ===== -->
+<div id="pg-filieres" style="display:none">
+  <div style="background:var(--surface-2);padding:2.5rem 1.5rem;border-bottom:1px solid var(--border)">
+    <div style="max-width:1280px;margin:0 auto">
+      <h1 style="font-family:var(--font-display);font-size:2.25rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.5rem">Filières</h1>
+      <p style="color:var(--text-muted)">Choisissez votre domaine d'études</p>
+    </div>
+  </div>
+  <section class="section"><div class="section-inner"><div class="fil-grid" id="allFil"></div></div></section>
+</div>
+
+<!-- ===== FILIERE PAGE ===== -->
+<div id="pg-filiere" style="display:none">
+  <div class="fil-page-hero" id="filPageHero">
+    <div class="fil-page-hero-inner">
+      <div style="flex:1">
+        <div class="fil-back" onclick="goPage('filieres')">← Retour aux filières</div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div class="fil-page-icon" id="filPageIcon">⚖️</div>
+          <div>
+            <div class="fil-page-title" id="filPageTitle">Droit</div>
+            <div class="fil-page-sub" id="filPageSub">0 documents disponibles</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="section"><div class="section-inner"><div class="docs-grid" id="filGrid"><p style="color:var(--text-muted);padding:2rem;text-align:center">Chargement...</p></div></div></section>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div id="pg-login" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo-wrap"><div class="auth-logo-mark">📚</div><div class="auth-logo-name">EduLib RDC</div></div>
+      <div class="auth-sub">Accédez à vos ressources pédagogiques</div>
+      <div class="auth-title">Connexion</div>
+      <div class="auth-err" id="loginErr"></div>
+      <div class="form-grp"><label class="form-lbl">Email</label><input class="form-inp" type="email" id="loginEmail" placeholder="votre@email.com"/></div>
+      <div class="form-grp"><label class="form-lbl">Mot de passe</label><input class="form-inp" type="password" id="loginPass" placeholder="••••••••"/></div>
+      <button class="auth-submit-btn" id="loginBtn" onclick="doLogin()">Se connecter</button>
+      <span class="auth-link" onclick="goPage('register')">Pas encore de compte ? S'inscrire</span>
+      <span class="auth-link gray" onclick="goPage('home')">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REGISTER ===== -->
+<div id="pg-register" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo-wrap"><div class="auth-logo-mark">📚</div><div class="auth-logo-name">EduLib RDC</div></div>
+      <div class="auth-sub">Rejoignez des milliers d'étudiants congolais</div>
+      <div class="auth-title">Créer un compte</div>
+      <div class="auth-err" id="regErr"></div>
+      <div class="form-grp"><label class="form-lbl">Nom complet *</label><input class="form-inp" type="text" id="regName" placeholder="Votre nom complet"/></div>
+      <div class="form-grp"><label class="form-lbl">Email *</label><input class="form-inp" type="email" id="regEmail" placeholder="votre@email.com"/></div>
+      <div class="form-grp"><label class="form-lbl">Rôle *</label>
+        <select class="form-sel" id="regRole">
+          <option value="">Sélectionner votre rôle...</option>
+          <option value="etudiant">🎓 Étudiant</option>
+          <option value="assistant">📝 Assistant</option>
+          <option value="ct">🏫 Chargé de Travaux (CT)</option>
+          <option value="professeur">👨‍🏫 Professeur</option>
+        </select>
+      </div>
+      <div class="form-grp"><label class="form-lbl">Filière *</label>
+        <select class="form-sel" id="regFil">
+          <option value="">Sélectionner votre filière...</option>
+          <option value="droit">⚖️ Droit</option><option value="medecine">🩺 Médecine</option>
+          <option value="polytechnique">⚙️ Polytechnique</option><option value="sciences">🔬 Sciences</option>
+          <option value="lettres">📖 Lettres</option><option value="economie">📊 Économie</option>
+        </select>
+      </div>
+      <div class="form-grp"><label class="form-lbl">Mot de passe *</label><input class="form-inp" type="password" id="regPass" placeholder="Minimum 6 caractères"/></div>
+      <div class="form-grp"><label class="form-lbl">Confirmer *</label><input class="form-inp" type="password" id="regPass2" placeholder="••••••••"/></div>
+      <button class="auth-submit-btn" id="regBtn" onclick="doRegister()">Créer mon compte</button>
+      <span class="auth-link" onclick="goPage('login')">Déjà un compte ? Se connecter</span>
+      <span class="auth-link gray" onclick="goPage('home')">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="pg-dashboard" style="display:none">
+  <div class="dash-hero">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-greeting">Bienvenue sur votre espace personnel</div>
+        <div class="dash-name" id="dashName">Étudiant</div>
+        <div class="dash-filiere-badge" id="dashFil">🎓 Filière</div>
+      </div>
+      <div class="dash-quick-stats">
+        <div class="dash-qstat"><div class="dash-qstat-num" id="dqDocs">0</div><div class="dash-qstat-lbl">Documents</div></div>
+        <div class="dash-qstat"><div class="dash-qstat-num" id="dqOrders">0</div><div class="dash-qstat-lbl">Commandes</div></div>
+        <div class="dash-qstat"><div class="dash-qstat-num" id="dqSpent">$0</div><div class="dash-qstat-lbl">Dépensé</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-tabs">
+      <button class="dtab active" onclick="showDashTab('docs',this)">📚 Mes documents</button>
+      <button class="dtab" onclick="showDashTab('progress',this)">📈 Ma progression</button>
+      <button class="dtab" onclick="showDashTab('profile',this)">👤 Mon profil</button>
+    </div>
+    <div id="tabDocs">
+      <div class="bought-grid" id="boughtGrid"><p style="color:var(--text-muted);padding:2rem;text-align:center">Chargement...</p></div>
+    </div>
+    <div id="tabProgress" style="display:none">
+      <div class="progress-grid">
+        <div class="prog-card">
+          <div class="prog-card-title">📊 Documents par filière</div>
+          <div class="prog-bar-wrap" id="progByFil"></div>
+        </div>
+        <div class="prog-card">
+          <div class="prog-card-title">🏆 Votre activité</div>
+          <div id="activityStats"></div>
+        </div>
+      </div>
+      <div class="section-hd" style="margin-bottom:1.25rem"><h3 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700">Recommandations pour vous</h3></div>
+      <div class="reco-grid" id="recoGrid"></div>
+    </div>
+    <div id="tabProfile" style="display:none">
+      <div class="profile-layout">
+        <div class="profile-card">
+          <div class="profile-av" id="profAv">?</div>
+          <div class="profile-name" id="profNm">-</div>
+          <div class="profile-email" id="profEm">-</div>
+          <div class="profile-stats-row">
+            <div><div class="profile-stat-num" id="profDocCnt">0</div><div class="profile-stat-lbl">Docs achetés</div></div>
+            <div><div class="profile-stat-num" id="profOrderCnt">0</div><div class="profile-stat-lbl">Commandes</div></div>
+          </div>
+          <button class="adm-btn-sec" onclick="logoutUser()" style="width:100%;font-family:var(--font-body)">🚪 Se déconnecter</button>
+        </div>
+        <div class="profile-info-card">
+          <div class="profile-info-title">Informations du compte</div>
+          <div class="profile-info-row"><span class="profile-info-key">Nom complet</span><span class="profile-info-val" id="piName">-</span></div>
+          <div class="profile-info-row"><span class="profile-info-key">Email</span><span class="profile-info-val" id="piEmail">-</span></div>
+          <div class="profile-info-row"><span class="profile-info-key">Filière</span><span class="profile-info-val" id="piFil">-</span></div>
+          <div class="profile-info-row"><span class="profile-info-key">Membre depuis</span><span class="profile-info-val" id="piDate">-</span></div>
+          <div class="profile-info-row"><span class="profile-info-key">Documents achetés</span><span class="profile-info-val" id="piDocs">0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LOGIN ===== -->
+<div id="pg-adminlogin" style="display:none">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo-wrap"><div class="auth-logo-mark">⚙️</div><div class="auth-logo-name">EduLib RDC</div></div>
+      <div class="auth-sub">Espace Administrateur — Accès restreint</div>
+      <div class="auth-title">Connexion Admin</div>
+      <div class="auth-err" id="adminErr"></div>
+      <div class="form-grp"><label class="form-lbl">Identifiant</label><input class="form-inp" type="text" id="adminU" placeholder="admin"/></div>
+      <div class="form-grp"><label class="form-lbl">Mot de passe</label><input class="form-inp" type="password" id="adminP" placeholder="••••••••"/></div>
+      <button class="auth-submit-btn" onclick="doAdminLogin()">Se connecter</button>
+      <span class="auth-link gray" onclick="goPage('home')">← Retour au site</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN ===== -->
+<div id="pg-admin" style="display:none">
+  <div class="adm-layout">
+    <div class="adm-sidebar">
+      <div class="adm-sidebar-title">Principal</div>
+      <div class="adm-nav-item active" onclick="showAP('dashboard',this)"><span>📊</span>Tableau de bord</div>
+      <div class="adm-nav-item" onclick="showAP('documents',this)"><span>📚</span>Documents</div>
+      <div class="adm-nav-item" onclick="showAP('ajouter',this);resetDocForm()"><span>➕</span>Ajouter</div>
+      <div class="adm-nav-item" onclick="showAP('utilisateurs',this)"><span>👥</span>Utilisateurs</div>
+      <div class="adm-nav-item" onclick="showAP('commandes',this)"><span>🛒</span>Commandes</div>
+      <div class="adm-sidebar-title">Compte</div>
+      <div class="adm-nav-item" onclick="showAP('params',this)"><span>⚙️</span>Paramètres</div>
+      <div class="adm-nav-item" style="color:#ef4444" onclick="adminOut()"><span>🚪</span>Déconnexion</div>
+    </div>
+    <div class="adm-content">
+      <div class="adm-pg active" id="adm-dashboard">
+        <div class="adm-page-title">Tableau de bord</div>
+        <p class="adm-page-sub">Bienvenue, Serge ! Voici le résumé de votre plateforme.</p>
+        <div class="adm-stats-grid">
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--blue-light)">📚</div><span class="adm-badge" id="admDocBadge">0 docs</span></div><div class="adm-num" id="admDocN">0</div><div class="adm-lbl">Documents publiés</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--green-light)">👥</div><span class="adm-badge" id="admUserBadge">0</span></div><div class="adm-num" id="admUserN">0</div><div class="adm-lbl">Étudiants inscrits</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--amber-light)">🛒</div><span class="adm-badge" id="admOrdBadge">0</span></div><div class="adm-num" id="admOrdN">0</div><div class="adm-lbl">Commandes</div></div>
+          <div class="adm-stat"><div class="adm-stat-hd"><div class="adm-stat-ic" style="background:var(--purple-light)">💰</div><span class="adm-badge">Total</span></div><div class="adm-num" id="admRev">$0</div><div class="adm-lbl">Revenus</div></div>
+        </div>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Documents récents</div><button class="act-btn act-edit" onclick="showAP('documents',null)">Voir tous</button></div><div style="overflow-x:auto"><table class="adm-tbl" id="tblRecentDocs"></table></div></div>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Derniers inscrits</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="tblRecentUsers"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-documents">
+        <div class="adm-page-title">Documents</div>
+        <p class="adm-page-sub">Gérez tous les documents de la plateforme.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="docListLbl">Tous les documents</div><button class="adm-btn" onclick="showAP('ajouter',null);resetDocForm()">+ Ajouter</button></div><div style="overflow-x:auto"><table class="adm-tbl" id="tblAllDocs"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-ajouter">
+        <div class="adm-page-title" id="docFormTitle">Ajouter un document</div>
+        <p class="adm-page-sub" id="docFormSub">Remplissez toutes les informations du document.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title">Informations</div></div>
+        <div style="padding:1.5rem">
+          <input type="hidden" id="editId"/>
+          <div class="form-grid">
+            <div class="form-grp-adm form-full"><label class="form-lbl">Titre *</label><input class="form-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil Congolais"/></div>
+            <div class="form-grp-adm"><label class="form-lbl">Filière *</label><select class="form-sel" id="fFil"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option></select></div>
+            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
+            <div class="form-grp-adm"><label class="form-lbl">Professeur *</label><input class="form-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
+            <div class="form-grp-adm"><label class="form-lbl">Prix (USD) *</label><input class="form-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
+            <div class="form-grp-adm"><label class="form-lbl">Pages</label><input class="form-inp" type="number" id="fPages" placeholder="100"/></div>
+            <div class="form-grp-adm"><label class="form-lbl">Année</label><input class="form-inp" type="number" id="fAnnee" placeholder="2025"/></div>
+            <div class="form-grp-adm"><label class="form-lbl">Badge</label><select class="form-sel" id="fBadge"><option value="">Aucun</option><option value="new">Nouveau</option><option value="popular">Populaire</option></select></div>
+            <div class="form-grp-adm form-full"><label class="form-lbl">Description</label><textarea class="form-inp" id="fDesc" rows="3" placeholder="Décrivez le contenu..."></textarea></div>
+            <div class="form-grp-adm form-full"><label class="form-lbl">Lien Google Drive PDF *</label><input class="form-inp" type="url" id="fLink" placeholder="https://drive.google.com/file/d/..."/><small style="color:var(--text-soft);font-size:0.75rem;margin-top:4px;display:block">💡 Drive : clic droit → Partager → Copier le lien</small></div>
+          </div>
+          <div style="display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap">
+            <button class="adm-btn" onclick="saveDoc()" id="saveBtn">Enregistrer le document</button>
+            <button class="adm-btn-sec" onclick="resetDocForm();showAP('documents',null)">Annuler</button>
+          </div>
+        </div></div>
+      </div>
+      <div class="adm-pg" id="adm-utilisateurs">
+        <div class="adm-page-title">Utilisateurs</div>
+        <p class="adm-page-sub">Tous les étudiants inscrits sur la plateforme.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="userListLbl">Utilisateurs</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="tblUsers"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-commandes">
+        <div class="adm-page-title">Commandes</div>
+        <p class="adm-page-sub">Historique de toutes les commandes.</p>
+        <div class="adm-card"><div class="adm-card-hd"><div class="adm-card-title" id="ordListLbl">Commandes</div></div><div style="overflow-x:auto"><table class="adm-tbl" id="tblOrders"></table></div></div>
+      </div>
+      <div class="adm-pg" id="adm-params">
+        <div class="adm-page-title">Paramètres</div>
+        <p class="adm-page-sub">Gérez votre compte administrateur.</p>
+        <div class="adm-card" style="max-width:480px"><div class="adm-card-hd"><div class="adm-card-title">Changer le mot de passe</div></div>
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+          <div class="form-grp-adm"><label class="form-lbl">Mot de passe actuel</label><input class="form-inp" type="password" id="oldP" placeholder="••••••••"/></div>
+          <div class="form-grp-adm"><label class="form-lbl">Nouveau mot de passe</label><input class="form-inp" type="password" id="newP" placeholder="••••••••"/></div>
+          <div class="form-grp-adm"><label class="form-lbl">Confirmer</label><input class="form-inp" type="password" id="confP" placeholder="••••••••"/></div>
+          <button class="adm-btn" style="align-self:flex-start" onclick="changeAdminPwd()">Mettre à jour</button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<button class="ai-fab" onclick="toggleAI()" title="Assistant IA EduLib">🤖</button>
+<div class="ai-overlay" id="aiOverlay" onclick="toggleAI()"></div>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-hd">
+    <div class="ai-panel-title">🤖 Assistant EduLib IA</div>
+    <button class="ai-panel-close" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="ai-messages" id="aiMessages">
+    <div class="ai-welcome">
+      <div class="ai-welcome-icon">🎓</div>
+      <div class="ai-welcome-title">Bonjour ! Je suis l'assistant EduLib</div>
+      <div class="ai-welcome-sub">Posez-moi vos questions sur les documents, les filières ou vos cours.</div>
+    </div>
+  </div>
+  <div class="ai-input-wrap">
+    <input class="ai-input" type="text" id="aiInput" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')sendAI()"/>
+    <button class="ai-send" id="aiSendBtn" onclick="sendAI()">➤</button>
+  </div>
+</div>
+
+<footer id="mainFtr">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">EduLib RDC</div>
+        <p class="footer-brand-desc">La plateforme de référence pour les ressources pédagogiques universitaires en République Démocratique du Congo.</p>
+      </div>
+      <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="goPage('home')">Accueil</li><li onclick="goPage('catalogue')">Catalogue</li><li onclick="goPage('filieres')">Filières</li></ul></div>
+      <div><div class="footer-col-title">Filières</div><ul class="footer-links"><li onclick="goFiliere('droit')">Droit</li><li onclick="goFiliere('medecine')">Médecine</li><li onclick="goFiliere('polytechnique')">Polytechnique</li><li onclick="goFiliere('sciences')">Sciences</li><li onclick="goFiliere('lettres')">Lettres</li></ul></div>
+      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:rgba(255,255,255,0.5)">contact@edulibrdc.com</a></li><li><a href="tel:+243840021963" style="color:rgba(255,255,255,0.5)" id="footerPhone">+243 840 021 963</a></li><li><a href="https://wa.me/243840021963" style="color:rgba(255,255,255,0.5)" id="footerWhatsapp">WhatsApp</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 EduLib RDC. Tous droits réservés.</span><span style="color:rgba(255,255,255,0.25);font-size:0.75rem">Kinshasa, République Démocratique du Congo</span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toastEl"><span id="toastTxt"></span></div>
+<div class="modal-overlay" id="modalOv" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><div class="modal-hd"><div class="modal-title" id="modalTit"></div><button class="mclosebtn" onclick="closeModal()">✕</button></div><div id="modalBdy"></div></div>
+</div>
+<div class="cart-panel-ov" id="cartOv" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPnl">
+  <div class="cart-hd"><div class="cart-hd-title">Mon panier</div><button class="mclosebtn" onclick="closeCart()">✕</button></div>
+  <div class="cart-body" id="cartBdy"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-total-row"><span>Total</span><span id="cartTot">$0</span></div>
+    <button class="cart-checkout-btn" onclick="checkout()">Passer commande</button>
+  </div>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase init
+var firebaseConfig = {
+  apiKey: "AIzaSyAoxL9c71QEhA1-TLdmiTDjnxWFhprWe44",
+  authDomain: "edulib-rdc.firebaseapp.com",
+  projectId: "edulib-rdc",
+  storageBucket: "edulib-rdc.firebasestorage.app",
+  messagingSenderId: "523092755243",
+  appId: "1:523092755243:web:eef7329b63c03e281ebb6e"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+var auth = firebase.auth();
+
+// State
+var docs=[],users=[],orders=[],cart=[],curUser=null,boughtIds=[],isAdmin=false,adminPwd='edulib2025',curFil='',curSearch='';
+var FILIERES=[{id:'droit',name:'Droit',emoji:'⚖️',color:'#2563eb'},{id:'medecine',name:'Médecine',emoji:'🩺',color:'#059669'},{id:'polytechnique',name:'Polytechnique',emoji:'⚙️',color:'#d97706'},{id:'sciences',name:'Sciences',emoji:'🔬',color:'#16a34a'},{id:'lettres',name:'Lettres',emoji:'📖',color:'#7c3aed'},{id:'economie',name:'Économie',emoji:'📊',color:'#ea580c'}];
+var EMOJIS={droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
+var COLORS={droit:'#2563eb',medecine:'#059669',polytechnique:'#d97706',sciences:'#16a34a',lettres:'#7c3aed',economie:'#ea580c'};
+function flabel(f){var x=FILIERES.find(function(i){return i.id===f;});return x?x.name:f;}
+function bdgClass(f){return ({droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'})[f]||'bdg-blue';}
+
+// Auth state listener
+auth.onAuthStateChanged(function(user) {
+  if(user) {
+    db.collection('users').doc(user.uid).get().then(function(doc) {
+      if(doc.exists) {
+        curUser = doc.data();
+        curUser.uid = user.uid;
+      } else {
+        curUser = {uid:user.uid, name:user.displayName||user.email, email:user.email};
+      }
+      loadBoughtIds(function() {
+        showUserNav();
+        refreshAllGrids();
+        var loginPg=document.getElementById('pg-login');
+        var regPg=document.getElementById('pg-register');
+        if((loginPg&&loginPg.style.display!=='none')||(regPg&&regPg.style.display!=='none')){
+          goPage('dashboard');
+          showToast('Bienvenue ! 👋','success');
+        }
+      });
+    });
+  } else {
+    curUser = null;
+    boughtIds = [];
+    showGuestNav();
+    refreshAllGrids();
+  }
+});
+
+function showUserNav(){
+  document.getElementById('guestNav').style.display='none';
+  document.getElementById('userNav').style.display='flex';
+  document.getElementById('mobGuest').style.display='none';
+  document.getElementById('mobUser').style.display='block';
+  var h=document.getElementById('heroCTA');if(h)h.style.display='none';
+  var c=document.getElementById('ctaBtn');if(c){c.textContent='Parcourir le catalogue';c.onclick=function(){goPage('catalogue');};}
+}
+function showGuestNav(){
+  document.getElementById('guestNav').style.display='flex';
+  document.getElementById('userNav').style.display='none';
+  var an=document.getElementById('adminNav');if(an)an.style.display='none';
+  document.getElementById('mobGuest').style.display='block';
+  document.getElementById('mobUser').style.display='none';
+  var h=document.getElementById('heroCTA');if(h)h.style.display='';
+  var c=document.getElementById('ctaBtn');if(c){c.textContent='Créer un compte gratuit';c.onclick=function(){goPage('register');};}
+}
+function showAdminNav(){
+  document.getElementById('guestNav').style.display='none';
+  document.getElementById('userNav').style.display='none';
+  var an=document.getElementById('adminNav');if(an)an.style.display='flex';
+  document.getElementById('mobGuest').style.display='none';
+  document.getElementById('mobUser').style.display='none';
+}
+
+// Load data from Firebase
+function loadDocs(cb) {
+  db.collection('documents').orderBy('createdAt','desc').get().then(function(snap) {
+    docs = snap.docs.map(function(d){var x=d.data();x.id=d.id;return x;});
+    updateStats();
+    refreshAllGrids();
+    if(cb) cb();
+  }).catch(function(e){
+    console.log('loadDocs error:', e);
+    if(cb) cb();
+  });
+}
+
+function loadBoughtIds(cb) {
+  if(!curUser){boughtIds=[];if(cb)cb();return;}
+  db.collection('users').doc(curUser.uid).collection('purchases').get().then(function(snap){
+    boughtIds = snap.docs.map(function(d){return d.id;});
+    if(cb) cb();
+  }).catch(function(){boughtIds=[];if(cb)cb();});
+}
+
+function loadUsers(cb) {
+  db.collection('users').get().then(function(snap){
+    users = snap.docs.map(function(d){var x=d.data();x.id=d.id;return x;});
+    if(cb) cb();
+  }).catch(function(){users=[];if(cb)cb();});
+}
+
+function loadOrders(cb) {
+  db.collection('orders').get().then(function(snap){
+    orders = snap.docs.map(function(d){var x=d.data();x.id=d.id;return x;});
+    if(cb) cb();
+  }).catch(function(){orders=[];if(cb)cb();});
+}
+
+function updateStats(){
+  var n=docs.length;
+  ['cntDocs','statDocs','admDocN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=n;});
+  var db2=document.getElementById('admDocBadge');if(db2)db2.textContent=n+' docs';
+  db.collection('users').get().then(function(snap){
+    var u=snap.size;
+    ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=u;});
+    var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
+  }).catch(function(){});
+}
+
+// Render
+function makeDocCard(d){
+  var bought=boughtIds.indexOf(d.id)>-1;
+  var div=document.createElement('div');
+  div.className='doc-card';div.dataset.id=d.id;
+  var thumb=document.createElement('div');thumb.className='doc-thumb '+(d.filiere||'');
+  thumb.innerHTML=(d.emoji||EMOJIS[d.filiere]||'📄');
+  if(d.badge==='new'){var b=document.createElement('div');b.className='doc-badge nb';b.textContent='✦ Nouveau';thumb.appendChild(b);}
+  if(d.badge==='popular'){var b=document.createElement('div');b.className='doc-badge pb';b.textContent='🔥 Populaire';thumb.appendChild(b);}
+  var body=document.createElement('div');body.className='doc-body';
+  var fil=document.createElement('div');fil.className='doc-fil '+(d.filiere||'');fil.textContent=flabel(d.filiere);
+  var title=document.createElement('div');title.className='doc-title';title.textContent=d.title;
+  var prof=document.createElement('div');prof.className='doc-prof';prof.textContent=d.prof;
+  var footer=document.createElement('div');footer.className='doc-footer';
+  if(bought){
+    var lbl=document.createElement('div');lbl.style.cssText='color:var(--green);font-size:0.8rem;font-weight:700';lbl.textContent='✓ Acheté';
+    var btn=document.createElement('button');btn.className='doc-btn dl';btn.textContent='⬇ Télécharger';btn.dataset.id=d.id;
+    btn.addEventListener('click',function(e){e.stopPropagation();dlDoc(this.dataset.id);});
+    footer.appendChild(lbl);footer.appendChild(btn);
+  }else{
+    var price=document.createElement('div');price.className='doc-price';price.innerHTML='$'+d.prix+' <small>USD</small>';
+    var btn=document.createElement('button');btn.className='doc-btn buy';btn.textContent='+ Panier';btn.dataset.id=d.id;
+    btn.addEventListener('click',function(e){e.stopPropagation();addCart(this.dataset.id);});
+    footer.appendChild(price);footer.appendChild(btn);
+  }
+  body.appendChild(fil);body.appendChild(title);body.appendChild(prof);body.appendChild(footer);
+  div.appendChild(thumb);div.appendChild(body);
+  div.addEventListener('click',function(){openDoc(this.dataset.id);});
+  return div;
+}
+
+function renderDocs(id,list){
+  var el=document.getElementById(id);if(!el)return;
+  el.innerHTML='';
+  if(!list.length){var p=document.createElement('p');p.style.cssText='color:var(--text-muted);grid-column:1/-1;text-align:center;padding:3rem;font-size:0.95rem';p.textContent='Aucun document trouvé.';el.appendChild(p);return;}
+  list.forEach(function(d){el.appendChild(makeDocCard(d));});
+}
+
+function renderFil(id){
+  var el=document.getElementById(id);if(!el)return;el.innerHTML='';
+  FILIERES.forEach(function(f){
+    var cnt=docs.filter(function(d){return d.filiere===f.id;}).length;
+    var div=document.createElement('div');div.className='fil-card '+f.id;div.dataset.id=f.id;
+    div.innerHTML='<span class="fil-icon">'+f.emoji+'</span><div class="fil-name">'+f.name+'</div><div class="fil-count">'+cnt+' document'+(cnt!==1?'s':'')+'</div><div class="fil-arrow">→ Explorer</div>';
+    div.addEventListener('click',function(){goFiliere(this.dataset.id);});
+    el.appendChild(div);
+  });
+}
+
+function filtered(){return docs.filter(function(d){var mF=!curFil||d.filiere===curFil;var q=curSearch.toLowerCase();var mS=!q||(d.title&&d.title.toLowerCase().indexOf(q)>-1)||(d.prof&&d.prof.toLowerCase().indexOf(q)>-1);return mF&&mS;});}
+
+function refreshAllGrids(){
+  renderDocs('homeGrid',filtered().slice(0,8));
+  renderDocs('catGrid',filtered());
+  renderFil('homeFil');renderFil('allFil');
+}
+
+function applyFilter(){curSearch=document.getElementById('searchQ').value;renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
+function setFiliere(f,el){curFil=f;document.querySelectorAll('.chips .chip').forEach(function(c){c.classList.remove('active');});if(el)el.classList.add('active');renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
+
+function goFiliere(f){
+  var found=FILIERES.find(function(x){return x.id===f;});if(!found)return;
+  var icon=document.getElementById('filPageIcon');if(icon){icon.textContent=found.emoji;icon.style.background=found.color+'22';}
+  var t=document.getElementById('filPageTitle');if(t)t.textContent=found.name;
+  var fDocs=docs.filter(function(d){return d.filiere===f;});
+  var sub=document.getElementById('filPageSub');if(sub)sub.textContent=fDocs.length+' document'+(fDocs.length!==1?'s':'')+' disponible'+(fDocs.length!==1?'s':'');
+  renderDocs('filGrid',fDocs);goPage('filiere');
+}
+
+function openDoc(id){
+  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  var bought=boughtIds.indexOf(id)>-1;
+  var emoji=d.emoji||EMOJIS[d.filiere]||'📄';
+  var body=document.getElementById('modalBdy');
+  var tit=document.getElementById('modalTit');
+  if(tit)tit.textContent=d.title;
+  if(!body)return;
+  body.innerHTML='';
+  var emojiDiv=document.createElement('div');emojiDiv.style.cssText='font-size:3.5rem;text-align:center;margin-bottom:1rem;padding:1.5rem;background:var(--surface-2);border-radius:14px';emojiDiv.textContent=emoji;body.appendChild(emojiDiv);
+  if(bought){var ok=document.createElement('div');ok.style.cssText='background:var(--green-light);color:var(--green);border-radius:10px;padding:12px;text-align:center;font-weight:700;margin-bottom:1rem';ok.textContent='✓ Document dans votre bibliothèque';body.appendChild(ok);}
+  else{var pr=document.createElement('div');pr.style.cssText='font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:1rem';pr.textContent='$'+d.prix+' USD';body.appendChild(pr);}
+  [['Filière',flabel(d.filiere)],['Professeur',d.prof||'-'],['Type',d.type||'-'],['Pages',d.pages||'-'],['Année',d.annee||'-']].forEach(function(item){var row=document.createElement('div');row.className='mdet';row.innerHTML='<span class="mdet-lbl">'+item[0]+'</span><span class="mdet-val">'+item[1]+'</span>';body.appendChild(row);});
+  if(d.desc){var desc=document.createElement('p');desc.style.cssText='margin-top:1rem;font-size:0.875rem;color:var(--text-muted);line-height:1.7;background:var(--surface-2);padding:1rem;border-radius:10px';desc.textContent=d.desc;body.appendChild(desc);}
+  var actionBtn=document.createElement('button');actionBtn.className='mbtn '+(bought?'success':'primary');actionBtn.textContent=bought?'⬇ Télécharger le PDF':'🛒 Ajouter au panier';actionBtn.dataset.id=id;
+  actionBtn.addEventListener('click',function(){if(bought)dlDoc(this.dataset.id);else addCart(this.dataset.id);closeModal();});body.appendChild(actionBtn);
+  var closeBtn=document.createElement('button');closeBtn.className='mbtn secondary';closeBtn.textContent='Fermer';closeBtn.addEventListener('click',closeModal);body.appendChild(closeBtn);
+  document.getElementById('modalOv').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOv').classList.remove('open');}
+
+function dlDoc(id){
+  if(!curUser){showToast('Connectez-vous pour télécharger','error');goPage('login');return;}
+  if(boughtIds.indexOf(id)<0){showToast('Achetez ce document dabord','error');return;}
+  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  if(d.driveLink){var url=d.driveLink;var m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);if(m)url='https://drive.google.com/uc?export=download&id='+m[1];window.open(url,'_blank');showToast('Téléchargement en cours 📥','success');}
+  else showToast('Lien non disponible','error');
+}
+
+function addCart(id){
+  if(!curUser){showToast('Connectez-vous pour acheter','error');goPage('login');return;}
+  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  if(boughtIds.indexOf(id)>-1){showToast('Déjà dans votre bibliothèque','');return;}
+  if(cart.find(function(x){return x.id===id;})){showToast('Déjà dans le panier','');return;}
+  cart.push(d);updateCartBadge();showToast('"'+d.title.substring(0,30)+'..." ajouté 🛒','success');
+}
+function rmCart(id){cart=cart.filter(function(x){return x.id!==id;});updateCartBadge();renderCartItems();}
+function updateCartBadge(){
+  var n=cart.length;
+  var c=document.getElementById('cartBadge');if(c){c.textContent=n;c.style.display=n?'inline':'none';}
+  var cm=document.getElementById('cartBadgeMob');if(cm){cm.textContent=n;cm.style.display=n?'inline':'none';}
+  var cm2=document.getElementById('navCartBadgeMob');if(cm2){cm2.textContent=n;cm2.style.display=n?'inline-block':'none';}
+}
+function renderCartItems(){
+  var el=document.getElementById('cartBdy'),ft=document.getElementById('cartFoot');
+  if(!cart.length){el.innerHTML='<div class="cart-empty-msg">🛒<br><br>Votre panier est vide</div>';ft.style.display='none';return;}
+  el.innerHTML='';var tot=0;
+  cart.forEach(function(d){
+    tot+=(parseFloat(d.prix)||0);
+    var item=document.createElement('div');item.className='cart-item';
+    var thumb=document.createElement('div');thumb.className='cart-item-thumb '+(d.filiere||'');thumb.textContent=d.emoji||'📄';
+    var info=document.createElement('div');info.className='cart-item-info';info.innerHTML='<div class="cart-item-title">'+d.title+'</div><div class="cart-item-price">$'+d.prix+' USD</div>';
+    var rm=document.createElement('button');rm.className='cart-item-rm';rm.textContent='✕';rm.dataset.id=d.id;rm.addEventListener('click',function(){rmCart(this.dataset.id);});
+    item.appendChild(thumb);item.appendChild(info);item.appendChild(rm);el.appendChild(item);
+  });
+  document.getElementById('cartTot').textContent='$'+tot.toFixed(2);ft.style.display='block';
+}
+function openCart(){renderCartItems();document.getElementById('cartOv').classList.add('open');document.getElementById('cartPnl').classList.add('open');}
+function closeCart(){document.getElementById('cartOv').classList.remove('open');document.getElementById('cartPnl').classList.remove('open');}
+
+function checkout(){
+  if(!curUser){showToast('Connectez-vous pour commander','error');return;}
+  if(!cart.length)return;
+  var tot=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
+  var ord={userId:curUser.uid,userName:curUser.name,userEmail:curUser.email,items:cart.map(function(d){return {id:d.id,title:d.title,prix:d.prix};}),total:tot,status:'En attente de paiement',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+  db.collection('orders').add(ord).then(function(){
+    var batch=db.batch();
+    cart.forEach(function(d){var ref=db.collection('users').doc(curUser.uid).collection('purchases').doc(d.id);batch.set(ref,{docId:d.id,title:d.title,purchasedAt:Date.now()});});
+    return batch.commit();
+  }).then(function(){
+    boughtIds=boughtIds.concat(cart.map(function(d){return d.id;}));
+    cart=[];updateCartBadge();closeCart();refreshAllGrids();
+    showToast('Commande enregistrée ! Voir Mon espace 🎉','success');
+  }).catch(function(e){showToast('Erreur: '+e.message,'error');});
+}
+
+// AUTH
+function doLogin(){
+  var email=document.getElementById('loginEmail').value.trim();
+  var pass=document.getElementById('loginPass').value;
+  var err=document.getElementById('loginErr');
+  var btn=document.getElementById('loginBtn');
+  err.classList.remove('show');
+  if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Connexion...';
+  auth.signInWithEmailAndPassword(email,pass).then(function(){
+    goPage('dashboard');showToast('Bienvenue ! 👋','success');
+    document.getElementById('loginEmail').value='';document.getElementById('loginPass').value='';
+  }).catch(function(e){
+    btn.disabled=false;btn.textContent='Se connecter';
+    err.textContent=e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
+    err.classList.add('show');
+  });
+}
+
+function doRegister(){
+  var name=document.getElementById('regName').value.trim();
+  var email=document.getElementById('regEmail').value.trim();
+  var role=document.getElementById('regRole').value;
+  var fil=document.getElementById('regFil').value;
+  var pass=document.getElementById('regPass').value;
+  var pass2=document.getElementById('regPass2').value;
+  var err=document.getElementById('regErr');
+  var btn=document.getElementById('regBtn');
+  err.classList.remove('show');
+  if(!name||!email||!role||!fil||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
+  if(pass!==pass2){err.textContent='Les mots de passe ne correspondent pas.';err.classList.add('show');return;}
+  if(pass.length<6){err.textContent='Minimum 6 caractères.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Création...';
+  auth.createUserWithEmailAndPassword(email,pass).then(function(cred){
+    return cred.user.updateProfile({displayName:name}).then(function(){
+      return db.collection('users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
+    });
+  }).then(function(){
+    goPage('dashboard');showToast('Bienvenue '+name+' ! Compte créé 🎉','success');
+    ['regName','regEmail','regPass','regPass2'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('regFil').value='';
+  }).catch(function(e){
+    btn.disabled=false;btn.textContent='Créer mon compte';
+    err.textContent=e.code==='auth/email-already-in-use'?'Email déjà utilisé.':'Erreur: '+e.message;
+    err.classList.add('show');
+  });
+}
+
+function logoutUser(){auth.signOut().then(function(){goPage('home');showToast('Déconnecté.','');});}
+
+// DASHBOARD
+function loadDashboard(){
+  if(!curUser){goPage('login');return;}
+  var fil=FILIERES.find(function(f){return f.id===curUser.filiere;});
+  var dn=document.getElementById('dashName');if(dn)dn.textContent=curUser.name||curUser.email;
+  var df=document.getElementById('dashFil');if(df)df.textContent=(fil?fil.emoji+' ':'')+flabel(curUser.filiere);
+  loadBoughtIds(function(){
+    db.collection('orders').where('userId','==',curUser.uid).get().then(function(snap){
+      var myOrders=snap.docs.map(function(d){return d.data();});
+      var spent=myOrders.reduce(function(s,o){return s+(parseFloat(o.total)||0);},0);
+      var dqd=document.getElementById('dqDocs');if(dqd)dqd.textContent=boughtIds.length;
+      var dqo=document.getElementById('dqOrders');if(dqo)dqo.textContent=myOrders.length;
+      var dqs=document.getElementById('dqSpent');if(dqs)dqs.textContent='$'+spent.toFixed(0);
+    });
+    renderBought();updateProfileUI();
+  });
+}
+
+function renderBought(){
+  var el=document.getElementById('boughtGrid');if(!el)return;
+  var bought=docs.filter(function(d){return boughtIds.indexOf(d.id)>-1;});
+  var c=document.getElementById('profDocCnt');if(c)c.textContent=bought.length;
+  if(!bought.length){
+    el.innerHTML='';
+    var empty=document.createElement('div');empty.className='empty-state';
+    empty.innerHTML='<span class="empty-icon">📚</span><div class="empty-title">Aucun document acheté pour linstant</div><p class="empty-desc">Parcourez notre catalogue.</p>';
+    var btn=document.createElement('button');btn.className='adm-btn';btn.style.fontFamily='var(--font-body)';btn.textContent='Parcourir le catalogue';btn.addEventListener('click',function(){goPage('catalogue');});
+    empty.appendChild(btn);el.appendChild(empty);return;
+  }
+  el.innerHTML='';
+  bought.forEach(function(d){
+    var card=document.createElement('div');card.className='bought-card';
+    var top=document.createElement('div');top.className='bought-card-top';
+    var em=document.createElement('div');em.className='bought-emoji '+(d.filiere||'');em.textContent=d.emoji||EMOJIS[d.filiere]||'📄';
+    var info=document.createElement('div');info.className='bought-info';info.innerHTML='<div class="bought-title">'+d.title+'</div><div class="bought-prof">'+d.prof+'</div>';
+    top.appendChild(em);top.appendChild(info);
+    var meta=document.createElement('div');meta.className='bought-meta';
+    meta.innerHTML='<span class="bought-tag">'+flabel(d.filiere)+'</span>'+(d.type?'<span class="bought-tag">'+d.type+'</span>':'')+(d.pages?'<span class="bought-tag">'+d.pages+' pages</span>':'');
+    var dlBtn=document.createElement('button');dlBtn.className='dl-btn';dlBtn.textContent='⬇ Télécharger le PDF';dlBtn.dataset.id=d.id;dlBtn.addEventListener('click',function(){dlDoc(this.dataset.id);});
+    card.appendChild(top);card.appendChild(meta);card.appendChild(dlBtn);el.appendChild(card);
+  });
+}
+
+function renderProgress(){
+  loadBoughtIds(function(){
+    var bought=docs.filter(function(d){return boughtIds.indexOf(d.id)>-1;});
+    var pbf=document.getElementById('progByFil');
+    if(pbf){
+      if(!bought.length){pbf.innerHTML='<p style="color:var(--text-muted);font-size:0.875rem">Aucun document acheté encore.</p>';}
+      else{
+        var counts={};FILIERES.forEach(function(f){counts[f.id]=bought.filter(function(d){return d.filiere===f.id;}).length;});
+        var maxC=Math.max.apply(null,Object.values(counts).concat([1]));
+        pbf.innerHTML=FILIERES.map(function(f){var cnt=counts[f.id];if(!cnt)return '';var pct=Math.round(cnt/maxC*100);return '<div class="prog-bar-item"><span class="prog-bar-label">'+f.emoji+' '+f.name+'</span><div class="prog-bar-track"><div class="prog-bar-fill" style="width:'+pct+'%;background:'+f.color+'"></div></div><span class="prog-bar-val">'+cnt+'</span></div>';}).filter(Boolean).join('');
+      }
+    }
+    var as=document.getElementById('activityStats');
+    if(as){
+      db.collection('orders').where('userId','==',curUser.uid).get().then(function(snap){
+        var myOrders=snap.docs.map(function(d){return d.data();});
+        var spent=myOrders.reduce(function(s,o){return s+(parseFloat(o.total)||0);},0);
+        var filBought=bought.filter(function(d){return d.filiere===curUser.filiere;}).length;
+        var filTotal=docs.filter(function(d){return d.filiere===curUser.filiere;}).length;
+        as.innerHTML='<div style="display:flex;flex-direction:column;gap:16px"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Documents achetés</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--blue)">'+boughtIds.length+'</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Commandes passées</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--green)">'+myOrders.length+'</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Total dépensé</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--amber)">$'+spent.toFixed(2)+'</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0"><span style="font-size:0.875rem;color:var(--text-muted);font-weight:500">Docs '+flabel(curUser.filiere)+' achetés</span><span style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--purple)">'+filBought+'/'+filTotal+'</span></div></div>';
+      });
+    }
+    var rg=document.getElementById('recoGrid');
+    if(rg){
+      var notBought=docs.filter(function(d){return boughtIds.indexOf(d.id)<0;});
+      var recos=notBought.filter(function(d){return d.filiere===curUser.filiere;}).slice(0,3);
+      if(recos.length<3)recos=recos.concat(notBought.filter(function(d){return d.filiere!==curUser.filiere;}).slice(0,3-recos.length));
+      rg.innerHTML='';
+      if(!recos.length){rg.innerHTML='<p style="color:var(--text-muted);font-size:0.875rem">Vous avez tout acheté ! Bravo 🎉</p>';}
+      else recos.forEach(function(d){rg.appendChild(makeDocCard(d));});
+    }
+  });
+}
+
+function updateProfileUI(){
+  if(!curUser)return;
+  var name=curUser.name||curUser.email||'Étudiant';
+  var initials=name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().substring(0,2);
+  var pa=document.getElementById('profAv');if(pa)pa.textContent=initials;
+  var pn=document.getElementById('profNm');if(pn)pn.textContent=name;
+  var pe=document.getElementById('profEm');if(pe)pe.textContent=curUser.email;
+  var c1=document.getElementById('profDocCnt');if(c1)c1.textContent=boughtIds.length;
+  db.collection('orders').where('userId','==',curUser.uid).get().then(function(snap){
+    var c2=document.getElementById('profOrderCnt');if(c2)c2.textContent=snap.size;
+  });
+  var piN=document.getElementById('piName');if(piN)piN.textContent=name;
+  var piE=document.getElementById('piEmail');if(piE)piE.textContent=curUser.email;
+  var piF=document.getElementById('piFil');if(piF)piF.textContent=flabel(curUser.filiere);
+  var piD=document.getElementById('piDate');if(piD)piD.textContent=curUser.createdAt?new Date(curUser.createdAt).toLocaleDateString('fr-FR'):'-';
+  var piDc=document.getElementById('piDocs');if(piDc)piDc.textContent=boughtIds.length;
+}
+
+function showDashTab(tab,el){
+  document.querySelectorAll('.dtab').forEach(function(t){t.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.getElementById('tabDocs').style.display=tab==='docs'?'block':'none';
+  document.getElementById('tabProgress').style.display=tab==='progress'?'block':'none';
+  document.getElementById('tabProfile').style.display=tab==='profile'?'block':'none';
+  if(tab==='docs')renderBought();
+  if(tab==='progress')renderProgress();
+  if(tab==='profile')updateProfileUI();
+}
+
+// ADMIN AUTH
+function doAdminLogin(){
+  var u=document.getElementById('adminU').value.trim();
+  var p=document.getElementById('adminP').value;
+  var err=document.getElementById('adminErr');
+  if(u==='admin'&&p===adminPwd){
+    isAdmin=true;err.classList.remove('show');
+    sessionStorage.setItem('el_admin','1');
+    showAdminNav();
+    goPage('admin');showToast('Bienvenue Serge ! 👋','success');refreshAdminData();
+  }else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
+}
+function adminOut(){isAdmin=false;sessionStorage.removeItem('el_admin');showGuestNav();goPage('home');showToast('Déconnecté.','');}
+function changeAdminPwd(){
+  var o=document.getElementById('oldP').value,n=document.getElementById('newP').value,c=document.getElementById('confP').value;
+  if(o!==adminPwd){showToast('Mot de passe actuel incorrect.','error');return;}
+  if(n.length<6){showToast('Minimum 6 caractères.','error');return;}
+  if(n!==c){showToast('Les mots de passe ne correspondent pas.','error');return;}
+  adminPwd=n;['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  showToast('Mot de passe mis à jour !','success');
+}
+
+function refreshAdminData(){
+  loadUsers(function(){renderAdmRecentUsers();renderAdmUsers();});
+  loadOrders(function(){renderAdmOrders();
+    var ob=document.getElementById('admOrdBadge');if(ob)ob.textContent=orders.length+' total';
+    var on=document.getElementById('admOrdN');if(on)on.textContent=orders.length;
+    var rev=orders.reduce(function(s,o){return s+(parseFloat(o.total)||0);},0);
+    var rv=document.getElementById('admRev');if(rv)rv.textContent='$'+rev.toFixed(2);
+  });
+  updateStats();renderAdmRecentDocs();
+}
+
+function showAP(p,el){
+  document.querySelectorAll('.adm-pg').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.adm-nav-item').forEach(function(x){x.classList.remove('active');});
+  var pg=document.getElementById('adm-'+p);if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');
+  if(p==='documents')renderAdmAllDocs();
+  if(p==='utilisateurs')renderAdmUsers();
+  if(p==='commandes')renderAdmOrders();
+  if(p==='dashboard')refreshAdminData();
+}
+
+function emptyRow(cols,msg){return '<tr><td colspan="'+cols+'" style="text-align:center;padding:2rem;color:var(--text-muted)">'+msg+'</td></tr>';}
+
+function makeAdmDocRow(d,i){
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td style="color:var(--text-muted)">'+(i+1)+'</td><td>'+(d.emoji||'📄')+' '+d.title.substring(0,25)+'</td><td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td></td>';
+  var td=tr.cells[4];
+  var edit=document.createElement('button');edit.className='act-btn act-edit';edit.textContent='Modifier';edit.dataset.id=d.id;edit.addEventListener('click',function(){editDoc(this.dataset.id);});
+  var del=document.createElement('button');del.className='act-btn act-del';del.textContent='Supprimer';del.dataset.id=d.id;del.addEventListener('click',function(){delDoc(this.dataset.id);});
+  td.appendChild(edit);td.appendChild(del);return tr;
+}
+
+function renderAdmRecentDocs(){
+  var t=document.getElementById('tblRecentDocs');if(!t)return;
+  if(!docs.length){t.innerHTML=emptyRow(4,'Aucun document encore.');return;}
+  t.innerHTML='<thead><tr><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody></tbody>';
+  var tbody=t.querySelector('tbody');
+  docs.slice(0,5).forEach(function(d){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(d.emoji||'📄')+' '+d.title.substring(0,28)+'</td><td><span class="bdg '+bdgClass(d.filiere)+'">'+flabel(d.filiere)+'</span></td><td><b>$'+d.prix+'</b></td><td></td>';
+    var td=tr.cells[3];
+    var edit=document.createElement('button');edit.className='act-btn act-edit';edit.textContent='Modifier';edit.dataset.id=d.id;edit.addEventListener('click',function(){editDoc(this.dataset.id);});
+    var del=document.createElement('button');del.className='act-btn act-del';del.textContent='Supprimer';del.dataset.id=d.id;del.addEventListener('click',function(){delDoc(this.dataset.id);});
+    td.appendChild(edit);td.appendChild(del);tbody.appendChild(tr);
+  });
+}
+
+function renderAdmRecentUsers(){
+  var t=document.getElementById('tblRecentUsers');if(!t)return;
+  if(!users.length){t.innerHTML=emptyRow(3,'Aucun utilisateur encore.');return;}
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Filière</th></tr></thead><tbody>'+users.slice(0,5).map(function(u){return '<tr><td><b>'+(u.name||'-')+'</b></td><td>'+u.email+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td></tr>';}).join('')+'</tbody>';
+}
+
+function renderAdmAllDocs(){
+  var t=document.getElementById('tblAllDocs');if(!t)return;
+  var lbl=document.getElementById('docListLbl');if(lbl)lbl.textContent='Tous les documents ('+docs.length+')';
+  if(!docs.length){t.innerHTML=emptyRow(5,'Aucun document. Cliquez sur + Ajouter.');return;}
+  t.innerHTML='<thead><tr><th>#</th><th>Titre</th><th>Filière</th><th>Prix</th><th>Actions</th></tr></thead><tbody></tbody>';
+  var tbody=t.querySelector('tbody');docs.forEach(function(d,i){tbody.appendChild(makeAdmDocRow(d,i));});
+}
+
+function renderAdmUsers(){
+  var t=document.getElementById('tblUsers');if(!t)return;
+  var lbl=document.getElementById('userListLbl');if(lbl)lbl.textContent='Utilisateurs ('+users.length+')';
+  if(!users.length){t.innerHTML=emptyRow(4,'Aucun utilisateur inscrit.');return;}
+  var roleLabel={etudiant:'Etudiant',assistant:'Assistant',ct:'CT',professeur:'Professeur'};
+  t.innerHTML='<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Filière</th><th>Date</th></tr></thead><tbody>'+users.map(function(u){return '<tr><td><b>'+(u.name||'-')+'</b></td><td>'+u.email+'</td><td>'+(roleLabel[u.role]||u.role||'-')+'</td><td><span class="bdg '+bdgClass(u.filiere)+'">'+flabel(u.filiere)+'</span></td><td style="color:var(--text-muted)">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
+}
+
+function renderAdmOrders(){
+  var t=document.getElementById('tblOrders');if(!t)return;
+  var lbl=document.getElementById('ordListLbl');if(lbl)lbl.textContent='Commandes ('+orders.length+')';
+  if(!orders.length){t.innerHTML=emptyRow(5,'Aucune commande encore.');return;}
+  t.innerHTML='<thead><tr><th>Étudiant</th><th>Docs</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'+orders.map(function(o){return '<tr><td><b>'+(o.userName||'-')+'</b><br><small style="color:var(--text-muted)">'+(o.userEmail||'')+'</small></td><td>'+(o.items&&o.items.length||0)+'</td><td><b>$'+(o.total||0)+'</b></td><td><span class="bdg bdg-amber">'+(o.status||'En attente')+'</span></td><td style="color:var(--text-muted)">'+(o.createdAt?new Date(o.createdAt.toDate?o.createdAt.toDate():o.createdAt).toLocaleDateString('fr-FR'):'-')+'</td></tr>';}).join('')+'</tbody>';
+}
+
+// CRUD DOCS
+function saveDoc(){
+  var title=document.getElementById('fTitle').value.trim();
+  var fil=document.getElementById('fFil').value;
+  var type=document.getElementById('fType').value;
+  var prof=document.getElementById('fProf').value.trim();
+  var prix=parseFloat(document.getElementById('fPrix').value);
+  var link=document.getElementById('fLink').value.trim();
+  if(!title||!fil||!type||!prof||isNaN(prix)||!link){showToast('Remplissez tous les champs obligatoires (*)','error');return;}
+  var data={title:title,filiere:fil,type:type,prof:prof,prix:prix,driveLink:link,
+    pages:parseInt(document.getElementById('fPages').value)||null,
+    annee:parseInt(document.getElementById('fAnnee').value)||null,
+    desc:document.getElementById('fDesc').value||'',
+    badge:document.getElementById('fBadge').value||'',
+    emoji:EMOJIS[fil]||'📄',createdAt:Date.now()};
+  var btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='Enregistrement...';
+  var eid=document.getElementById('editId').value;
+  var promise=eid?db.collection('documents').doc(eid).update(data):db.collection('documents').add(data);
+  promise.then(function(){
+    showToast(eid?'Document mis à jour !':'Document ajouté ! 🎉','success');
+    loadDocs(function(){renderAdmAllDocs();renderAdmRecentDocs();});
+    resetDocForm();showAP('documents',null);
+  }).catch(function(e){btn.disabled=false;btn.textContent='Enregistrer le document';showToast('Erreur: '+e.message,'error');});
+}
+
+function editDoc(id){
+  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  document.getElementById('editId').value=id;
+  document.getElementById('fTitle').value=d.title||'';document.getElementById('fFil').value=d.filiere||'';
+  document.getElementById('fType').value=d.type||'';document.getElementById('fProf').value=d.prof||'';
+  document.getElementById('fPrix').value=d.prix||'';document.getElementById('fPages').value=d.pages||'';
+  document.getElementById('fAnnee').value=d.annee||'';document.getElementById('fDesc').value=d.desc||'';
+  document.getElementById('fBadge').value=d.badge||'';document.getElementById('fLink').value=d.driveLink||'';
+  var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Modifier le document';
+  var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Mettez à jour les informations.';
+  var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Mettre à jour';
+  showAP('ajouter',null);
+}
+
+function delDoc(id){
+  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  var body=document.getElementById('modalBdy');document.getElementById('modalTit').textContent='Supprimer le document';
+  body.innerHTML='';
+  var p=document.createElement('p');p.style.cssText='margin-bottom:1.5rem;color:var(--text-muted);line-height:1.6';p.innerHTML='Supprimer <b>'+d.title+'</b> ? Irréversible.';
+  var yes=document.createElement('button');yes.style.cssText='width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:0.5rem';yes.textContent='Oui, supprimer';yes.dataset.id=id;yes.addEventListener('click',function(){confirmDel(this.dataset.id);});
+  var no=document.createElement('button');no.className='mbtn secondary';no.textContent='Annuler';no.addEventListener('click',closeModal);
+  body.appendChild(p);body.appendChild(yes);body.appendChild(no);
+  document.getElementById('modalOv').classList.add('open');
+}
+
+function confirmDel(id){
+  db.collection('documents').doc(id).delete().then(function(){
+    closeModal();loadDocs(function(){renderAdmAllDocs();renderAdmRecentDocs();});showToast('Document supprimé.','');
+  }).catch(function(e){showToast('Erreur: '+e.message,'error');});
+}
+
+function resetDocForm(){
+  document.getElementById('editId').value='';
+  ['fTitle','fProf','fPrix','fPages','fAnnee','fDesc','fLink'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['fFil','fType','fBadge'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Ajouter un document';
+  var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Remplissez toutes les informations du document.';
+  var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Enregistrer le document';
+}
+
+// NAVIGATION
+var _curPage='home';
+function goPage(p){
+  if(p==='admin'&&!isAdmin){goPage('adminlogin');return;}
+  if(p==='dashboard'&&!curUser){goPage('login');return;}
+  if(p===_curPage){window.scrollTo({top:0,behavior:'smooth'});return;}
+  var outEl=document.getElementById('pg-'+_curPage);
+  var inEl=document.getElementById('pg-'+p);
+  if(!inEl)return;
+  inEl.style.display='block';
+  inEl.classList.remove('pg-enter','pg-exit');
+  void inEl.offsetWidth;
+  inEl.classList.add('pg-enter');
+  if(outEl)outEl.classList.add('pg-exit');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      inEl.classList.remove('pg-enter');
+      if(outEl)setTimeout(function(){outEl.style.display='none';outEl.classList.remove('pg-exit');},280);
+    });
+  });
+  _curPage=p;
+  var ftr=document.getElementById('mainFtr');if(ftr)ftr.style.display=['admin','adminlogin','login','register'].indexOf(p)>-1?'none':'block';
+  if(p==='admin')showAdminNav();
+  else if(isAdmin)showAdminNav();
+  window.scrollTo({top:0,behavior:'instant'});
+  if(p==='catalogue')renderDocs('catGrid',filtered());
+  if(p==='filieres')renderFil('allFil');
+  if(p==='dashboard')loadDashboard();
+  if(p==='admin')refreshAdminData();
+}
+
+function setNav(id){document.querySelectorAll('.nav-link').forEach(function(a){a.classList.remove('active');});var e=document.getElementById(id);if(e)e.classList.add('active');}
+function toggleMenu(){document.getElementById('mobMenu').classList.toggle('open');}
+function closeMenu(){document.getElementById('mobMenu').classList.remove('open');}
+function toggleUserMenu(){var d=document.getElementById('userDropdown');if(d)d.style.display=d.style.display==='none'||!d.style.display?'block':'none';}
+function closeUserMenu(){var d=document.getElementById('userDropdown');if(d)d.style.display='none';}
+document.addEventListener('click',function(e){if(!e.target.closest('#userNav'))closeUserMenu();});
+
+function showToast(msg,type){
+  var t=document.getElementById('toastEl');
+  document.getElementById('toastTxt').textContent=msg;
+  t.className='toast show'+(type==='success'?' success':type==='error'?' error':'');
+  setTimeout(function(){t.classList.remove('show');},3500);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  var sq=document.getElementById('searchQ');
+  if(sq){var timer=null;sq.addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(applyFilter,300);});}
+});
+
+function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('adminlogin');}
+
+// AI CHAT
+var aiHistory = [];
+
+function toggleAI(){
+  var panel=document.getElementById('aiPanel');
+  var ov=document.getElementById('aiOverlay');
+  panel.classList.toggle('open');
+  if(ov)ov.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    setTimeout(function(){var inp=document.getElementById('aiInput');if(inp)inp.focus();},350);
+  }
+}
+
+function sendAI(){
+  var input=document.getElementById('aiInput');
+  var msg=input.value.trim();
+  if(!msg)return;
+  var msgsEl=document.getElementById('aiMessages');
+  var btn=document.getElementById('aiSendBtn');
+  var welcome=msgsEl.querySelector('.ai-welcome');
+  if(welcome)welcome.remove();
+  var userMsg=document.createElement('div');
+  userMsg.className='ai-msg user';
+  userMsg.textContent=msg;
+  msgsEl.appendChild(userMsg);
+  var loading=document.createElement('div');
+  loading.className='ai-msg loading';
+  loading.innerHTML='<div class="ai-typing"><span></span><span></span><span></span></div>';
+  msgsEl.appendChild(loading);
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+  input.value='';
+  btn.disabled=true;
+  var docsList=docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
+  var systemPrompt='Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: '+docsList+'. Reponds en francais, de facon concise et bienveillante.';
+  aiHistory.push({role:'user',content:msg});
+  if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);
+  var GEMINI_KEY = 'VOTRE_CLE_GEMINI_ICI';
+  // Convertir l'historique au format Gemini (parts au lieu de content)
+  var geminiHistory = aiHistory.slice(0,-1).map(function(m){
+    return {role: m.role==='assistant'?'model':'user', parts:[{text:m.content}]};
+  });
+  var geminiBody = {
+    system_instruction:{parts:[{text:systemPrompt}]},
+    contents: geminiHistory.concat([{role:'user',parts:[{text:msg}]}]),
+    generationConfig:{maxOutputTokens:512,temperature:0.7}
+  };
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(geminiBody)
+  }).then(function(r){return r.json();}).then(function(data){
+    loading.remove();
+    var reply='Desolee, je ne peux pas repondre maintenant.';
+    try{reply=data.candidates[0].content.parts[0].text;}catch(e){}
+    var botMsg=document.createElement('div');
+    botMsg.className='ai-msg bot';botMsg.textContent=reply;
+    msgsEl.appendChild(botMsg);msgsEl.scrollTop=msgsEl.scrollHeight;
+    aiHistory.push({role:'assistant',content:reply});
+    btn.disabled=false;
+  }).catch(function(){
+    loading.remove();
+    var errMsg=document.createElement('div');
+    errMsg.className='ai-msg bot';errMsg.textContent='Erreur de connexion. Verifiez votre connexion internet.';
+    msgsEl.appendChild(errMsg);msgsEl.scrollTop=msgsEl.scrollHeight;
+    btn.disabled=false;
+  });
+}
+
+window.addEventListener('hashchange',checkHash);
+checkHash();
+
+// INIT - restore admin session and load docs
+try{if(sessionStorage.getItem('el_admin')==='1'){isAdmin=true;showAdminNav();}}catch(e){}
+
+loadDocs();
+</script>
+</body>
+</html>
