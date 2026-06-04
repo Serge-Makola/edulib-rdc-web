@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>EduLib RDC — Plateforme de Ressources Pédagogiques</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="manifest" href="data:application/json,{%22name%22:%22EduLib%20RDC%22,%22short_name%22:%22EduLib%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230d1117%22,%22theme_color%22:%22%232563eb%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/192/literature.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}"/>
+<meta name="theme-color" content="#2563eb"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="EduLib RDC"/>
+<meta name="description" content="Plateforme de ressources pedagogiques pour etudiants universitaires en RDC"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -423,6 +429,59 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 .ai-welcome-icon{font-size:2.75rem;margin-bottom:0.75rem}
 .ai-welcome-title{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:0.4rem}
 .ai-welcome-sub{font-size:0.82rem;line-height:1.6}
+
+/* ===== RATING STARS ===== */
+.doc-rating{display:flex;gap:2px;margin:4px 0}
+.star{color:#e2e8f0;font-size:0.85rem;cursor:pointer;transition:color 0.1s;-webkit-tap-highlight-color:transparent}
+.star.filled,.star:hover{color:var(--gold)}
+.rating-count{font-size:0.72rem;color:var(--text-muted);margin-left:4px;align-self:center}
+
+/* ===== ADVANCED SEARCH ===== */
+.adv-search{display:flex;gap:8px;flex-wrap:wrap;padding:0.75rem 0 0}
+.adv-select{padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.8rem;font-family:var(--font-body);background:#fff;color:var(--ink);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none}
+.adv-select:focus{border-color:var(--blue)}
+
+/* ===== NOTIFICATION BELL ===== */
+.notif-btn{position:relative;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.15);border-radius:9px;padding:7px 10px;color:#fff;cursor:pointer;font-size:1rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;display:none;border:2px solid var(--ink)}
+.notif-dot.show{display:block}
+.notif-panel{position:fixed;top:68px;right:1rem;width:min(340px,calc(100vw - 2rem));background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);z-index:500;border:1px solid var(--border);display:none;max-height:70vh;overflow-y:auto}
+.notif-panel.open{display:block}
+.notif-hd{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-hd-title{font-weight:700;font-size:0.95rem}
+.notif-clear{font-size:0.75rem;color:var(--blue);cursor:pointer;background:none;border:none}
+.notif-item{padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.notif-item:last-child{border-bottom:none}
+.notif-item.unread{background:var(--blue-light)}
+.notif-icon{font-size:1.4rem;flex-shrink:0}
+.notif-text{font-size:0.82rem;line-height:1.5;color:var(--ink)}
+.notif-time{font-size:0.72rem;color:var(--text-muted);margin-top:2px}
+.notif-empty{padding:2rem;text-align:center;color:var(--text-muted);font-size:0.875rem}
+
+/* ===== PWA INSTALL BANNER ===== */
+.pwa-banner{position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:#fff;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;z-index:900;border-top:1px solid rgba(255,255,255,0.1);transform:translateY(100%);transition:transform 0.3s}
+.pwa-banner.show{transform:translateY(0)}
+.pwa-banner-text{flex:1;font-size:0.875rem}
+.pwa-banner-title{font-weight:700;margin-bottom:2px}
+.pwa-banner-sub{font-size:0.78rem;color:rgba(255,255,255,0.6)}
+.pwa-install-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:var(--font-body);-webkit-tap-highlight-color:transparent}
+.pwa-dismiss{background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:1.2rem;padding:4px;-webkit-tap-highlight-color:transparent}
+
+/* ===== ABOUT & CONTACT PAGES ===== */
+.info-page{max-width:800px;margin:0 auto;padding:3rem 1.5rem}
+.info-page h2{font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:1.5rem;color:var(--ink)}
+.info-page h3{font-size:1.1rem;font-weight:700;margin:2rem 0 0.75rem;color:var(--ink)}
+.info-page p{color:var(--text-muted);line-height:1.8;margin-bottom:1rem}
+.info-card{background:var(--surface-2);border-radius:16px;padding:1.5rem;margin-bottom:1rem;border:1px solid var(--border)}
+.contact-form{display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem}
+.contact-form input,.contact-form textarea,.contact-form select{padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:var(--font-body);background:#fff;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
+.contact-form textarea{min-height:120px;resize:vertical}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.team-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;text-align:center}
+.team-avatar{font-size:2.5rem;margin-bottom:0.5rem}
+.team-name{font-weight:700;font-size:0.9rem}
+.team-role{font-size:0.78rem;color:var(--text-muted);margin-top:2px}
 </style>
 </head>
 <body>
@@ -460,6 +519,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         </div>
       </span>
     </div>
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot"></span></button>
     <button class="nav-cart-btn" id="navCartBtn" onclick="openCart()" aria-label="Panier">🛒 <span class="nav-cart-badge" id="navCartBadgeMob">0</span></button>
     <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
   </div>
@@ -479,6 +539,26 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
     <span class="nav-link" onclick="goPage('dashboard');closeMenu()">👤 Mon espace</span>
     <span class="nav-link" style="color:var(--red)" onclick="logoutUser();closeMenu()">🚪 Déconnexion</span>
   </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-hd">
+    <span class="notif-hd-title">🔔 Notifications</span>
+    <button class="notif-clear" onclick="clearNotifs()">Tout effacer</button>
+  </div>
+  <div id="notifList"><div class="notif-empty">Aucune notification</div></div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwaBanner">
+  <div style="font-size:2rem">📚</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Installer EduLib RDC</div>
+    <div class="pwa-banner-sub">Accedez rapidement depuis votre ecran d'accueil</div>
+  </div>
+  <button class="pwa-install-btn" onclick="installPWA()">Installer</button>
+  <button class="pwa-dismiss" onclick="dismissPWA()">✕</button>
 </div>
 
 <!-- ===== HOME ===== -->
@@ -523,6 +603,21 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       <div class="search-wrap">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>
         <input type="text" id="searchQ" placeholder="Rechercher un document, un cours, un professeur..."/>
+        <select class="adv-select" id="filterType" onchange="applyFilter()">
+          <option value="">Tous les types</option>
+          <option value="Syllabus">Syllabus</option>
+          <option value="Notes de cours">Notes de cours</option>
+          <option value="Exercices corriges">Exercices corrigés</option>
+          <option value="Examen corrige">Examen corrigé</option>
+          <option value="TD corrige">TD corrigé</option>
+        </select>
+        <select class="adv-select" id="filterYear" onchange="applyFilter()">
+          <option value="">Toutes les années</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+        </select>
       </div>
       <div class="chips">
         <button class="chip active" onclick="setFiliere('',this)">Tous</button>
@@ -858,6 +953,56 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
   </div>
 </div>
 
+<!-- ===== ABOUT ===== -->
+<div id="pg-about" style="display:none">
+  <div class="info-page">
+    <div style="margin-bottom:0.5rem"><button class="btn btn-ghost" onclick="goPage('home')" style="font-size:0.875rem">← Retour</button></div>
+    <h2>À propos d'EduLib RDC</h2>
+    <div class="info-card">
+      <p>EduLib RDC est la premiere plateforme de ressources pedagogiques dediee aux etudiants universitaires de la Republique Democratique du Congo. Notre mission est de rendre les ressources academiques accessibles, abordables et de qualite pour chaque etudiant congolais.</p>
+    </div>
+    <h3>🎯 Notre mission</h3>
+    <p>Faciliter l'acces aux ressources pedagogiques de qualite pour tous les etudiants universitaires congolais, quelle que soit leur universite ou leur localisation.</p>
+    <h3>📚 Ce que nous offrons</h3>
+    <p>Syllabus officiels, notes de cours, exercices corriges, examens corriges et travaux diriges couvrant 6 filieres : Droit, Medecine, Polytechnique, Sciences, Lettres et Economie.</p>
+    <h3>👥 Notre equipe</h3>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-avatar">👨‍💻</div><div class="team-name">Serge Makola</div><div class="team-role">Fondateur & Developpeur</div></div>
+      <div class="team-card"><div class="team-avatar">🎓</div><div class="team-name">EduLib RDC</div><div class="team-role">Equipe pedagogique</div></div>
+    </div>
+    <h3>📍 Contact</h3>
+    <div class="info-card">
+      <p>📧 contact@edulibrdc.com<br>📞 +243 840 021 963<br>📍 Kinshasa, RDC</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTACT ===== -->
+<div id="pg-contact" style="display:none">
+  <div class="info-page">
+    <div style="margin-bottom:0.5rem"><button class="btn btn-ghost" onclick="goPage('home')" style="font-size:0.875rem">← Retour</button></div>
+    <h2>Nous contacter</h2>
+    <div class="info-card">
+      <p>📧 contact@edulibrdc.com &nbsp;|&nbsp; 📞 +243 840 021 963</p>
+      <p><a href="https://wa.me/243840021963" style="color:var(--blue);font-weight:600">💬 WhatsApp</a></p>
+    </div>
+    <h3>📝 Envoyer un message</h3>
+    <div class="contact-form">
+      <input type="text" id="ctNom" placeholder="Votre nom complet"/>
+      <input type="email" id="ctEmail" placeholder="Votre email"/>
+      <select id="ctSujet">
+        <option value="">Choisir un sujet...</option>
+        <option>Question sur un document</option>
+        <option>Probleme technique</option>
+        <option>Proposition de partenariat</option>
+        <option>Autre</option>
+      </select>
+      <textarea id="ctMsg" placeholder="Votre message..."></textarea>
+      <button class="auth-submit-btn" onclick="sendContact()">Envoyer le message</button>
+    </div>
+  </div>
+</div>
+
 <footer id="mainFtr">
   <div class="footer-inner">
     <div class="footer-top">
@@ -865,7 +1010,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         <div class="footer-brand-name">EduLib RDC</div>
         <p class="footer-brand-desc">La plateforme de référence pour les ressources pédagogiques universitaires en République Démocratique du Congo.</p>
       </div>
-      <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="goPage('home')">Accueil</li><li onclick="goPage('catalogue')">Catalogue</li><li onclick="goPage('filieres')">Filières</li></ul></div>
+      <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="goPage('home')">Accueil</li><li onclick="goPage('catalogue')">Catalogue</li><li onclick="goPage('filieres')">Filières</li><li onclick="goPage('about')">À propos</li><li onclick="goPage('contact')">Contact</li></ul></div>
       <div><div class="footer-col-title">Filières</div><ul class="footer-links"><li onclick="goFiliere('droit')">Droit</li><li onclick="goFiliere('medecine')">Médecine</li><li onclick="goFiliere('polytechnique')">Polytechnique</li><li onclick="goFiliere('sciences')">Sciences</li><li onclick="goFiliere('lettres')">Lettres</li></ul></div>
       <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:rgba(255,255,255,0.5)">contact@edulibrdc.com</a></li><li><a href="tel:+243840021963" style="color:rgba(255,255,255,0.5)" id="footerPhone">+243 840 021 963</a></li><li><a href="https://wa.me/243840021963" style="color:rgba(255,255,255,0.5)" id="footerWhatsapp">WhatsApp</a></li></ul></div>
     </div>
@@ -970,7 +1115,12 @@ function showAdminNav(){
 // Load data from Firebase
 function loadDocs(cb) {
   db.collection('documents').orderBy('createdAt','desc').get().then(function(snap) {
+    var prevCount=docs.length;
     docs = snap.docs.map(function(d){var x=d.data();x.id=d.id;return x;});
+    if(prevCount>0&&docs.length>prevCount){
+      var newDocs=docs.slice(0,docs.length-prevCount);
+      newDocs.forEach(function(nd){addNotif('📚','Nouveau document: '+nd.title);});
+    }
     updateStats();
     refreshAllGrids();
     if(cb) cb();
@@ -1038,7 +1188,13 @@ function makeDocCard(d){
     btn.addEventListener('click',function(e){e.stopPropagation();addCart(this.dataset.id);});
     footer.appendChild(price);footer.appendChild(btn);
   }
-  body.appendChild(fil);body.appendChild(title);body.appendChild(prof);body.appendChild(footer);
+  // Rating stars
+  var ratingDiv=document.createElement('div');ratingDiv.className='doc-rating';
+  var avgRating=d.ratingSum&&d.ratingCount?Math.round(d.ratingSum/d.ratingCount):0;
+  var rCount=d.ratingCount||0;
+  for(var s=1;s<=5;s++){var star=document.createElement('span');star.className='star'+(s<=avgRating?' filled':'');star.textContent='★';star.dataset.id=d.id;star.dataset.val=s;star.addEventListener('click',function(e){e.stopPropagation();rateDoc(this.dataset.id,parseInt(this.dataset.val));});ratingDiv.appendChild(star);}
+  if(rCount>0){var rc=document.createElement('span');rc.className='rating-count';rc.textContent='('+rCount+')';ratingDiv.appendChild(rc);}
+  body.appendChild(fil);body.appendChild(title);body.appendChild(prof);body.appendChild(ratingDiv);body.appendChild(footer);
   div.appendChild(thumb);div.appendChild(body);
   div.addEventListener('click',function(){openDoc(this.dataset.id);});
   return div;
@@ -1062,7 +1218,7 @@ function renderFil(id){
   });
 }
 
-function filtered(){return docs.filter(function(d){var mF=!curFil||d.filiere===curFil;var q=curSearch.toLowerCase();var mS=!q||(d.title&&d.title.toLowerCase().indexOf(q)>-1)||(d.prof&&d.prof.toLowerCase().indexOf(q)>-1);return mF&&mS;});}
+function filtered(){return docs.filter(function(d){var mF=!curFil||d.filiere===curFil;var q=curSearch.toLowerCase();var mS=!q||(d.title&&d.title.toLowerCase().indexOf(q)>-1)||(d.prof&&d.prof.toLowerCase().indexOf(q)>-1);var mT=!curType||d.type===curType;var mY=!curYear||String(d.annee)===String(curYear);return mF&&mS&&mT&&mY;});}
 
 function refreshAllGrids(){
   renderDocs('homeGrid',filtered().slice(0,8));
@@ -1070,7 +1226,7 @@ function refreshAllGrids(){
   renderFil('homeFil');renderFil('allFil');
 }
 
-function applyFilter(){curSearch=document.getElementById('searchQ').value;renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
+function applyFilter(){curSearch=document.getElementById('searchQ').value;curType=(document.getElementById('filterType')||{}).value||'';curYear=(document.getElementById('filterYear')||{}).value||'';renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
 function setFiliere(f,el){curFil=f;document.querySelectorAll('.chips .chip').forEach(function(c){c.classList.remove('active');});if(el)el.classList.add('active');renderDocs('homeGrid',filtered().slice(0,8));renderDocs('catGrid',filtered());}
 
 function goFiliere(f){
@@ -1651,6 +1807,100 @@ function sendAI(){
     msgsEl.appendChild(errMsg);msgsEl.scrollTop=msgsEl.scrollHeight;
     btn.disabled=false;
   });
+}
+
+// ===== RATING =====
+function rateDoc(id,val){
+  if(!curUser){showToast('Connectez-vous pour noter','error');return;}
+  var d=docs.find(function(x){return x.id===id;});if(!d)return;
+  var newSum=(d.ratingSum||0)+val;
+  var newCount=(d.ratingCount||0)+1;
+  db.collection('documents').doc(id).update({ratingSum:newSum,ratingCount:newCount}).then(function(){
+    d.ratingSum=newSum;d.ratingCount=newCount;
+    refreshAllGrids();
+    showToast('Merci pour votre note ! ⭐','success');
+  }).catch(function(){});
+}
+
+// ===== NOTIFICATIONS =====
+var notifications=[];
+var notifOpen=false;
+
+function addNotif(icon,text){
+  notifications.unshift({icon:icon,text:text,time:new Date(),unread:true});
+  renderNotifs();
+  var dot=document.getElementById('notifDot');if(dot)dot.classList.add('show');
+}
+
+function renderNotifs(){
+  var list=document.getElementById('notifList');if(!list)return;
+  if(!notifications.length){list.innerHTML='<div class="notif-empty">Aucune notification</div>';return;}
+  list.innerHTML='';
+  notifications.slice(0,20).forEach(function(n){
+    var item=document.createElement('div');
+    item.className='notif-item'+(n.unread?' unread':'');
+    var ago=Math.round((Date.now()-n.time)/60000);
+    var timeStr=ago<1?'A l'instant':ago<60?ago+' min':Math.round(ago/60)+'h';
+    item.innerHTML='<div class="notif-icon">'+n.icon+'</div><div><div class="notif-text">'+n.text+'</div><div class="notif-time">'+timeStr+'</div></div>';
+    list.appendChild(item);
+  });
+}
+
+function toggleNotif(){
+  var panel=document.getElementById('notifPanel');if(!panel)return;
+  notifOpen=!notifOpen;
+  panel.classList.toggle('open',notifOpen);
+  if(notifOpen){
+    notifications.forEach(function(n){n.unread=false;});
+    var dot=document.getElementById('notifDot');if(dot)dot.classList.remove('show');
+  }
+}
+
+function clearNotifs(){
+  notifications=[];renderNotifs();
+  var dot=document.getElementById('notifDot');if(dot)dot.classList.remove('show');
+}
+
+document.addEventListener('click',function(e){
+  var panel=document.getElementById('notifPanel');
+  var btn=document.getElementById('notifBtn');
+  if(notifOpen&&panel&&btn&&!panel.contains(e.target)&&!btn.contains(e.target)){
+    notifOpen=false;panel.classList.remove('open');
+  }
+});
+
+// ===== PWA INSTALL =====
+var pwaPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();pwaPrompt=e;
+  setTimeout(function(){
+    var banner=document.getElementById('pwaBanner');
+    if(banner&&!localStorage.getItem('pwaDismissed'))banner.classList.add('show');
+  },5000);
+});
+function installPWA(){
+  if(pwaPrompt){pwaPrompt.prompt();pwaPrompt.userChoice.then(function(){dismissPWA();});}
+  else{showToast('Pour installer: Menu → Ajouter a l'ecran d'accueil','success');}
+}
+function dismissPWA(){
+  var b=document.getElementById('pwaBanner');if(b)b.classList.remove('show');
+  try{localStorage.setItem('pwaDismissed','1');}catch(e){}
+}
+
+// ===== CONTACT FORM =====
+function sendContact(){
+  var nom=document.getElementById('ctNom').value.trim();
+  var email=document.getElementById('ctEmail').value.trim();
+  var sujet=document.getElementById('ctSujet').value;
+  var msg=document.getElementById('ctMsg').value.trim();
+  if(!nom||!email||!msg){showToast('Remplissez tous les champs','error');return;}
+  db.collection('messages').add({nom:nom,email:email,sujet:sujet,message:msg,createdAt:Date.now()}).then(function(){
+    showToast('Message envoye ! Nous vous repondrons bientot 📧','success');
+    document.getElementById('ctNom').value='';
+    document.getElementById('ctEmail').value='';
+    document.getElementById('ctMsg').value='';
+    document.getElementById('ctSujet').value='';
+  }).catch(function(){showToast('Erreur, reessayez','error');});
 }
 
 window.addEventListener('hashchange',checkHash);
