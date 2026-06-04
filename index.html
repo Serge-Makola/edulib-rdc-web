@@ -1555,7 +1555,7 @@ function sendAI(){
   input.value='';
   btn.disabled=true;
   var docsList=docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
-  var systemPrompt='Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: '+docsList+'. Reponds en francais, de facon concise et bienveillante.';
+  var systemPrompt="Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: "+docsList+". Reponds en francais, de facon concise et bienveillante.";
   aiHistory.push({role:'user',content:msg});
   if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);
   var GEMINI_KEY = 'VOTRE_CLE_GEMINI_ICI';
