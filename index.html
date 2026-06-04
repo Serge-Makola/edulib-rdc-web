@@ -415,6 +415,8 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 .ai-input-wrap{padding:0.875rem 1rem;border-top:1px solid var(--border);display:-webkit-flex;display:flex;gap:8px;flex-shrink:0;background:#fff}
 .ai-input{-webkit-flex:1;flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;outline:none;font-family:var(--font-body);-webkit-appearance:none;appearance:none;background:#fff;color:var(--ink)}
 .ai-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
+.ai-attach{background:var(--surface-2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:1rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation;flex-shrink:0}
+.ai-attach:hover{background:var(--border)}
 .ai-send{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:11px 18px;cursor:pointer;font-size:1rem;font-weight:700;font-family:var(--font-body);-webkit-transition:background 0.15s;transition:background 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .ai-send:hover{background:var(--blue-dark)}.ai-send:disabled{opacity:0.5;cursor:not-allowed}
 .ai-welcome{text-align:center;padding:3rem 1.5rem;color:var(--text-muted)}
@@ -845,8 +847,14 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
     </div>
   </div>
   <div class="ai-input-wrap">
+    <button class="ai-attach" id="aiAttachBtn" onclick="document.getElementById('aiFileInput').click()" title="Joindre un fichier">📎</button>
+    <input type="file" id="aiFileInput" accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" style="display:none" onchange="handleAIFile(this)"/>
     <input class="ai-input" type="text" id="aiInput" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')sendAI()"/>
     <button class="ai-send" id="aiSendBtn" onclick="sendAI()">➤</button>
+  </div>
+  <div id="aiFilePreview" style="display:none;padding:0 1rem 0.75rem;font-size:0.78rem;color:var(--text-muted);display:none;align-items:center;gap:8px;background:#fff">
+    <span id="aiFileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+    <button onclick="clearAIFile()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;padding:0">✕</button>
   </div>
 </div>
 
@@ -1525,6 +1533,59 @@ function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('admin
 // AI CHAT
 var aiHistory = [];
 
+var aiAttachedFile = null;
+var aiAttachedText = null;
+
+function handleAIFile(input){
+  var file = input.files[0];
+  if(!file) return;
+  aiAttachedFile = file;
+  var preview = document.getElementById('aiFilePreview');
+  var nameEl = document.getElementById('aiFileName');
+  if(nameEl) nameEl.textContent = "📄 " + file.name;
+  if(preview){preview.style.display='flex';}
+  // Read file content
+  if(file.type === 'text/plain'){
+    var reader = new FileReader();
+    reader.onload = function(e){ aiAttachedText = e.target.result.substring(0, 8000); };
+    reader.readAsText(file);
+  } else if(file.type.startsWith('image/')){
+    var reader = new FileReader();
+    reader.onload = function(e){ aiAttachedText = "[Image jointe: "+file.name+"]"; };
+    reader.readAsDataURL(file);
+  } else {
+    // PDF or Word - we can only tell the AI the filename and ask user to paste content
+    aiAttachedText = "[Fichier joint: "+file.name+"] - Contenu non extractible directement. Demandez a l'utilisateur de coller le texte.";
+    // Try to read as text anyway
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var text = e.target.result;
+        if(typeof text === 'string' && text.length > 10){
+          aiAttachedText = "Contenu du fichier "+file.name+": "+text.substring(0,6000);
+        }
+      }catch(ex){}
+    };
+    reader.readAsText(file);
+  }
+  // Focus input
+  setTimeout(function(){
+    var inp = document.getElementById('aiInput');
+    if(inp){ inp.placeholder = "Que voulez-vous faire avec ce fichier ?"; inp.focus(); }
+  }, 200);
+}
+
+function clearAIFile(){
+  aiAttachedFile = null;
+  aiAttachedText = null;
+  var preview = document.getElementById('aiFilePreview');
+  if(preview) preview.style.display = 'none';
+  var inp = document.getElementById('aiInput');
+  if(inp) inp.placeholder = "Posez votre question...";
+  var fi = document.getElementById('aiFileInput');
+  if(fi) fi.value = '';
+}
+
 function toggleAI(){
   var panel=document.getElementById('aiPanel');
   var ov=document.getElementById('aiOverlay');
@@ -1556,8 +1617,13 @@ function sendAI(){
   input.value='';
   btn.disabled=true;
   var docsList=docs.slice(0,20).map(function(d){return d.title+' ('+flabel(d.filiere)+', $'+d.prix+')';}).join(', ');
-  var systemPrompt="Tu es l'assistant IA de EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC. Tu aides a trouver des documents et expliquer des concepts. Documents disponibles: "+docsList+". Reponds en francais, de facon concise et bienveillante.";
-  aiHistory.push({role:'user',content:msg});
+  var systemPrompt="Tu es un assistant academique intelligent pour EduLib RDC, une plateforme de ressources pedagogiques pour etudiants universitaires en RDC (droit, medecine, polytechnique, sciences, lettres, economie). Tu es expert dans toutes les matieres universitaires : droit congolais et international, medecine, economie, sciences exactes, lettres et sciences humaines, polytechnique et ingenierie. Tu peux expliquer des concepts, resumer des cours, aider a la comprehension, donner des definitions, analyser des sujets, orienter des recherches scientifiques et academiques. Documents disponibles sur la plateforme : "+docsList+". Si un document est disponible sur la plateforme, signale-le. Reponds toujours en francais, de facon claire, structuree et bienveillante. Sois aussi complet que necessaire.";
+  var fullMsg = msg;
+  if(aiAttachedText){
+    fullMsg = "Fichier joint: "+aiAttachedFile.name+"\n\nContenu:\n"+aiAttachedText+"\n\nQuestion de l'utilisateur: "+msg;
+    clearAIFile();
+  }
+  aiHistory.push({role:'user',content:fullMsg});
   if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);
   var MISTRAL_KEY = '5m2VQtW6GXG48R9ynVzYLa6qQBjlEk79';
   var mistralMessages = [{role:'system',content:systemPrompt}];
