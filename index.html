@@ -1535,6 +1535,22 @@ function toggleAI(){
   }
 }
 
+function mdToHtml(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/### (.+)/g,'<strong style="font-size:0.95em;display:block;margin:8px 0 4px">$1</strong>')
+    .replace(/## (.+)/g,'<strong style="font-size:1em;display:block;margin:8px 0 4px">$1</strong>')
+    .replace(/# (.+)/g,'<strong style="font-size:1.05em;display:block;margin:8px 0 4px">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*
+]+)\*/g,'<em>$1</em>')
+    .replace(/^\s*[-*]\s+(.+)/gm,'<div style="padding-left:12px;margin:2px 0">• $1</div>')
+    .replace(/
+
+/g,'<br><br>')
+    .replace(/
+/g,'<br>');
+}
 function sendAI(){
   var input=document.getElementById('aiInput');
   var msg=input.value.trim();
@@ -1572,7 +1588,8 @@ function sendAI(){
       if(data.error)reply='Erreur: '+data.error.message;
     }
     var botMsg=document.createElement('div');
-    botMsg.className='ai-msg bot';botMsg.textContent=reply;
+    botMsg.className='ai-msg bot';
+    botMsg.innerHTML=mdToHtml(reply);
     msgsEl.appendChild(botMsg);msgsEl.scrollTop=msgsEl.scrollHeight;
     aiHistory.push({role:'assistant',content:reply});
     btn.disabled=false;
