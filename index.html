@@ -1840,7 +1840,7 @@ function renderNotifs(){
     var item=document.createElement('div');
     item.className='notif-item'+(n.unread?' unread':'');
     var ago=Math.round((Date.now()-n.time)/60000);
-    var timeStr=ago<1?'A l'instant':ago<60?ago+' min':Math.round(ago/60)+'h';
+    var timeStr=ago<1?"A l'instant":ago<60?ago+" min":Math.round(ago/60)+"h";
     item.innerHTML='<div class="notif-icon">'+n.icon+'</div><div><div class="notif-text">'+n.text+'</div><div class="notif-time">'+timeStr+'</div></div>';
     list.appendChild(item);
   });
@@ -1880,7 +1880,7 @@ window.addEventListener('beforeinstallprompt',function(e){
 });
 function installPWA(){
   if(pwaPrompt){pwaPrompt.prompt();pwaPrompt.userChoice.then(function(){dismissPWA();});}
-  else{showToast('Pour installer: Menu → Ajouter a l'ecran d'accueil','success');}
+  else{showToast("Pour installer: Menu Ajouter a l'ecran d'accueil","success");}
 }
 function dismissPWA(){
   var b=document.getElementById('pwaBanner');if(b)b.classList.remove('show');
