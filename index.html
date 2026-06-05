@@ -868,9 +868,9 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       <div class="auth-sub">Espace Administrateur — Accès restreint</div>
       <div class="auth-title">Connexion Admin</div>
       <div class="auth-err" id="adminErr"></div>
-      <div class="form-grp"><label class="form-lbl">Identifiant</label><input class="form-inp" type="text" id="adminU" placeholder="admin"/></div>
+      <div class="form-grp"><label class="form-lbl">Email admin</label><input class="form-inp" type="email" id="adminU" placeholder="votre@email.com"/></div>
       <div class="form-grp"><label class="form-lbl">Mot de passe</label><input class="form-inp" type="password" id="adminP" placeholder="••••••••"/></div>
-      <button class="auth-submit-btn" onclick="doAdminLogin()">Se connecter</button>
+      <button class="auth-submit-btn" id="adminLoginBtn" onclick="doAdminLogin()">Se connecter</button>
       <span class="auth-link gray" onclick="goPage('home')">← Retour au site</span>
     </div>
   </div>
@@ -1082,7 +1082,7 @@ var db = firebase.firestore();
 var auth = firebase.auth();
 
 // State
-var docs=[],users=[],orders=[],cart=[],curUser=null,boughtIds=[],isAdmin=false,adminPwd='edulib2025',curFil='',curSearch='',curType='',curYear='';
+var docs=[],users=[],orders=[],cart=[],curUser=null,boughtIds=[],isAdmin=false,curFil='',curSearch='',curType='',curYear='';
 var FILIERES=[{id:'droit',name:'Droit',emoji:'⚖️',color:'#2563eb'},{id:'medecine',name:'Médecine',emoji:'🩺',color:'#059669'},{id:'polytechnique',name:'Polytechnique',emoji:'⚙️',color:'#d97706'},{id:'sciences',name:'Sciences',emoji:'🔬',color:'#16a34a'},{id:'lettres',name:'Lettres',emoji:'📖',color:'#7c3aed'},{id:'economie',name:'Économie',emoji:'📊',color:'#ea580c'}];
 var EMOJIS={droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
 var COLORS={droit:'#2563eb',medecine:'#059669',polytechnique:'#d97706',sciences:'#16a34a',lettres:'#7c3aed',economie:'#ea580c'};
@@ -1518,24 +1518,59 @@ function showDashTab(tab,el){
 
 // ADMIN AUTH
 function doAdminLogin(){
-  var u=document.getElementById('adminU').value.trim();
-  var p=document.getElementById('adminP').value;
+  var email=document.getElementById('adminU').value.trim();
+  var pass=document.getElementById('adminP').value;
   var err=document.getElementById('adminErr');
-  if(u==='admin'&&p===adminPwd){
-    isAdmin=true;err.classList.remove('show');
-    sessionStorage.setItem('el_admin','1');
-    showAdminNav();
-    goPage('admin');showToast('Bienvenue Serge ! 👋','success');refreshAdminData();
-  }else{err.textContent='Identifiants incorrects.';err.classList.add('show');}
+  var btn=document.getElementById('adminLoginBtn');
+  err.classList.remove('show');
+  if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Connexion...';
+  auth.signInWithEmailAndPassword(email,pass).then(function(cred){
+    var uid=cred.user.uid;
+    return db.collection('users').doc(uid).get();
+  }).then(function(doc){
+    if(doc.exists&&doc.data().role==='admin'){
+      isAdmin=true;
+      try{sessionStorage.setItem('el_admin','1');}catch(e){}
+      showAdminNav();
+      btn.disabled=false;btn.textContent='Se connecter';
+      goPage('admin');
+      showToast('Bienvenue Serge ! 👋','success');
+      refreshAdminData();
+    } else {
+      auth.signOut();
+      err.textContent='Acces refuse. Compte non autorise.';
+      err.classList.add('show');
+      btn.disabled=false;btn.textContent='Se connecter';
+    }
+  }).catch(function(e){
+    err.textContent=e.code==='auth/wrong-password'||e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
+    err.classList.add('show');
+    btn.disabled=false;btn.textContent='Se connecter';
+  });
 }
-function adminOut(){isAdmin=false;sessionStorage.removeItem('el_admin');showGuestNav();goPage('home');showToast('Déconnecté.','');}
+function adminOut(){
+  isAdmin=false;
+  try{sessionStorage.removeItem('el_admin');}catch(e){}
+  auth.signOut().then(function(){
+    curUser=null;boughtIds=[];
+    showGuestNav();
+    goPage('home');
+    showToast('Déconnecté.','');
+  }).catch(function(){
+    showGuestNav();goPage('home');
+  });
+}
 function changeAdminPwd(){
-  var o=document.getElementById('oldP').value,n=document.getElementById('newP').value,c=document.getElementById('confP').value;
-  if(o!==adminPwd){showToast('Mot de passe actuel incorrect.','error');return;}
-  if(n.length<6){showToast('Minimum 6 caractères.','error');return;}
+  var n=document.getElementById('newP').value,c=document.getElementById('confP').value;
+  if(n.length<6){showToast('Minimum 6 caracteres.','error');return;}
   if(n!==c){showToast('Les mots de passe ne correspondent pas.','error');return;}
-  adminPwd=n;['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-  showToast('Mot de passe mis à jour !','success');
+  var user=auth.currentUser;
+  if(!user){showToast('Non connecte.','error');return;}
+  user.updatePassword(n).then(function(){
+    ['oldP','newP','confP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    showToast('Mot de passe mis a jour !','success');
+  }).catch(function(e){showToast('Erreur: '+e.message,'error');});
 }
 
 function refreshAdminData(){
@@ -1762,7 +1797,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(sq){var timer=null;sq.addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(applyFilter,300);});}
 });
 
-function checkHash(){if(window.location.hash==='#admin-edulib2025')goPage('adminlogin');}
+function checkHash(){}
 
 // AI CHAT
 var aiHistory = [];
@@ -1984,15 +2019,22 @@ window.addEventListener('hashchange',checkHash);
 checkHash();
 
 // INIT - restore admin session and load docs
-try{
-  if(sessionStorage.getItem('el_admin')==='1'){
-    isAdmin=true;
-    showAdminNav();
-    var savedAdmPage='';
-    try{savedAdmPage=sessionStorage.getItem('edulib_page')||'';}catch(ex){}
-    if(savedAdmPage==='admin'){goPage('admin');}
+// Vérification admin au démarrage via Firebase
+auth.onAuthStateChanged(function(adminCheck){
+  if(adminCheck){
+    db.collection('users').doc(adminCheck.uid).get().then(function(doc){
+      if(doc.exists&&doc.data().role==='admin'){
+        isAdmin=true;
+        try{sessionStorage.setItem('el_admin','1');}catch(e){}
+        showAdminNav();
+        var savedPage='';
+        try{savedPage=sessionStorage.getItem('edulib_page')||'';}catch(ex){}
+        if(savedPage==='admin'){goPage('admin');}
+      }
+    }).catch(function(){});
   }
-}catch(e){}
+});
+try{if(sessionStorage.getItem('el_admin')==='1'){isAdmin=true;}}catch(e){}
 
 loadDocs();
 </script>
