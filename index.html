@@ -1092,7 +1092,7 @@ function bdgClass(f){return ({droit:'bdg-blue',medecine:'bdg-green',polytechniqu
 // Auth state listener
 auth.onAuthStateChanged(function(user) {
   if(user) {
-    db.collection('Users').doc(user.uid).get().then(function(doc) {
+    db.collection('users').doc(user.uid).get().then(function(doc) {
       if(doc.exists) {
         curUser = doc.data();
         curUser.uid = user.uid;
@@ -1166,14 +1166,14 @@ function loadDocs(cb) {
 
 function loadBoughtIds(cb) {
   if(!curUser){boughtIds=[];if(cb)cb();return;}
-  db.collection('Users').doc(curUser.uid).get().then(function(doc){
+  db.collection('users').doc(curUser.uid).get().then(function(doc){
     boughtIds=(doc.exists&&doc.data().boughtIds)||[];
     if(cb)cb();
   }).catch(function(){boughtIds=[];if(cb)cb();});
 }
 
 function loadUsers(cb) {
-  db.collection('Users').get().then(function(snap){
+  db.collection('users').get().then(function(snap){
     users = snap.docs.map(function(d){var x=d.data();x.id=d.id;return x;});
     if(cb) cb();
   }).catch(function(){users=[];if(cb)cb();});
@@ -1191,7 +1191,7 @@ function updateStats(){
   ['cntDocs','statDocs','admDocN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=n;});
   var db2=document.getElementById('admDocBadge');if(db2)db2.textContent=n+' docs';
   // Charger le nombre d'utilisateurs depuis Firebase
-  db.collection('Users').get().then(function(snap){
+  db.collection('users').get().then(function(snap){
     var u=snap.size;
     ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=u;});
     var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
@@ -1352,7 +1352,7 @@ function checkout(){
   db.collection('orders').add(ord).then(function(){
     // Sauvegarder les achats dans le profil utilisateur
     var boughtList=(curUser.boughtIds||[]).concat(cart.map(function(d){return d.id;}));
-    return db.collection('Users').doc(curUser.uid).update({boughtIds:boughtList});
+    return db.collection('users').doc(curUser.uid).update({boughtIds:boughtList});
   }).then(function(){
     boughtIds=boughtIds.concat(cart.map(function(d){return d.id;}));
     cart=[];updateCartBadge();closeCart();refreshAllGrids();
@@ -1395,7 +1395,7 @@ function doRegister(){
   btn.disabled=true;btn.textContent='Création...';
   auth.createUserWithEmailAndPassword(email,pass).then(function(cred){
     return cred.user.updateProfile({displayName:name}).then(function(){
-      return db.collection('Users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
+      return db.collection('users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
     });
   }).then(function(){
     goPage('dashboard');showToast('Bienvenue '+name+' ! Compte créé 🎉','success');
@@ -1527,7 +1527,7 @@ function doAdminLogin(){
   btn.disabled=true;btn.textContent='Connexion...';
   auth.signInWithEmailAndPassword(email,pass).then(function(cred){
     var uid=cred.user.uid;
-    return db.collection('Users').doc(uid).get();
+    return db.collection('users').doc(uid).get();
   }).then(function(doc){
     var docData = doc.exists ? doc.data() : null;
     var role = docData ? docData.role : 'AUCUN';
@@ -2027,7 +2027,7 @@ checkHash();
 // Vérification admin au démarrage via Firebase
 auth.onAuthStateChanged(function(adminCheck){
   if(adminCheck){
-    db.collection('Users').doc(adminCheck.uid).get().then(function(doc){
+    db.collection('users').doc(adminCheck.uid).get().then(function(doc){
       if(doc.exists&&doc.data().role==='admin'){
         isAdmin=true;
         try{sessionStorage.setItem('el_admin','1');}catch(e){}
