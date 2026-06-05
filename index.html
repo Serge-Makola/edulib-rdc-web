@@ -754,6 +754,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       <div class="form-grp"><label class="form-lbl">Email</label><input class="form-inp" type="email" id="loginEmail" placeholder="votre@email.com"/></div>
       <div class="form-grp"><label class="form-lbl">Mot de passe</label><input class="form-inp" type="password" id="loginPass" placeholder="••••••••"/></div>
       <button class="auth-submit-btn" id="loginBtn" onclick="doLogin()">Se connecter</button>
+      <span class="auth-link" onclick="showResetPwd()">Mot de passe oublié ?</span>
       <span class="auth-link" onclick="goPage('register')">Pas encore de compte ? S'inscrire</span>
       <span class="auth-link gray" onclick="goPage('home')">← Retour au site</span>
     </div>
@@ -1063,6 +1064,22 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
   </div>
 </div>
 
+
+<!-- RESET PASSWORD MODAL -->
+<div class="modal-overlay" id="resetModal">
+  <div class="auth-card" style="max-width:400px;width:100%">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:2rem;margin-bottom:0.5rem">🔑</div>
+      <div class="auth-title">Réinitialiser le mot de passe</div>
+      <div style="font-size:0.875rem;color:var(--text-muted);margin-top:0.5rem">Entrez votre email et nous vous enverrons un lien de réinitialisation</div>
+    </div>
+    <div class="auth-err" id="resetErr"></div>
+    <div class="auth-success" id="resetSuccess" style="display:none;background:var(--green-light);color:var(--green);padding:12px 16px;border-radius:10px;font-size:0.875rem;margin-bottom:1rem;text-align:center"></div>
+    <div class="form-grp"><label class="form-lbl">Email</label><input class="form-inp" type="email" id="resetEmail" placeholder="votre@email.com"/></div>
+    <button class="auth-submit-btn" id="resetBtn" onclick="doResetPwd()">Envoyer le lien</button>
+    <span class="auth-link gray" onclick="hideResetPwd()" style="margin-top:0.75rem">← Retour à la connexion</span>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -2013,6 +2030,46 @@ function sendContact(){
     document.getElementById('ctMsg').value='';
     document.getElementById('ctSujet').value='';
   }).catch(function(){showToast('Erreur, reessayez','error');});
+}
+
+function showResetPwd(){
+  var modal=document.getElementById('resetModal');
+  if(modal)modal.classList.add('open');
+  var err=document.getElementById('resetErr');
+  var succ=document.getElementById('resetSuccess');
+  if(err)err.classList.remove('show');
+  if(succ)succ.style.display='none';
+  var inp=document.getElementById('resetEmail');
+  // Pre-fill with login email if available
+  var loginEmail=document.getElementById('loginEmail');
+  if(inp&&loginEmail&&loginEmail.value)inp.value=loginEmail.value;
+  setTimeout(function(){if(inp)inp.focus();},300);
+}
+
+function hideResetPwd(){
+  var modal=document.getElementById('resetModal');
+  if(modal)modal.classList.remove('open');
+}
+
+function doResetPwd(){
+  var email=document.getElementById('resetEmail').value.trim();
+  var err=document.getElementById('resetErr');
+  var succ=document.getElementById('resetSuccess');
+  var btn=document.getElementById('resetBtn');
+  err.classList.remove('show');
+  succ.style.display='none';
+  if(!email){err.textContent='Entrez votre adresse email.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Envoi...';
+  auth.sendPasswordResetEmail(email).then(function(){
+    succ.textContent='Email envoyé ! Vérifiez votre boîte mail (et vos spams).';
+    succ.style.display='block';
+    btn.disabled=false;btn.textContent='Envoyer le lien';
+    document.getElementById('resetEmail').value='';
+  }).catch(function(e){
+    var msg=e.code==='auth/user-not-found'?'Aucun compte avec cet email.':'Erreur: '+e.message;
+    err.textContent=msg;err.classList.add('show');
+    btn.disabled=false;btn.textContent='Envoyer le lien';
+  });
 }
 
 window.addEventListener('hashchange',checkHash);
