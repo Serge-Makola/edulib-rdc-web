@@ -1132,9 +1132,9 @@ function loadDocs(cb) {
 
 function loadBoughtIds(cb) {
   if(!curUser){boughtIds=[];if(cb)cb();return;}
-  db.collection('users').doc(curUser.uid).collection('purchases').get().then(function(snap){
-    boughtIds = snap.docs.map(function(d){return d.id;});
-    if(cb) cb();
+  db.collection('users').doc(curUser.uid).get().then(function(doc){
+    boughtIds=(doc.exists&&doc.data().boughtIds)||[];
+    if(cb)cb();
   }).catch(function(){boughtIds=[];if(cb)cb();});
 }
 
@@ -1299,18 +1299,23 @@ function openCart(){renderCartItems();document.getElementById('cartOv').classLis
 function closeCart(){document.getElementById('cartOv').classList.remove('open');document.getElementById('cartPnl').classList.remove('open');}
 
 function checkout(){
-  if(!curUser){showToast('Connectez-vous pour commander','error');return;}
+  if(!curUser){
+    closeCart();
+    showToast('Connectez-vous pour finaliser votre achat','error');
+    goPage('login');
+    return;
+  }
   if(!cart.length)return;
   var tot=cart.reduce(function(s,d){return s+(parseFloat(d.prix)||0);},0);
   var ord={userId:curUser.uid,userName:curUser.name,userEmail:curUser.email,items:cart.map(function(d){return {id:d.id,title:d.title,prix:d.prix};}),total:tot,status:'En attente de paiement',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
   db.collection('orders').add(ord).then(function(){
-    var batch=db.batch();
-    cart.forEach(function(d){var ref=db.collection('users').doc(curUser.uid).collection('purchases').doc(d.id);batch.set(ref,{docId:d.id,title:d.title,purchasedAt:Date.now()});});
-    return batch.commit();
+    // Sauvegarder les achats dans le profil utilisateur
+    var boughtList=(curUser.boughtIds||[]).concat(cart.map(function(d){return d.id;}));
+    return db.collection('users').doc(curUser.uid).update({boughtIds:boughtList});
   }).then(function(){
     boughtIds=boughtIds.concat(cart.map(function(d){return d.id;}));
     cart=[];updateCartBadge();closeCart();refreshAllGrids();
-    showToast('Commande enregistrée ! Voir Mon espace 🎉','success');
+    showToast('Commande enregistree ! Voir Mon espace','success');
   }).catch(function(e){showToast('Erreur: '+e.message,'error');});
 }
 
@@ -1781,13 +1786,12 @@ function sendAI(){
   }
   aiHistory.push({role:'user',content:fullMsg});
   if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);
-  var MISTRAL_KEY = '5m2VQtW6GXG48R9ynVzYLa6qQBjlEk79';
   var mistralMessages = [{role:'system',content:systemPrompt}];
   aiHistory.slice(-10).forEach(function(m){mistralMessages.push({role:m.role,content:m.content});});
-  fetch('https://api.mistral.ai/v1/chat/completions',{
+  fetch('/api/chat',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+MISTRAL_KEY},
-    body:JSON.stringify({model:'mistral-small-latest',messages:mistralMessages,max_tokens:512,temperature:0.7})
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:mistralMessages})
   }).then(function(r){return r.json();}).then(function(data){
     loading.remove();
     var reply='Desolee, je ne peux pas repondre maintenant.';
