@@ -1529,7 +1529,10 @@ function doAdminLogin(){
     var uid=cred.user.uid;
     return db.collection('users').doc(uid).get();
   }).then(function(doc){
-    if(doc.exists&&doc.data().role==='admin'){
+    var docData = doc.exists ? doc.data() : null;
+    var role = docData ? docData.role : 'AUCUN';
+    console.log('Doc exists:', doc.exists, '| Role:', role);
+    if(doc.exists && role==='admin'){
       isAdmin=true;
       try{sessionStorage.setItem('el_admin','1');}catch(e){}
       showAdminNav();
@@ -1539,7 +1542,7 @@ function doAdminLogin(){
       refreshAdminData();
     } else {
       auth.signOut();
-      err.textContent='Acces refuse. Compte non autorise.';
+      err.textContent='Role: '+role+' | Doc: '+doc.exists;
       err.classList.add('show');
       btn.disabled=false;btn.textContent='Se connecter';
     }
