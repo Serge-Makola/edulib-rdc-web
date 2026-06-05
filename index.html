@@ -1519,6 +1519,7 @@ function showDashTab(tab,el){
 }
 
 // ADMIN AUTH
+var ADMIN_UID = '3IulbkeHujhAyWHBI5ETE1EnJ303';
 function doAdminLogin(){
   var email=document.getElementById('adminU').value.trim();
   var pass=document.getElementById('adminP').value;
@@ -1528,12 +1529,7 @@ function doAdminLogin(){
   if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
   btn.disabled=true;btn.textContent='Connexion...';
   auth.signInWithEmailAndPassword(email,pass).then(function(cred){
-    var uid=cred.user.uid;
-    return db.collection('users').doc(uid).get();
-  }).then(function(doc){
-    var data = doc.data() || {};
-    var role = data.role || '';
-    if(role==='admin'){
+    if(cred.user.uid===ADMIN_UID){
       isAdmin=true;
       try{sessionStorage.setItem('el_admin','1');}catch(e){}
       showAdminNav();
@@ -2023,22 +2019,18 @@ window.addEventListener('hashchange',checkHash);
 checkHash();
 
 // INIT - restore admin session and load docs
-// Vérification admin au démarrage via Firebase
-auth.onAuthStateChanged(function(adminCheck){
-  if(adminCheck){
-    db.collection('users').doc(adminCheck.uid).get().then(function(doc){
-      if(doc.exists&&doc.data().role==='admin'){
-        isAdmin=true;
-        try{sessionStorage.setItem('el_admin','1');}catch(e){}
-        showAdminNav();
-        var savedPage='';
-        try{savedPage=sessionStorage.getItem('edulib_page')||'';}catch(ex){}
-        if(savedPage==='admin'){goPage('admin');}
-      }
-    }).catch(function(){});
+// Vérification admin au démarrage
+try{
+  if(sessionStorage.getItem('el_admin')==='1'){
+    isAdmin=true;
+    var savedPage='';
+    try{savedPage=sessionStorage.getItem('edulib_page')||'';}catch(ex){}
+    if(savedPage==='admin'){
+      showAdminNav();
+      goPage('admin');
+    }
   }
-});
-try{if(sessionStorage.getItem('el_admin')==='1'){isAdmin=true;}}catch(e){}
+}catch(e){}
 
 loadDocs();
 </script>
