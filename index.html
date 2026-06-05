@@ -1531,7 +1531,6 @@ function doAdminLogin(){
   }).then(function(doc){
     var docData = doc.exists ? doc.data() : null;
     var role = docData ? docData.role : 'AUCUN';
-    console.log('Doc exists:', doc.exists, '| Role:', role);
     if(doc.exists && role==='admin'){
       isAdmin=true;
       try{sessionStorage.setItem('el_admin','1');}catch(e){}
@@ -1541,8 +1540,11 @@ function doAdminLogin(){
       showToast('Bienvenue Serge ! 👋','success');
       refreshAdminData();
     } else {
+      // Afficher l'UID utilisé pour chercher
+      var uid = '';
+      try{uid=auth.currentUser?auth.currentUser.uid:'aucun';}catch(ex){}
       auth.signOut();
-      err.textContent='Role: '+role+' | Doc: '+doc.exists;
+      err.textContent='UID: '+uid+' | Doc: '+doc.exists+' | Role: '+role;
       err.classList.add('show');
       btn.disabled=false;btn.textContent='Se connecter';
     }
