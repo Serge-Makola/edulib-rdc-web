@@ -1529,9 +1529,9 @@ function doAdminLogin(){
     var uid=cred.user.uid;
     return db.collection('users').doc(uid).get();
   }).then(function(doc){
-    var docData = doc.exists ? doc.data() : null;
-    var role = docData ? docData.role : 'AUCUN';
-    if(doc.exists && role==='admin'){
+    var role = '';
+    try{role = doc.get('role') || '';}catch(ex){role = doc.data()['role'] || '';}
+    if(role==='admin'){
       isAdmin=true;
       try{sessionStorage.setItem('el_admin','1');}catch(e){}
       showAdminNav();
@@ -1540,11 +1540,8 @@ function doAdminLogin(){
       showToast('Bienvenue Serge ! 👋','success');
       refreshAdminData();
     } else {
-      // Afficher l'UID utilisé pour chercher
-      var uid = '';
-      try{uid=auth.currentUser?auth.currentUser.uid:'aucun';}catch(ex){}
       auth.signOut();
-      err.textContent='UID: '+uid+' | Doc: '+doc.exists+' | Role: '+role;
+      err.textContent='Acces refuse. Compte non autorise.';
       err.classList.add('show');
       btn.disabled=false;btn.textContent='Se connecter';
     }
