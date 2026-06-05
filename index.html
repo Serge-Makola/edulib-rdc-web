@@ -1529,22 +1529,13 @@ function doAdminLogin(){
     var uid=cred.user.uid;
     return db.collection('users').doc(uid).get();
   }).then(function(doc){
-    var role = '';
-    try{role = doc.get('role') || '';}catch(ex){role = doc.data()['role'] || '';}
-    if(role==='admin'){
-      isAdmin=true;
-      try{sessionStorage.setItem('el_admin','1');}catch(e){}
-      showAdminNav();
-      btn.disabled=false;btn.textContent='Se connecter';
-      goPage('admin');
-      showToast('Bienvenue Serge ! 👋','success');
-      refreshAdminData();
-    } else {
-      auth.signOut();
-      err.textContent='Acces refuse. Compte non autorise.';
-      err.classList.add('show');
-      btn.disabled=false;btn.textContent='Se connecter';
-    }
+    var data = doc.data();
+    var allKeys = data ? Object.keys(data).join(',') : 'VIDE';
+    var role = data ? (data.role || data.Role || data.ROLE || '') : '';
+    err.textContent='Keys: '+allKeys+' | role: '+role;
+    err.classList.add('show');
+    btn.disabled=false;btn.textContent='Se connecter';
+    auth.signOut();
   }).catch(function(e){
     err.textContent=e.code==='auth/wrong-password'||e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
     err.classList.add('show');
