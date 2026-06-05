@@ -388,16 +388,46 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 @media(max-width:640px){.nav-links{display:none}.hamburger{display:flex!important}.footer-top{grid-column:1fr}.hero{padding:4rem 1.25rem 3rem;min-height:auto}.dash-hero-inner{flex-direction:column;align-items:flex-start}.dash-quick-stats{width:100%}.dash-qstat{flex:1}}
 /* AI styles → voir section injected above */
 
-/* PAGE TRANSITIONS */
-[id^="pg-"]{transition:opacity 0.26s cubic-bezier(0.4,0,0.2,1),transform 0.26s cubic-bezier(0.4,0,0.2,1)}
-.pg-enter{opacity:0;transform:translateY(12px)}
-.pg-exit{opacity:0;transform:translateY(-6px);pointer-events:none;position:relative;z-index:-1}
+/* PAGE TRANSITIONS — smooth slide */
+[id^="pg-"]{
+  animation-duration:0.35s;
+  animation-fill-mode:both;
+  animation-timing-function:cubic-bezier(0.25,0.46,0.45,0.94);
+}
+@keyframes pgSlideIn{
+  from{opacity:0;transform:translateX(28px) scale(0.98)}
+  to{opacity:1;transform:translateX(0) scale(1)}
+}
+@keyframes pgSlideBack{
+  from{opacity:0;transform:translateX(-28px) scale(0.98)}
+  to{opacity:1;transform:translateX(0) scale(1)}
+}
+@keyframes pgSlideUp{
+  from{opacity:0;transform:translateY(20px) scale(0.99)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes pgFadeOut{
+  from{opacity:1;transform:translateX(0) scale(1)}
+  to{opacity:0;transform:translateX(-20px) scale(0.98)}
+}
+@keyframes pgFadeOutRight{
+  from{opacity:1;transform:translateX(0) scale(1)}
+  to{opacity:0;transform:translateX(20px) scale(0.98)}
+}
+.pg-enter-right{animation-name:pgSlideIn}
+.pg-enter-left{animation-name:pgSlideBack}
+.pg-enter-up{animation-name:pgSlideUp}
+.pg-exit-left{animation-name:pgFadeOut;pointer-events:none}
+.pg-exit-right{animation-name:pgFadeOutRight;pointer-events:none}
 
 /* CART BUTTON VISIBLE ON MOBILE */
-.nav-cart-btn{display:none;-webkit-align-items:center;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);border-radius:9px;padding:7px 13px;cursor:pointer;color:#fff;font-size:0.875rem;font-weight:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nav-icon-btn{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;padding:6px 9px;color:#fff;cursor:pointer;font-size:0.95rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1}
+.nav-icon-btn:active{background:rgba(255,255,255,0.2)}
+.nav-cart-btn{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:3px;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 9px;cursor:pointer;color:#fff;font-size:0.95rem;font-weight:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .nav-cart-btn:active{background:rgba(255,255,255,0.2)}
-.nav-cart-badge{background:var(--red);color:#fff;font-size:0.6rem;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;text-align:center;display:none}
-@media(max-width:640px){.nav-cart-btn{display:-webkit-flex;display:flex}.nav-links{display:none}}
+.nav-cart-badge{background:var(--red);color:#fff;font-size:0.58rem;font-weight:800;border-radius:99px;padding:1px 4px;min-width:14px;text-align:center;display:none}
+@media(max-width:640px){.nav-links{display:none}}
+@media(min-width:641px){.notif-btn,.nav-cart-btn{display:none}}
 
 /* AI SIDEBAR */
 .ai-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:linear-gradient(135deg,var(--blue),#7c3aed);border-radius:50%;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(37,99,235,0.4);z-index:500;border:none;font-size:1.4rem;-webkit-transition:all 0.2s;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -491,8 +521,9 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
   <div class="nav-inner">
     <div class="nav-logo" onclick="goPage('home')">
       <div class="nav-logo-mark">📚</div>
-      <div>
-        <div class="nav-logo-text">EduLib<span style="color:#93c5fd">RDC</span></div>
+      <div style="line-height:1">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;letter-spacing:-0.02em">EduLib</div>
+        <div style="font-family:var(--font-display);font-weight:700;font-size:0.7rem;color:#93c5fd;letter-spacing:0.05em">RDC</div>
       </div>
     </div>
     <div class="nav-links">
@@ -502,25 +533,25 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       <span class="nav-link" onclick="openCart()">🛒 Panier <span class="cart-badge" id="cartBadge">0</span></span>
     </div>
     <div class="nav-actions">
-      <span id="guestNav" style="display:flex;align-items:center;gap:8px">
+      <span id="guestNav" style="display:flex;align-items:center;gap:6px">
         <button class="btn btn-ghost" onclick="goPage('login')">Connexion</button>
         <button class="btn btn-primary" onclick="goPage('register')">S'inscrire</button>
       </span>
-      <span id="adminNav" style="display:none;align-items:center;gap:8px">
-        <span class="nav-link active">⚙️ Admin</span>
+      <span id="adminNav" style="display:none;align-items:center;gap:6px">
+        <span class="nav-link active" onclick="goPage('admin')" style="cursor:pointer">⚙️ Admin</span>
         <button class="btn btn-ghost" onclick="adminOut()">Déconnexion</button>
       </span>
-      <span id="userNav" style="display:none;align-items:center;gap:8px;position:relative">
-        <span class="nav-link active" onclick="goPage('dashboard')">👤 Mon espace</span>
-        <button class="btn btn-ghost" onclick="toggleUserMenu()" id="userMenuBtn">▾</button>
+      <span id="userNav" style="display:none;align-items:center;gap:4px;position:relative">
+        <button class="nav-icon-btn" onclick="goPage('dashboard')" title="Mon espace">👤</button>
+        <button class="nav-icon-btn" onclick="toggleUserMenu()" id="userMenuBtn" title="Menu">▾</button>
         <div id="userDropdown" style="display:none;position:absolute;top:48px;right:0;background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);min-width:180px;z-index:300;border:1px solid var(--border);overflow:hidden">
           <div onclick="goPage('dashboard');closeUserMenu()" style="padding:12px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:8px;transition:background 0.15s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''">👤 Mon espace</div>
           <div onclick="logoutUser();closeUserMenu()" style="padding:12px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;color:var(--red);display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--red-light)'" onmouseout="this.style.background=''">🚪 Déconnexion</div>
         </div>
       </span>
+      <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot"></span></button>
+      <button class="nav-cart-btn" id="navCartBtn" onclick="openCart()" aria-label="Panier">🛒<span class="nav-cart-badge" id="navCartBadgeMob">0</span></button>
     </div>
-    <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot"></span></button>
-    <button class="nav-cart-btn" id="navCartBtn" onclick="openCart()" aria-label="Panier">🛒 <span class="nav-cart-badge" id="navCartBadgeMob">0</span></button>
     <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -1071,11 +1102,14 @@ auth.onAuthStateChanged(function(user) {
       loadBoughtIds(function() {
         showUserNav();
         refreshAllGrids();
-        // Naviguer vers dashboard si on vient de login/register
-        // _curPage est la page courante trackée par goPage()
-        if(_curPage==='login'||_curPage==='register'||_curPage==='home'){
+        // Restaurer la page après reload ou naviguer vers dashboard après login
+        var savedPage = '';
+        try{savedPage=sessionStorage.getItem('edulib_page')||'';}catch(e){}
+        if(_curPage==='login'||_curPage==='register'){
           goPage('dashboard');
           showToast('Bienvenue ! 👋','success');
+        } else if(savedPage==='dashboard'||savedPage===''){
+          goPage('dashboard');
         }
       });
     });
@@ -1156,10 +1190,17 @@ function updateStats(){
   var n=docs.length;
   ['cntDocs','statDocs','admDocN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=n;});
   var db2=document.getElementById('admDocBadge');if(db2)db2.textContent=n+' docs';
+  // Charger le nombre d'utilisateurs depuis Firebase
   db.collection('users').get().then(function(snap){
     var u=snap.size;
     ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=u;});
     var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
+  }).catch(function(){});
+  // Charger le nombre de commandes
+  db.collection('orders').get().then(function(snap){
+    var o=snap.size;
+    var on=document.getElementById('admOrdN');if(on)on.textContent=o;
+    var ob=document.getElementById('admOrdBadge');if(ob)ob.textContent=o+' total';
   }).catch(function(){});
 }
 
@@ -1641,25 +1682,57 @@ function resetDocForm(){
 
 // NAVIGATION
 var _curPage='home';
+// Ordre des pages pour déterminer la direction du slide
+var _pageOrder=['home','catalogue','filieres','filiere','login','register','dashboard','about','contact','admin','adminlogin'];
+var _modalPages=['login','register','adminlogin','about','contact'];
+
 function goPage(p){
   if(p==='admin'&&!isAdmin){goPage('adminlogin');return;}
   if(p==='dashboard'&&!curUser){goPage('login');return;}
   if(p===_curPage){window.scrollTo({top:0,behavior:'smooth'});return;}
+
   var outEl=document.getElementById('pg-'+_curPage);
   var inEl=document.getElementById('pg-'+p);
   if(!inEl)return;
+
+  // Déterminer la direction
+  var fromIdx=_pageOrder.indexOf(_curPage);
+  var toIdx=_pageOrder.indexOf(p);
+  var isModal=_modalPages.indexOf(p)>-1||_modalPages.indexOf(_curPage)>-1;
+
+  var enterClass, exitClass;
+  if(isModal){
+    enterClass='pg-enter-up';
+    exitClass='pg-exit-right';
+  } else if(toIdx>fromIdx){
+    enterClass='pg-enter-right';
+    exitClass='pg-exit-left';
+  } else {
+    enterClass='pg-enter-left';
+    exitClass='pg-exit-right';
+  }
+
+  // Nettoyer les classes précédentes
+  inEl.className=inEl.className.replace(/pg-enter-\S+|pg-exit-\S+/g,'').trim();
+  if(outEl)outEl.className=outEl.className.replace(/pg-enter-\S+|pg-exit-\S+/g,'').trim();
+
   inEl.style.display='block';
-  inEl.classList.remove('pg-enter','pg-exit');
-  void inEl.offsetWidth;
-  inEl.classList.add('pg-enter');
-  if(outEl)outEl.classList.add('pg-exit');
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      inEl.classList.remove('pg-enter');
-      if(outEl)setTimeout(function(){outEl.style.display='none';outEl.classList.remove('pg-exit');},280);
-    });
-  });
+  void inEl.offsetWidth; // force reflow
+  inEl.classList.add(enterClass);
+  if(outEl){
+    outEl.classList.add(exitClass);
+    setTimeout(function(){
+      outEl.style.display='none';
+      outEl.className=outEl.className.replace(/pg-enter-\S+|pg-exit-\S+/g,'').trim();
+    },340);
+  }
+  // Nettoyer la classe d'entrée après animation
+  setTimeout(function(){
+    inEl.className=inEl.className.replace(/pg-enter-\S+|pg-exit-\S+/g,'').trim();
+  },380);
+
   _curPage=p;
+  try{sessionStorage.setItem('edulib_page',p);}catch(e){}
   var ftr=document.getElementById('mainFtr');if(ftr)ftr.style.display=['admin','adminlogin','login','register'].indexOf(p)>-1?'none':'block';
   if(p==='admin')showAdminNav();
   else if(isAdmin)showAdminNav();
@@ -1911,7 +1984,15 @@ window.addEventListener('hashchange',checkHash);
 checkHash();
 
 // INIT - restore admin session and load docs
-try{if(sessionStorage.getItem('el_admin')==='1'){isAdmin=true;showAdminNav();}}catch(e){}
+try{
+  if(sessionStorage.getItem('el_admin')==='1'){
+    isAdmin=true;
+    showAdminNav();
+    var savedAdmPage='';
+    try{savedAdmPage=sessionStorage.getItem('edulib_page')||'';}catch(ex){}
+    if(savedAdmPage==='admin'){goPage('admin');}
+  }
+}catch(e){}
 
 loadDocs();
 </script>
