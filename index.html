@@ -1797,7 +1797,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(sq){var timer=null;sq.addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(applyFilter,300);});}
 });
 
-function checkHash(){}
+function checkHash(){if(window.location.hash==='#admin')goPage('adminlogin');}
 
 // AI CHAT
 var aiHistory = [];
