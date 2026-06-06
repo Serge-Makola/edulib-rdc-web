@@ -643,6 +643,8 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         <input type="text" id="searchQ" placeholder="Rechercher un document, un cours, un professeur..."/>
         <select class="adv-select" id="filterType" onchange="applyFilter()">
           <option value="">Tous les types</option>
+          <option value="Ouvrage">Ouvrage</option>
+          <option value="Article scientifique">Article scientifique</option>
           <option value="Syllabus">Syllabus</option>
           <option value="Notes de cours">Notes de cours</option>
           <option value="Exercices corriges">Exercices corrigés</option>
@@ -942,7 +944,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
           <div class="form-grid">
             <div class="form-grp-adm form-full"><label class="form-lbl">Titre *</label><input class="form-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil Congolais"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Filière *</label><select class="form-sel" id="fFil"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option><option value="sciences_po">Sciences Politiques</option><option value="psychologie">Psychologie</option><option value="pharmacie">Pharmacie</option><option value="agronomie">Agronomie</option><option value="environnement">Environnement</option><option value="math_info">Math &amp; Informatique</option><option value="biologie">Biologie</option></select></div>
-            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
+            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Ouvrage</option><option>Article scientifique</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
             <div class="form-grp-adm"><label class="form-lbl">Professeur *</label><input class="form-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Prix (USD) *</label><input class="form-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Pages</label><input class="form-inp" type="number" id="fPages" placeholder="100"/></div>
@@ -1015,16 +1017,24 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
     <div style="margin-bottom:0.5rem"><button class="btn btn-ghost" onclick="goPage('home')" style="font-size:0.875rem">← Retour</button></div>
     <h2>À propos d'EduLib RDC</h2>
     <div class="info-card">
-      <p>EduLib RDC est la premiere plateforme de ressources pedagogiques dediee aux etudiants universitaires de la Republique Democratique du Congo. Notre mission est de rendre les ressources academiques accessibles, abordables et de qualite pour chaque etudiant congolais.</p>
+      <p>EduLib RDC est la première plateforme congolaise de ressources pédagogiques et scientifiques, dédiée aux étudiants, enseignants et chercheurs de la République Démocratique du Congo. Notre vision est de démocratiser l'accès au savoir et de valoriser la production intellectuelle congolaise.</p>
     </div>
     <h3>🎯 Notre mission</h3>
-    <p>Faciliter l'acces aux ressources pedagogiques de qualite pour tous les etudiants universitaires congolais, quelle que soit leur universite ou leur localisation.</p>
+    <p>Nous facilitons l'accès aux ressources pédagogiques et scientifiques de qualité pour tous — étudiants, professeurs et chercheurs — quelle que soit leur université ou leur localisation en RDC. Nous offrons également aux enseignants et aux chercheurs une plateforme pour publier et vendre leurs travaux, ouvrages et articles scientifiques.</p>
     <h3>📚 Ce que nous offrons</h3>
-    <p>Syllabus officiels, notes de cours, exercices corriges, examens corriges et travaux diriges couvrant 6 filieres : Droit, Medecine, Polytechnique, Sciences, Lettres et Economie.</p>
-    <h3>👥 Notre equipe</h3>
+    <p>Ouvrages, syllabus officiels, notes de cours, exercices corrigés, examens corrigés, travaux dirigés et articles scientifiques couvrant 13 filières : Droit, Médecine, Polytechnique, Sciences, Lettres, Économie, Sciences Politiques, Psychologie, Pharmacie, Agronomie, Environnement, Math &amp; Informatique et Biologie.</p>
+    <h3>👥 Notre équipe</h3>
     <div class="team-grid">
-      <div class="team-card"><div class="team-avatar">👨‍💻</div><div class="team-name">Serge Makola</div><div class="team-role">Fondateur & Developpeur</div></div>
-      <div class="team-card"><div class="team-avatar">🎓</div><div class="team-name">EduLib RDC</div><div class="team-role">Equipe pedagogique</div></div>
+      <div class="team-card">
+        <div class="team-avatar">👨‍💻</div>
+        <div class="team-name">Serge Makola</div>
+        <div class="team-role">Fondateur &amp; Développeur</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">📚</div>
+        <div class="team-name">Gloire Kisanga Josias</div>
+        <div class="team-role">Gestionnaire de contenu &amp; Publications</div>
+      </div>
     </div>
     <h3>📍 Contact</h3>
     <div class="info-card">
