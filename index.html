@@ -388,6 +388,13 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 @media(max-width:640px){.nav-links{display:none}.hamburger{display:flex!important}.footer-top{grid-column:1fr}.hero{padding:4rem 1.25rem 3rem;min-height:auto}.dash-hero-inner{flex-direction:column;align-items:flex-start}.dash-quick-stats{width:100%}.dash-qstat{flex:1}}
 /* AI styles → voir section injected above */
 
+/* FILIERE SELECT OPTIONS STYLING */
+.filiere-option{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.filiere-option:hover{background:var(--surface-2)}
+.filiere-option-emoji{font-size:1.25rem;width:28px;text-align:center}
+.filiere-option-name{font-weight:500;font-size:0.9rem}
+.filiere-option-desc{font-size:0.75rem;color:var(--text-muted)}
+
 /* PAGE TRANSITIONS — smooth slide */
 [id^="pg-"]{
   animation-duration:0.35s;
@@ -658,6 +665,13 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         <button class="chip" onclick="goFiliere('sciences')">🔬 Sciences</button>
         <button class="chip" onclick="goFiliere('lettres')">📖 Lettres</button>
         <button class="chip" onclick="goFiliere('economie')">📊 Économie</button>
+        <button class="chip" onclick="goFiliere('sciences_po')">🏛️ Sc. Politiques</button>
+        <button class="chip" onclick="goFiliere('psychologie')">🧠 Psychologie</button>
+        <button class="chip" onclick="goFiliere('pharmacie')">💊 Pharmacie</button>
+        <button class="chip" onclick="goFiliere('agronomie')">🌱 Agronomie</button>
+        <button class="chip" onclick="goFiliere('environnement')">🌍 Environnement</button>
+        <button class="chip" onclick="goFiliere('math_info')">💻 Math &amp; Info</button>
+        <button class="chip" onclick="goFiliere('biologie')">🧬 Biologie</button>
       </div>
     </div>
   </div>
@@ -783,9 +797,19 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       <div class="form-grp"><label class="form-lbl">Filière *</label>
         <select class="form-sel" id="regFil">
           <option value="">Sélectionner votre filière...</option>
-          <option value="droit">⚖️ Droit</option><option value="medecine">🩺 Médecine</option>
-          <option value="polytechnique">⚙️ Polytechnique</option><option value="sciences">🔬 Sciences</option>
-          <option value="lettres">📖 Lettres</option><option value="economie">📊 Économie</option>
+          <option value="droit">⚖️ Droit</option>
+          <option value="medecine">🩺 Médecine</option>
+          <option value="polytechnique">⚙️ Polytechnique</option>
+          <option value="sciences">🔬 Sciences</option>
+          <option value="lettres">📖 Lettres</option>
+          <option value="economie">📊 Économie</option>
+          <option value="sciences_po">🏛️ Sciences Politiques</option>
+          <option value="psychologie">🧠 Psychologie</option>
+          <option value="pharmacie">💊 Pharmacie</option>
+          <option value="agronomie">🌱 Agronomie</option>
+          <option value="environnement">🌍 Environnement</option>
+          <option value="math_info">💻 Math &amp; Informatique</option>
+          <option value="biologie">🧬 Biologie</option>
         </select>
       </div>
       <div class="form-grp"><label class="form-lbl">Mot de passe *</label><input class="form-inp" type="password" id="regPass" placeholder="Minimum 6 caractères"/></div>
@@ -917,7 +941,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
           <input type="hidden" id="editId"/>
           <div class="form-grid">
             <div class="form-grp-adm form-full"><label class="form-lbl">Titre *</label><input class="form-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil Congolais"/></div>
-            <div class="form-grp-adm"><label class="form-lbl">Filière *</label><select class="form-sel" id="fFil"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option></select></div>
+            <div class="form-grp-adm"><label class="form-lbl">Filière *</label><select class="form-sel" id="fFil"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option><option value="sciences_po">Sciences Politiques</option><option value="psychologie">Psychologie</option><option value="pharmacie">Pharmacie</option><option value="agronomie">Agronomie</option><option value="environnement">Environnement</option><option value="math_info">Math &amp; Informatique</option><option value="biologie">Biologie</option></select></div>
             <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
             <div class="form-grp-adm"><label class="form-lbl">Professeur *</label><input class="form-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Prix (USD) *</label><input class="form-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
@@ -1100,11 +1124,25 @@ var auth = firebase.auth();
 
 // State
 var docs=[],users=[],orders=[],cart=[],curUser=null,boughtIds=[],isAdmin=false,curFil='',curSearch='',curType='',curYear='';
-var FILIERES=[{id:'droit',name:'Droit',emoji:'⚖️',color:'#2563eb'},{id:'medecine',name:'Médecine',emoji:'🩺',color:'#059669'},{id:'polytechnique',name:'Polytechnique',emoji:'⚙️',color:'#d97706'},{id:'sciences',name:'Sciences',emoji:'🔬',color:'#16a34a'},{id:'lettres',name:'Lettres',emoji:'📖',color:'#7c3aed'},{id:'economie',name:'Économie',emoji:'📊',color:'#ea580c'}];
+var FILIERES=[
+  {id:'droit',name:'Droit',emoji:'⚖️',color:'#2563eb'},
+  {id:'medecine',name:'Médecine',emoji:'🩺',color:'#059669'},
+  {id:'polytechnique',name:'Polytechnique',emoji:'⚙️',color:'#d97706'},
+  {id:'sciences',name:'Sciences',emoji:'🔬',color:'#16a34a'},
+  {id:'lettres',name:'Lettres',emoji:'📖',color:'#7c3aed'},
+  {id:'economie',name:'Économie',emoji:'📊',color:'#ea580c'},
+  {id:'sciences_po',name:'Sciences Politiques',emoji:'🏛️',color:'#0891b2'},
+  {id:'psychologie',name:'Psychologie',emoji:'🧠',color:'#c026d3'},
+  {id:'pharmacie',name:'Pharmacie',emoji:'💊',color:'#16a34a'},
+  {id:'agronomie',name:'Agronomie',emoji:'🌱',color:'#65a30d'},
+  {id:'environnement',name:'Environnement',emoji:'🌍',color:'#0d9488'},
+  {id:'math_info',name:'Math & Informatique',emoji:'💻',color:'#4f46e5'},
+  {id:'biologie',name:'Biologie',emoji:'🧬',color:'#dc2626'}
+];
 var EMOJIS={droit:'⚖️',medecine:'🩺',polytechnique:'⚙️',sciences:'🔬',lettres:'📖',economie:'📊'};
 var COLORS={droit:'#2563eb',medecine:'#059669',polytechnique:'#d97706',sciences:'#16a34a',lettres:'#7c3aed',economie:'#ea580c'};
 function flabel(f){var x=FILIERES.find(function(i){return i.id===f;});return x?x.name:f;}
-function bdgClass(f){return ({droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber'})[f]||'bdg-blue';}
+function bdgClass(f){return ({droit:'bdg-blue',medecine:'bdg-green',polytechnique:'bdg-amber',sciences:'bdg-green',lettres:'bdg-purple',economie:'bdg-amber',sciences_po:'bdg-blue',psychologie:'bdg-purple',pharmacie:'bdg-green',agronomie:'bdg-green',environnement:'bdg-green',math_info:'bdg-blue',biologie:'bdg-amber'})[f]||'bdg-blue';}
 
 // Auth state listener
 auth.onAuthStateChanged(function(user) {
@@ -1393,7 +1431,7 @@ function doLogin(){
     document.getElementById('loginEmail').value='';document.getElementById('loginPass').value='';
   }).catch(function(e){
     btn.disabled=false;btn.textContent='Se connecter';
-    err.textContent=e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
+    err.textContent=e.code==='auth/network-request-failed'?'Vérifiez votre connexion internet.':e.code==='auth/too-many-requests'?'Trop de tentatives. Réessayez plus tard.':'Email ou mot de passe incorrect.';
     err.classList.add('show');
   });
 }
@@ -1422,7 +1460,7 @@ function doRegister(){
     document.getElementById('regFil').value='';
   }).catch(function(e){
     btn.disabled=false;btn.textContent='Créer mon compte';
-    err.textContent=e.code==='auth/email-already-in-use'?'Email déjà utilisé.':'Erreur: '+e.message;
+    err.textContent=e.code==='auth/email-already-in-use'?'Cet email est déjà utilisé.':e.code==='auth/network-request-failed'?'Vérifiez votre connexion internet.':e.code==='auth/weak-password'?'Mot de passe trop faible (min. 6 caractères).':'Une erreur est survenue. Réessayez.';
     err.classList.add('show');
   });
 }
@@ -1561,7 +1599,7 @@ function doAdminLogin(){
       btn.disabled=false;btn.textContent='Se connecter';
     }
   }).catch(function(e){
-    err.textContent=e.code==='auth/wrong-password'||e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message;
+    err.textContent=e.code==='auth/network-request-failed'?'Vérifiez votre connexion internet.':e.code==='auth/too-many-requests'?'Trop de tentatives. Réessayez plus tard.':'Identifiants incorrects.';
     err.classList.add('show');
     btn.disabled=false;btn.textContent='Se connecter';
   });
@@ -1669,6 +1707,7 @@ function renderAdmOrders(){
 
 // CRUD DOCS
 function saveDoc(){
+  if(!isAdmin){showToast('Acces refuse.','error');return;}
   var title=document.getElementById('fTitle').value.trim();
   var fil=document.getElementById('fFil').value;
   var type=document.getElementById('fType').value;
@@ -2089,7 +2128,14 @@ try{
   }
 }catch(e){}
 
+// Precharger les documents immediatement
 loadDocs();
+// Precharger les stats si admin
+auth.onAuthStateChanged(function(u){
+  if(u&&sessionStorage.getItem('el_admin')==='1'){
+    setTimeout(function(){updateStats();},500);
+  }
+});
 </script>
 </body>
 </html>
