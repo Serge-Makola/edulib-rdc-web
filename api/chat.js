@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'mistral-small-latest',
         messages: body.messages,
-        max_tokens: 512,
+        max_tokens: 2048,
         temperature: 0.7
       })
     });
