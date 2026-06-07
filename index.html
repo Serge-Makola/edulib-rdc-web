@@ -47,7 +47,26 @@
   --shadow-blue:0 8px 32px rgba(37,99,235,0.2);
 }
 html{scroll-behavior:smooth}
-body{font-family:var(--font-body);color:var(--ink);background:var(--surface);line-height:1.6;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);color:var(--ink);background:var(--surface);line-height:1.6;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+
+/* DARK MODE */
+body.dark-mode{
+  --bg:#0d1117;--surface:#161b22;--surface-2:#1c2128;--border:#30363d;
+  --ink:#e6edf3;--text-muted:#7d8590;--text-soft:#8b949e;
+  --blue-glow:rgba(37,99,235,0.25);
+}
+body.dark-mode .auth-card,body.dark-mode .doc-card,body.dark-mode .hero-stat-card,
+body.dark-mode .info-card,body.dark-mode .team-card,body.dark-mode .ai-panel,
+body.dark-mode .cart-panel,body.dark-mode .notif-panel{background:var(--surface-2);border-color:var(--border);color:var(--ink)}
+body.dark-mode .form-inp,body.dark-mode .form-sel,body.dark-mode .adv-select,
+body.dark-mode .ai-input{background:var(--surface);border-color:var(--border);color:var(--ink)}
+body.dark-mode .search-wrap input{background:var(--surface-2);color:var(--ink)}
+body.dark-mode .ai-msg.bot{background:var(--surface-2);border-color:var(--border)}
+body.dark-mode .ai-input-wrap{background:var(--surface-2)}
+body.dark-mode .adm-panel,.dark-mode .adm-sidebar{background:var(--surface-2)}
+
+/* THEME TOGGLE */
+.theme-toggle{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;padding:6px 9px;color:#fff;cursor:pointer;font-size:0.95rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1}
 button{cursor:pointer;font-family:var(--font-body);border:none;background:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 input,select,textarea{font-family:var(--font-body)}
 img{max-width:100%;display:block}
@@ -106,7 +125,7 @@ nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur
 /* ===== SEARCH ===== */
 .search-bar{background:#fff;border-bottom:1px solid var(--border);padding:1.5rem 1.5rem}
 .search-bar-inner{max-width:860px;margin:0 auto}
-.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap{position:relative;margin-bottom:1rem;display:flex;flex-direction:column;gap:8px}
 .search-wrap svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-soft);pointer-events:none}
 .search-wrap input{width:100%;padding:14px 18px 14px 52px;border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;background:var(--surface-2);outline:none;transition:all 0.2s;color:var(--ink)}
 .search-wrap input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px var(--blue-glow)}
@@ -556,6 +575,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
           <div onclick="logoutUser();closeUserMenu()" style="padding:12px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;color:var(--red);display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--red-light)'" onmouseout="this.style.background=''">🚪 Déconnexion</div>
         </div>
       </span>
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Mode sombre/clair">🌙</button>
       <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot"></span></button>
       <button class="nav-cart-btn" id="navCartBtn" onclick="openCart()" aria-label="Panier">🛒<span class="nav-cart-badge" id="navCartBadgeMob">0</span></button>
     </div>
@@ -611,6 +631,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         <div class="hero-label"><span class="hero-label-dot"></span>Plateforme #1 en RDC</div>
         <h1>Réussir vos études,<br><em>c'est notre mission</em></h1>
         <p class="hero-desc">Syllabus, notes de cours, exercices corrigés — les meilleures ressources pédagogiques pour tous les étudiants universitaires de la République Démocratique du Congo.</p>
+        <p class="hero-adage"><em>« La quête du savoir et l'étude des sciences sont des tâches infiniment nobles mais terriblement ardues »</em></p>
         <div class="hero-btns">
           <button class="hero-btn-main" onclick="goPage('catalogue')">Parcourir le catalogue</button>
           <button class="hero-btn-sec" id="heroCTA" onclick="goPage('register')">S'inscrire gratuitement</button>
@@ -624,7 +645,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
         </div>
         <div class="hero-stat-card">
           <div class="hero-stat-label">Filières</div>
-          <div class="hero-stat-value">6</div>
+          <div class="hero-stat-value">13</div>
           <div class="hero-stat-desc">Facultés couvertes</div>
         </div>
         <div class="hero-stat-card wide">
@@ -640,11 +661,13 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
     <div class="search-bar-inner">
       <div class="search-wrap">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>
-        <input type="text" id="searchQ" placeholder="Rechercher un document, un cours, un professeur..."/>
+        <input type="text" id="searchQ" placeholder="Rechercher un document, un cours, un professeur..." onkeydown="if(event.key==='Enter')applyFilter()"/>
+        <button onclick="applyFilter()" style="position:absolute;right:12px;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);background:var(--blue);border:none;border-radius:8px;padding:8px 14px;color:#fff;cursor:pointer;font-size:0.875rem;font-weight:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation">🔍</button>
         <select class="adv-select" id="filterType" onchange="applyFilter()">
           <option value="">Tous les types</option>
           <option value="Ouvrage">Ouvrage</option>
           <option value="Article scientifique">Article scientifique</option>
+          <option value="Jurisprudence">Jurisprudence</option>
           <option value="Syllabus">Syllabus</option>
           <option value="Notes de cours">Notes de cours</option>
           <option value="Exercices corriges">Exercices corrigés</option>
@@ -944,7 +967,7 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
           <div class="form-grid">
             <div class="form-grp-adm form-full"><label class="form-lbl">Titre *</label><input class="form-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil Congolais"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Filière *</label><select class="form-sel" id="fFil"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option><option value="sciences_po">Sciences Politiques</option><option value="psychologie">Psychologie</option><option value="pharmacie">Pharmacie</option><option value="agronomie">Agronomie</option><option value="environnement">Environnement</option><option value="math_info">Math &amp; Informatique</option><option value="biologie">Biologie</option></select></div>
-            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Ouvrage</option><option>Article scientifique</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
+            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Ouvrage</option><option>Article scientifique</option><option>Jurisprudence</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
             <div class="form-grp-adm"><label class="form-lbl">Professeur *</label><input class="form-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Prix (USD) *</label><input class="form-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Pages</label><input class="form-inp" type="number" id="fPages" placeholder="100"/></div>
@@ -2120,6 +2143,26 @@ function doResetPwd(){
     btn.disabled=false;btn.textContent='Envoyer le lien';
   });
 }
+
+// DARK MODE
+function toggleTheme(){
+  var isDark = document.body.classList.toggle('dark-mode');
+  var btn = document.getElementById('themeBtn');
+  if(btn) btn.textContent = isDark ? '☀️' : '🌙';
+  try{localStorage.setItem('edulib_theme', isDark ? 'dark' : 'light');}catch(e){}
+}
+
+// Restaurer le theme au chargement
+(function(){
+  try{
+    var saved = localStorage.getItem('edulib_theme');
+    if(saved === 'dark'){
+      document.body.classList.add('dark-mode');
+      var btn = document.getElementById('themeBtn');
+      if(btn) btn.textContent = '☀️';
+    }
+  }catch(e){}
+})();
 
 window.addEventListener('hashchange',checkHash);
 checkHash();
