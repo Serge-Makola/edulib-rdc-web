@@ -6,7 +6,7 @@
 <title>EduLib RDC — Plateforme de Ressources Pédagogiques</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap" rel="stylesheet"/>
-<link rel="manifest" href="data:application/json,{%22name%22:%22EduLib%20RDC%22,%22short_name%22:%22EduLib%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230d1117%22,%22theme_color%22:%22%232563eb%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/192/literature.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}"/>
+<link rel="manifest" href="data:application/json,{%22name%22:%22EduLib%20RDC%22,%22short_name%22:%22EduLib%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230d1117%22,%22theme_color%22:%22%232563eb%22,%22icons%22:[{%22src%22:%22https://edulib-rdc-web.vercel.app/icon-192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22},{%22src%22:%22https://edulib-rdc-web.vercel.app/icon-512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -72,7 +72,7 @@ body.dark-mode .modal-card,body.dark-mode .modal-overlay .auth-card{background:v
 /* FORMULAIRES */
 body.dark-mode .form-inp,body.dark-mode .form-sel,body.dark-mode .adv-select,
 body.dark-mode .ai-input,body.dark-mode input,body.dark-mode select,body.dark-mode textarea{background:var(--surface-2)!important;border-color:var(--border)!important;color:var(--ink)!important}
-body.dark-mode .search-wrap input{background:var(--surface-2)!important;color:var(--ink)!important;border-color:var(--border)!important}
+body.dark-mode body.dark-mode .search-input-row input{background:var(--surface-2)!important;color:var(--ink)!important;border-color:var(--border)!important}
 body.dark-mode .search-wrap input:focus{background:var(--surface)!important;border-color:#1d9bf0!important;box-shadow:0 0 0 3px rgba(29,155,240,0.15)!important}
 /* CHIPS */
 body.dark-mode .chip{background:var(--surface-2)!important;border-color:var(--border)!important;color:var(--ink)!important}
@@ -109,6 +109,8 @@ body.dark-mode .hero-bg{background:radial-gradient(ellipse 80% 60% at 60% 40%,#0
 /* PAGES */
 body.dark-mode #pg-home,body.dark-mode #pg-catalogue,body.dark-mode #pg-filieres,
 body.dark-mode #pg-dashboard,body.dark-mode #pg-about,body.dark-mode #pg-contact{background:var(--bg)!important}
+body.dark-mode .home-stats,body.dark-mode .stats-section,body.dark-mode .home-inner,
+body.dark-mode .catalogue-section,body.dark-mode .search-section{background:var(--bg)!important}
 body.dark-mode .section-inner,body.dark-mode .catalogue-inner,body.dark-mode .fil-inner{background:transparent!important}
 /* FOOTER */
 body.dark-mode footer{background:#000!important}
@@ -128,7 +130,7 @@ img{max-width:100%;display:block}
 nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 1.5rem}
 .nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px;gap:1rem}
 .nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
-.nav-logo-mark{width:36px;height:36px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0}
+.nav-logo-mark{width:40px;height:40px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .nav-logo-text{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:-0.04em;white-space:nowrap}
 .nav-logo-sub{font-size:0.68rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;font-weight:500;line-height:1}
 .nav-links{display:flex;align-items:center;gap:2px}
@@ -168,7 +170,9 @@ nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur
 .hero-btn-sec{background:rgba(255,255,255,0.1);color:#fff;padding:14px 32px;border-radius:10px;font-weight:600;font-size:1rem;border:1.5px solid rgba(255,255,255,0.2);cursor:pointer;font-family:var(--font-body);transition:all 0.2s;backdrop-filter:blur(8px)}
 .hero-btn-sec:hover{background:rgba(255,255,255,0.15)}
 .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.hero-stat-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.25rem 1.5rem;backdrop-filter:blur(10px);transition:background 0.2s}
+.hero-stat-card{background:rgba(255,255,255,0.95);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(255,255,255,0.7);border-radius:16px;padding:1.25rem 1.5rem;transition:all 0.2s;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.hero-stat-card:hover{-webkit-transform:translateY(-2px);transform:translateY(-2px)}
+body.dark-mode .hero-stat-card{background:rgba(21,32,43,0.85)!important;border:1px solid rgba(255,255,255,0.08)!important;box-shadow:0 4px 20px rgba(0,0,0,0.4)!important}
 .hero-stat-card:hover{background:rgba(255,255,255,0.1)}
 .hero-stat-card.wide{grid-column:1/-1}
 .hero-stat-label{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:0.4rem}
@@ -179,12 +183,13 @@ nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur
 .search-bar{background:#fff;border-bottom:1px solid var(--border);padding:1.5rem 1.5rem}
 .search-bar-inner{max-width:860px;margin:0 auto}
 .search-wrap{margin-bottom:1rem;display:flex;flex-direction:column;gap:8px}
-.search-wrap svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-soft);pointer-events:none}
+
 /* search input moved to search-input-row */
-.search-wrap input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px var(--blue-glow)}
-.search-btn{position:absolute;right:6px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:var(--font-body);-webkit-tap-highlight-color:transparent;touch-action:manipulation;white-space:nowrap}
+/* search focus handled by search-input-row input:focus */
+.search-btn{position:absolute;right:8px;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);background:var(--blue);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:0.875rem;font-weight:700;cursor:pointer;font-family:var(--font-body);-webkit-tap-highlight-color:transparent;touch-action:manipulation;white-space:nowrap;z-index:1}
 .search-btn:hover{background:var(--blue-dark)}
-@media(max-width:480px){.search-btn{padding:7px 10px;font-size:0.75rem}}
+.search-btn:active{-webkit-transform:translateY(-50%) scale(0.96);transform:translateY(-50%) scale(0.96)}
+@media(max-width:480px){.search-btn{padding:8px 12px;font-size:0.8rem}}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:8px 16px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface-2);font-size:0.82rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:inline-flex;align-items:center;gap:5px}
 .chip:hover{border-color:var(--blue);color:var(--blue)}
@@ -213,7 +218,9 @@ nav{position:sticky;top:0;z-index:200;background:var(--ink);backdrop-filter:blur
 
 /* ===== DOC CARDS ===== */
 .docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.25rem}
-.doc-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.25s;cursor:pointer;display:flex;flex-direction:column;position:relative}
+.doc-card{background:rgba(255,255,255,0.95);-webkit-backdrop-filter:saturate(180%) blur(10px);backdrop-filter:saturate(180%) blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.25s;cursor:pointer;display:flex;flex-direction:column;position:relative;box-shadow:0 2px 16px rgba(0,0,0,0.06),0 1px 0 rgba(255,255,255,0.8) inset}
+.doc-card:hover{-webkit-transform:translateY(-2px);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.1);border-color:rgba(37,99,235,0.3)}
+body.dark-mode .doc-card{background:rgba(21,32,43,0.9)!important;border:1px solid rgba(255,255,255,0.07)!important;box-shadow:0 2px 16px rgba(0,0,0,0.4)!important}
 .doc-card:hover{border-color:var(--blue);box-shadow:0 12px 40px rgba(37,99,235,0.12);transform:translateY(-4px)}
 .doc-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
 .doc-thumb::after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.06) 100%)}
@@ -613,7 +620,10 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 <nav>
   <div class="nav-inner">
     <div class="nav-logo" onclick="goPage('home')">
-      <div class="nav-logo-mark">📚</div>
+      <div class="nav-logo-mark">
+        <img src="https://i.imgur.com/placeholder.png" id="edulib-logo" alt="EduLib RDC" style="width:40px;height:40px;object-fit:cover;border-radius:10px;display:none"/>
+        <div id="edulib-logo-fallback" style="width:40px;height:40px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem">📚</div>
+      </div>
       <div style="line-height:1">
         <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;letter-spacing:-0.02em">EduLib</div>
         <div style="font-family:var(--font-display);font-weight:700;font-size:0.7rem;color:#93c5fd;letter-spacing:0.05em">RDC</div>
