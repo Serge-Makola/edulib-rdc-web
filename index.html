@@ -357,6 +357,14 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 .footer-links li{font-size:0.875rem;cursor:pointer;transition:color 0.15s}
 .footer-links li:hover{color:#fff}
 .footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:2rem;display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;flex-wrap:wrap;gap:0.75rem}
+.footer-adage{text-align:center;padding:2.5rem 1.5rem;margin:2rem 0;position:relative}
+.footer-adage::before,.footer-adage::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:80px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)}
+.footer-adage::before{top:0}.footer-adage::after{bottom:0}
+.footer-adage-deco{color:var(--blue);font-size:1.1rem;margin-bottom:1rem;opacity:0.7;letter-spacing:8px}
+.footer-quote{font-style:italic;font-size:1.05rem;line-height:1.9;color:rgba(255,255,255,0.55);max-width:680px;margin:0 auto;font-family:var(--font-display);font-weight:400;letter-spacing:0.01em}
+.footer-quote em{color:rgba(255,255,255,0.85);font-style:italic;font-weight:700}
+.footer-quote-mark{font-size:1.6rem;color:var(--blue);line-height:0;vertical-align:-0.3em;opacity:0.7;font-style:normal}
+.footer-adage-source{font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-top:1.25rem;font-weight:600}
 
 /* ===== TOAST ===== */
 .toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:#fff;padding:14px 22px;border-radius:12px;font-size:0.875rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:340px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-lg)}
@@ -678,9 +686,105 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
 .team-avatar{font-size:2.5rem;margin-bottom:0.5rem}
 .team-name{font-weight:700;font-size:0.9rem}
 .team-role{font-size:0.78rem;color:var(--text-muted);margin-top:2px}
+
+/* ===== UX ENHANCEMENTS ===== */
+
+/* Animated stat counters */
+@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.stat-num,.hero-stat-value{animation:countUp 0.6s ease both}
+
+/* Scroll-reveal cards */
+@keyframes revealUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.doc-card{animation:revealUp 0.4s ease both}
+.doc-card:nth-child(1){animation-delay:0.05s}
+.doc-card:nth-child(2){animation-delay:0.1s}
+.doc-card:nth-child(3){animation-delay:0.15s}
+.doc-card:nth-child(4){animation-delay:0.2s}
+.doc-card:nth-child(5){animation-delay:0.25s}
+.doc-card:nth-child(6){animation-delay:0.3s}
+
+/* Fil cards reveal */
+.fil-card{animation:revealUp 0.4s ease both}
+
+/* Floating "Nouveau" badge pulse */
+@keyframes badgePop{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.doc-badge.nb{animation:badgePop 2.5s ease infinite}
+
+/* Welcome banner strip */
+.welcome-ribbon{background:linear-gradient(90deg,var(--blue),#7c3aed,var(--blue));background-size:200% 100%;animation:ribbonShift 4s linear infinite;color:#fff;text-align:center;padding:9px 1.5rem;font-size:0.8rem;font-weight:600;letter-spacing:0.04em;position:relative;overflow:hidden}
+@keyframes ribbonShift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.welcome-ribbon-inner{display:inline-flex;align-items:center;gap:0.75rem;flex-wrap:wrap;justify-content:center}
+.welcome-ribbon a{color:rgba(255,255,255,0.85);text-decoration:underline;cursor:pointer;font-weight:700}
+.welcome-ribbon-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:1rem;padding:4px;line-height:1;-webkit-tap-highlight-color:transparent}
+
+/* Doc card shimmer on hover */
+.doc-card::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent);transform:skewX(-20deg);transition:left 0.5s ease;pointer-events:none}
+.doc-card:hover::before{left:150%}
+.doc-card{position:relative;overflow:hidden}
+
+/* Smooth hero entrance */
+@keyframes heroFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero h1{animation:heroFadeIn 0.7s ease 0.1s both}
+.hero .hero-desc{animation:heroFadeIn 0.7s ease 0.25s both}
+.hero .hero-btns{animation:heroFadeIn 0.7s ease 0.4s both}
+.hero .hero-stats{animation:heroFadeIn 0.7s ease 0.3s both}
+
+/* Search bar glow on focus */
+.search-input-row:focus-within .search-icon{color:var(--blue);transition:color 0.2s}
+
+/* "Back to top" smooth button */
+.back-to-top{position:fixed;bottom:90px;right:24px;width:44px;height:44px;background:var(--surface);border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;box-shadow:var(--shadow);z-index:450;opacity:0;transform:translateY(12px);transition:all 0.3s;-webkit-tap-highlight-color:transparent}
+.back-to-top.show{opacity:1;transform:translateY(0)}
+.back-to-top:hover{background:var(--blue);color:#fff;border-color:var(--blue);transform:translateY(-2px)}
+body.dark-mode .back-to-top{background:var(--surface-2);border-color:var(--border);color:var(--ink)}
+
+/* Section separators */
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 1.5rem}
+
+/* Chip hover micro bounce */
+.chip{transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1)}
+.chip:hover{transform:translateY(-2px)}
+.chip.active{transform:scale(1.04)}
+
+/* AI FAB ripple */
+@keyframes fabPulse{0%{box-shadow:0 4px 20px rgba(37,99,235,0.4),0 0 0 0 rgba(37,99,235,0.35)}70%{box-shadow:0 4px 20px rgba(37,99,235,0.4),0 0 0 14px rgba(37,99,235,0)}100%{box-shadow:0 4px 20px rgba(37,99,235,0.4),0 0 0 0 rgba(37,99,235,0)}}
+.ai-fab{animation:fabPulse 2.5s infinite}
+
+/* Stat items subtle bounce */
+.stat-item{transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+.stat-item:hover{transform:translateY(-4px) scale(1.015)}
+
+/* CTA section gradient animation */
+@keyframes ctaGlow{0%,100%{opacity:0.7}50%{opacity:1}}
+.cta::before{animation:ctaGlow 4s ease infinite}
+
+/* Page transition polish */
+@keyframes pg-enter-right{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pg-enter-left{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:translateX(0)}}
+.pg-enter-right{animation:pg-enter-right 0.32s cubic-bezier(0.4,0,0.2,1) both}
+.pg-enter-left{animation:pg-enter-left 0.32s cubic-bezier(0.4,0,0.2,1) both}
+
+/* Mobile tap feedback */
+@media(max-width:768px){
+  .doc-card:active{transform:scale(0.98)}
+  .chip:active{transform:scale(0.96)}
+  .hero-btn-main:active,.hero-btn-sec:active{transform:scale(0.97)}
+}
 </style>
 </head>
 <body>
+
+<!-- WELCOME RIBBON -->
+<div class="welcome-ribbon" id="welcomeRibbon">
+  <div class="welcome-ribbon-inner">
+    <span>🎓 Bienvenue sur EduLib RDC — La plateforme #1 de ressources pédagogiques en RDC</span>
+    <span onclick="goPage('register')" style="cursor:pointer">→ <a>Créer un compte gratuit</a></span>
+  </div>
+  <button class="welcome-ribbon-close" onclick="document.getElementById('welcomeRibbon').style.display='none'">✕</button>
+</div>
+
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
 
 <!-- NAV -->
 <nav>
@@ -1257,10 +1361,16 @@ footer{background:var(--ink-soft);color:rgba(255,255,255,0.5);padding:3.5rem 1.5
       </div>
       <div><div class="footer-col-title">Navigation</div><ul class="footer-links"><li onclick="goPage('home')">Accueil</li><li onclick="goPage('catalogue')">Catalogue</li><li onclick="goPage('filieres')">Filières</li><li onclick="goPage('about')">À propos</li><li onclick="goPage('contact')">Contact</li></ul></div>
       <div><div class="footer-col-title">Filières</div><ul class="footer-links"><li onclick="goFiliere('droit')">Droit</li><li onclick="goFiliere('medecine')">Médecine</li><li onclick="goFiliere('polytechnique')">Polytechnique</li><li onclick="goFiliere('sciences')">Sciences</li><li onclick="goFiliere('lettres')">Lettres</li></ul></div>
-      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li>À propos</li><li>Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:rgba(255,255,255,0.5)">contact@edulibrdc.com</a></li><li><a href="tel:+243840021963" style="color:rgba(255,255,255,0.5)" id="footerPhone">+243 840 021 963</a></li><li><a href="https://wa.me/243840021963" style="color:rgba(255,255,255,0.5)" id="footerWhatsapp">WhatsApp</a></li></ul></div>
+      <div><div class="footer-col-title">Contact</div><ul class="footer-links"><li onclick="goPage('about')">À propos</li><li onclick="goPage('contact')">Support</li><li><a href="mailto:contact@edulibrdc.com" style="color:rgba(255,255,255,0.5)">contact@edulibrdc.com</a></li><li><a href="tel:+243840021963" style="color:rgba(255,255,255,0.5)" id="footerPhone">+243 840 021 963</a></li><li><a href="https://wa.me/243840021963" style="color:rgba(255,255,255,0.5)" id="footerWhatsapp">WhatsApp</a></li></ul></div>
     </div>
-    <div class="footer-adage"><em>« La quête du savoir et l'étude des sciences sont des tâches infiniment nobles mais terriblement ardues »</em></div>
-    <div class="footer-bottom"><span>© 2025 EduLib RDC. Tous droits réservés.</span><span style="color:rgba(255,255,255,0.25);font-size:0.75rem">Kinshasa, République Démocratique du Congo</span></div>
+    <div class="footer-adage">
+      <div class="footer-adage-deco">✦</div>
+      <blockquote class="footer-quote">
+        <span class="footer-quote-mark">"</span>La quête du savoir et l'étude des sciences sont des tâches infiniment nobles — mais <em>terriblement ardues.</em> C'est dans cette ardeur que se forge la grandeur.<span class="footer-quote-mark">"</span>
+      </blockquote>
+      <div class="footer-adage-source">— Philosophie d'EduLib RDC</div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 EduLib RDC. Tous droits réservés.</span><span style="color:rgba(255,255,255,0.25);font-size:0.75rem">🇨🇩 Kinshasa, République Démocratique du Congo</span></div>
   </div>
 </footer>
 
@@ -2347,7 +2457,22 @@ function toggleTheme(){
 })();
 
 // PDF VIEWER
+function isMobile(){return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||window.innerWidth<768;}
+
 function openPdfViewer(driveLink, title){
+  // Sur mobile : ouvrir dans un onglet Google Drive directement
+  var idMatch = driveLink.match(/[/=]([a-zA-Z0-9_-]{25,})/);
+  var src = driveLink;
+  if(idMatch){
+    src = 'https://drive.google.com/file/d/'+idMatch[1]+'/preview?usp=sharing';
+  }
+  if(isMobile()){
+    // Sur mobile : ouvrir dans Drive directement (meilleure expérience)
+    var driveUrl = idMatch ? 'https://drive.google.com/file/d/'+idMatch[1]+'/view' : driveLink;
+    window.open(driveUrl, '_blank');
+    showToast('Document ouvert dans Google Drive 📄','success');
+    return;
+  }
   var viewer = document.getElementById('pdfViewer');
   var frame = document.getElementById('pdfFrame');
   var loading = document.getElementById('pdfLoading');
@@ -2358,12 +2483,6 @@ function openPdfViewer(driveLink, title){
   if(loading) loading.style.display = 'flex';
   viewer.classList.add('open');
   document.body.style.overflow = 'hidden';
-  var src = driveLink;
-  // Extraire l'ID Google Drive
-  var idMatch = driveLink.match(/[/=]([a-zA-Z0-9_-]{25,})/);
-  if(idMatch){
-    src = 'https://drive.google.com/file/d/'+idMatch[1]+'/preview?usp=sharing';
-  }
   var t = setTimeout(function(){
     if(loading) loading.style.display = 'none';
     frame.style.display = 'block';
@@ -2416,7 +2535,47 @@ auth.onAuthStateChanged(function(u){
   if(u&&sessionStorage.getItem('el_admin')==='1'){
     setTimeout(function(){updateStats();},500);
   }
+  // Hide welcome ribbon for logged-in users
+  if(u){
+    var rib=document.getElementById('welcomeRibbon');
+    if(rib)rib.style.display='none';
+  }
 });
+
+// BACK TO TOP
+window.addEventListener('scroll',function(){
+  var btn=document.getElementById('backToTop');
+  if(!btn)return;
+  if(window.scrollY>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+});
+
+// ANIMATED COUNTER
+function animateCounter(el,target,duration){
+  var start=0,step=target/((duration||800)/16);
+  var timer=setInterval(function(){
+    start+=step;
+    if(start>=target){start=target;clearInterval(timer);}
+    el.textContent=Math.floor(start);
+  },16);
+}
+function initCounters(){
+  document.querySelectorAll('.stat-num,.hero-stat-value').forEach(function(el){
+    var val=parseInt(el.textContent);
+    if(val>0){el.textContent='0';animateCounter(el,val,900);}
+  });
+}
+var _countersInit=false;
+window.addEventListener('scroll',function(){
+  if(_countersInit)return;
+  var statsBar=document.querySelector('.stats-bar');
+  if(!statsBar)return;
+  var rect=statsBar.getBoundingClientRect();
+  if(rect.top<window.innerHeight){_countersInit=true;initCounters();}
+});
+
+// Hide ribbon if user has dismissed it before
+try{if(localStorage.getItem('edulib_ribbon_hidden')==='1'){var r=document.getElementById('welcomeRibbon');if(r)r.style.display='none';}}catch(e){}
+document.querySelector('.welcome-ribbon-close')&&document.querySelector('.welcome-ribbon-close').addEventListener('click',function(){try{localStorage.setItem('edulib_ribbon_hidden','1');}catch(e){}});
 </script>
 </body>
 </html>
