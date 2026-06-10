@@ -1501,20 +1501,15 @@ auth.onAuthStateChanged(function(user) {
         curUser.uid = user.uid;
       } else {
         curUser = {uid:user.uid, name:user.displayName||user.email, email:user.email, role:''};
-        // Créer le profil sans écraser un rôle existant
         db.collection('users').doc(user.uid).set(curUser, {merge:true});
       }
       loadBoughtIds(function() {
         showUserNav();
         refreshAllGrids();
-        // Restaurer la page après reload ou naviguer vers dashboard après login
-        var savedPage = '';
-        try{savedPage=sessionStorage.getItem('edulib_page')||'';}catch(e){}
+        // Rediriger vers dashboard uniquement si on vient de la page login ou register
         if(_curPage==='login'||_curPage==='register'){
           goPage('dashboard');
-          showToast('Bienvenue ! 👋','success');
-        } else if(savedPage==='dashboard'||savedPage===''){
-          goPage('dashboard');
+          showToast('Bienvenue '+(curUser.name||'')+'! 👋','success');
         }
       });
     });
@@ -1808,8 +1803,11 @@ function doLogin(){
   if(!email||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('show');return;}
   btn.disabled=true;btn.textContent='Connexion...';
   auth.signInWithEmailAndPassword(email,pass).then(function(){
-    goPage('dashboard');showToast('Bienvenue ! 👋','success');
-    document.getElementById('loginEmail').value='';document.getElementById('loginPass').value='';
+    // La redirection est gérée par onAuthStateChanged
+    // On réactive juste le bouton et vide les champs
+    btn.disabled=false;btn.textContent='Se connecter';
+    document.getElementById('loginEmail').value='';
+    document.getElementById('loginPass').value='';
   }).catch(function(e){
     btn.disabled=false;btn.textContent='Se connecter';
     err.textContent=e.code==='auth/network-request-failed'?'Vérifiez votre connexion internet.':e.code==='auth/too-many-requests'?'Trop de tentatives. Réessayez plus tard.':'Email ou mot de passe incorrect.';
