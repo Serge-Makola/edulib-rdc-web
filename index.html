@@ -1641,7 +1641,15 @@ function makeDocCard(d){
     readBtn.className='doc-btn';
     readBtn.style.cssText='background:var(--blue);color:#fff;border-color:var(--blue)';
     readBtn.textContent='Lire';
-    readBtn.onclick=function(e){e.stopPropagation();openPdfViewer(d.driveLink,d.title);};
+    readBtn.onclick=function(e){
+      e.stopPropagation();
+      if(!curUser){
+        showToast('Connectez-vous pour lire ce document 🔒','error');
+        setTimeout(function(){goPage('login');},1200);
+        return;
+      }
+      openPdfViewer(d.driveLink,d.title);
+    };
     footer.appendChild(readBtn);
   }
   footer.appendChild(btn);
@@ -1718,11 +1726,24 @@ function openDoc(id){
 function closeModal(){document.getElementById('modalOv').classList.remove('open');}
 
 function dlDoc(id){
-  if(!curUser){showToast('Connectez-vous pour télécharger','error');goPage('login');return;}
-  if(boughtIds.indexOf(id)<0){showToast('Achetez ce document dabord','error');return;}
+  if(!curUser){showToast('Connectez-vous pour télécharger 🔒','error');setTimeout(function(){goPage('login');},1200);return;}
+  if(boughtIds.indexOf(id)<0){showToast('Achetez ce document d\'abord','error');return;}
   var d=docs.find(function(x){return x.id===id;});if(!d)return;
-  if(d.driveLink){var url=d.driveLink;var m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);if(m)url='https://drive.google.com/uc?export=download&id='+m[1];window.open(url,'_blank');showToast('Téléchargement en cours 📥','success');}
-  else showToast('Lien non disponible','error');
+  if(d.driveLink){
+    // Firebase Storage URL — ouvrir directement
+    if(d.driveLink.indexOf('firebasestorage.googleapis.com')>-1){
+      window.open(d.driveLink,'_blank');
+    } else {
+      // Ancien lien Google Drive — compatibilité
+      var url=d.driveLink;
+      var m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if(m) url='https://drive.google.com/uc?export=download&id='+m[1];
+      window.open(url,'_blank');
+    }
+    showToast('Téléchargement en cours 📥','success');
+  } else {
+    showToast('Lien non disponible','error');
+  }
 }
 
 function addCart(id){
@@ -2601,16 +2622,25 @@ function toggleTheme(){
 function isMobile(){return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||window.innerWidth<768;}
 
 function openPdfViewer(driveLink, title){
-  var idMatch = driveLink.match(/[/=]([a-zA-Z0-9_-]{25,})/);
+  // Vérif connexion
+  if(!curUser){
+    showToast('Connectez-vous pour lire ce document 🔒','error');
+    setTimeout(function(){goPage('login');},1200);
+    return;
+  }
   var previewSrc = driveLink;
-  if(idMatch){
-    // Sur mobile on utilise Google Docs viewer embed — ça s'ouvre sans rediriger vers Drive
-    if(isMobile()){
+
+  if(driveLink.indexOf('firebasestorage.googleapis.com')>-1){
+    // URL Firebase Storage — utiliser directement dans l'iframe
+    previewSrc = driveLink;
+  } else {
+    // Lien Google Drive — extraire l'ID
+    var idMatch = driveLink.match(/[/=]([a-zA-Z0-9_-]{25,})/);
+    if(idMatch){
       previewSrc = 'https://drive.google.com/file/d/'+idMatch[1]+'/preview';
-    } else {
-      previewSrc = 'https://drive.google.com/file/d/'+idMatch[1]+'/preview?usp=sharing';
     }
   }
+
   var viewer = document.getElementById('pdfViewer');
   var frame = document.getElementById('pdfFrame');
   var loading = document.getElementById('pdfLoading');
