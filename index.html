@@ -1236,34 +1236,10 @@ body.dark-mode .upload-zone:hover{background:var(--blue-light);border-color:var(
             <div class="form-grp-adm"><label class="form-lbl">Badge</label><select class="form-sel" id="fBadge"><option value="">Aucun</option><option value="new">Nouveau</option><option value="popular">Populaire</option></select></div>
             <div class="form-grp-adm form-full"><label class="form-lbl">Description</label><textarea class="form-inp" id="fDesc" rows="3" placeholder="Décrivez le contenu..."></textarea></div>
             <div class="form-grp-adm form-full">
-              <label class="form-lbl">Fichier PDF *</label>
-              <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fPdfFile').click()">
-                <div class="upload-zone-icon">📄</div>
-                <div class="upload-zone-text">Cliquez pour choisir un PDF</div>
-                <div class="upload-zone-sub">ou glissez-déposez ici — max 50 MB</div>
-              </div>
-              <input type="file" id="fPdfFile" accept=".pdf" style="display:none" onchange="handlePdfSelect(this)"/>
-              <div id="uploadPreview" style="display:none;margin-top:0.75rem;padding:12px 16px;background:var(--blue-light);border:1.5px solid var(--blue);border-radius:10px;display:none;align-items:center;gap:12px">
-                <span style="font-size:1.5rem">📄</span>
-                <div style="flex:1;min-width:0">
-                  <div id="uploadFileName" style="font-weight:600;font-size:0.875rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-                  <div id="uploadFileSize" style="font-size:0.75rem;color:var(--text-muted)"></div>
-                </div>
-                <button onclick="clearPdfFile()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;flex-shrink:0">✕</button>
-              </div>
-              <!-- Champ caché pour conserver le lien existant lors d'une modification -->
-              <input type="hidden" id="fLink"/>
-              <div id="existingLinkWrap" style="display:none;margin-top:0.5rem;padding:10px 14px;background:var(--green-light);border-radius:8px;font-size:0.8rem;color:var(--green);font-weight:600">
-                ✅ Fichier déjà uploadé — laissez vide pour conserver l'actuel
-              </div>
-              <!-- Barre de progression upload -->
-              <div id="uploadProgressWrap" style="display:none;margin-top:0.75rem">
-                <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px">
-                  <span>Upload en cours...</span><span id="uploadPct">0%</span>
-                </div>
-                <div style="height:6px;background:var(--border);border-radius:99px;overflow:hidden">
-                  <div id="uploadBar" style="height:100%;background:var(--blue);border-radius:99px;width:0%;transition:width 0.2s"></div>
-                </div>
+              <label class="form-lbl">Lien Google Drive *</label>
+              <input class="form-inp" type="url" id="fLink" placeholder="https://drive.google.com/file/d/..." style="width:100%"/>
+              <div style="margin-top:0.4rem;font-size:0.78rem;color:var(--text-muted)">
+                📌 Dans Google Drive : clic droit sur le fichier → <strong>Obtenir le lien</strong> → choisir <strong>Toute personne avec le lien</strong> → copier.
               </div>
             </div>
           </div>
@@ -2098,63 +2074,6 @@ function renderAdmOrders(){
 }
 
 // CRUD DOCS
-// ===== FIREBASE STORAGE UPLOAD =====
-var _selectedPdfFile = null;
-
-function handlePdfSelect(input){
-  var file = input.files[0];
-  if(!file) return;
-  if(file.type !== 'application/pdf'){showToast('Veuillez sélectionner un fichier PDF.','error');input.value='';return;}
-  if(file.size > 50*1024*1024){showToast('Le fichier dépasse 50 MB.','error');input.value='';return;}
-  _selectedPdfFile = file;
-  var preview = document.getElementById('uploadPreview');
-  var nameEl = document.getElementById('uploadFileName');
-  var sizeEl = document.getElementById('uploadFileSize');
-  var zone = document.getElementById('uploadZone');
-  if(nameEl) nameEl.textContent = file.name;
-  if(sizeEl) sizeEl.textContent = (file.size/1024/1024).toFixed(2)+' MB';
-  if(preview){preview.style.display='flex';}
-  if(zone){
-    zone.style.borderColor='var(--blue)';
-    zone.querySelector('.upload-zone-text').textContent = 'OK: '+file.name.substring(0,45);
-    zone.querySelector('.upload-zone-sub').textContent = 'Cliquez pour changer de fichier';
-  }
-}
-
-function clearPdfFile(){
-  _selectedPdfFile = null;
-  var input = document.getElementById('fPdfFile');
-  if(input) input.value = '';
-  var preview = document.getElementById('uploadPreview');
-  if(preview) preview.style.display='none';
-  var zone = document.getElementById('uploadZone');
-  if(zone){
-    zone.style.borderColor='';
-    zone.querySelector('.upload-zone-text').textContent='Cliquez pour choisir un PDF';
-    zone.querySelector('.upload-zone-sub').textContent='ou glissez-deposez ici - max 50 MB';
-  }
-}
-
-function uploadPdfToStorage(file, onSuccess, onError){
-  var timestamp = Date.now();
-  var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  var path = 'documents/'+timestamp+'_'+safeName;
-  var ref = storage.ref(path);
-  var task = ref.put(file);
-  var progressWrap = document.getElementById('uploadProgressWrap');
-  var bar = document.getElementById('uploadBar');
-  var pct = document.getElementById('uploadPct');
-  if(progressWrap) progressWrap.style.display='block';
-  task.on('state_changed',
-    function(snap){
-      var progress = (snap.bytesTransferred/snap.totalBytes)*100;
-      if(bar) bar.style.width = progress.toFixed(0)+'%';
-      if(pct) pct.textContent = progress.toFixed(0)+'%';
-    },
-    function(err){ if(progressWrap)progressWrap.style.display='none'; onError(err); },
-    function(){ task.snapshot.ref.getDownloadURL().then(function(url){ if(progressWrap)progressWrap.style.display='none'; onSuccess(url); }); }
-  );
-}
 
 function saveDoc(){
   if(!isAdmin){showToast('Acces refuse.','error');return;}
@@ -2165,9 +2084,9 @@ function saveDoc(){
   var prof=document.getElementById('fProf').value.trim();
   var prix=parseFloat(document.getElementById('fPrix').value);
   var eid=document.getElementById('editId').value;
-  var existingLink=document.getElementById('fLink').value;
+  var driveLink=document.getElementById('fLink').value.trim();
   if(!title||!fil||!type||!prof||isNaN(prix)){showToast('Remplissez tous les champs obligatoires (*)','error');return;}
-  if(!_selectedPdfFile && !existingLink){showToast('Veuillez selectionner un fichier PDF.','error');return;}
+  if(!driveLink){showToast('Veuillez coller un lien Google Drive.','error');return;}
   btn.disabled=true;
   function persistDoc(fileUrl){
     var filObj=FILIERES.find(function(x){return x.id===fil;});
@@ -2193,16 +2112,8 @@ function saveDoc(){
       else{var f=document.getElementById('adm-ajouter');if(f)f.scrollTop=0;}
     }).catch(function(e){btn.disabled=false;btn.textContent='Enregistrer le document';showToast('Erreur: '+e.message,'error');});
   }
-  if(_selectedPdfFile){
-    btn.textContent='Upload en cours...';
-    uploadPdfToStorage(_selectedPdfFile,
-      function(url){ persistDoc(url); },
-      function(err){ btn.disabled=false;btn.textContent='Enregistrer le document';showToast('Erreur upload: '+err.message,'error'); }
-    );
-  } else {
-    btn.textContent='Enregistrement...';
-    persistDoc(existingLink);
-  }
+  btn.textContent='Enregistrement...';
+  persistDoc(driveLink);
 }
 
 function editDoc(id){
@@ -2213,15 +2124,9 @@ function editDoc(id){
   document.getElementById('fPrix').value=d.prix||'';document.getElementById('fPages').value=d.pages||'';
   document.getElementById('fAnnee').value=d.annee||'';document.getElementById('fDesc').value=d.desc||'';
   document.getElementById('fBadge').value=d.badge||'';
-  // Stocker le lien existant dans le champ caché
   document.getElementById('fLink').value=d.driveLink||'';
-  // Afficher indicateur fichier existant
-  var ew=document.getElementById('existingLinkWrap');
-  if(ew && d.driveLink) ew.style.display='block';
-  // Reset le fichier sélectionné
-  clearPdfFile();
   var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Modifier le document';
-  var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Mettez à jour les informations. Laissez le PDF vide pour conserver l\'actuel.';
+  var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Mettez à jour les informations du document.';
   var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Mettre à jour';
   showAP('ajouter',null);
 }
@@ -2250,10 +2155,6 @@ function resetDocForm(){
   var ft=document.getElementById('docFormTitle');if(ft)ft.textContent='Ajouter un document';
   var fs=document.getElementById('docFormSub');if(fs)fs.textContent='Remplissez toutes les informations du document.';
   var sb=document.getElementById('saveBtn');if(sb)sb.textContent='Enregistrer le document';
-  // Reset upload zone
-  clearPdfFile();
-  var el=document.getElementById('existingLinkWrap');if(el)el.style.display='none';
-  var pw=document.getElementById('uploadProgressWrap');if(pw)pw.style.display='none';
 }
 
 // NAVIGATION
