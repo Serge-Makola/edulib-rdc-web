@@ -1523,8 +1523,11 @@ function showAdminNav(){
 }
 
 // Load data from Firebase
+var _docsListenerStarted = false;
 function loadDocs(cb) {
-  db.collection('documents').orderBy('createdAt','desc').get().then(function(snap) {
+  if(_docsListenerStarted){ if(cb) cb(); return; }
+  _docsListenerStarted = true;
+  db.collection('documents').orderBy('createdAt','desc').onSnapshot(function(snap) {
     var prevIds=docs.map(function(d){return d.id;});
     docs = snap.docs.map(function(d){var x=d.data();x.id=d.id;return x;});
     if(prevIds.length>0){
@@ -1536,10 +1539,13 @@ function loadDocs(cb) {
     }
     updateStats();
     refreshAllGrids();
+    if(isAdmin){ renderAdmAllDocs(); renderAdmRecentDocs(); }
     if(cb) cb();
-  }).catch(function(e){
+    cb = null;
+  }, function(e){
     console.log('loadDocs error:', e);
     if(cb) cb();
+    cb = null;
   });
 }
 
@@ -2106,7 +2112,6 @@ function saveDoc(){
       var wasEdit=!!eid;
       btn.disabled=false;btn.textContent='Enregistrer le document';
       showToast(wasEdit?'Document mis a jour !':'Document ajoute !','success');
-      loadDocs(function(){renderAdmAllDocs();renderAdmRecentDocs();});
       resetDocForm();
       if(wasEdit){showAP('documents',null);}
       else{var f=document.getElementById('adm-ajouter');if(f)f.scrollTop=0;}
@@ -2144,7 +2149,7 @@ function delDoc(id){
 
 function confirmDel(id){
   db.collection('documents').doc(id).delete().then(function(){
-    closeModal();loadDocs(function(){renderAdmAllDocs();renderAdmRecentDocs();});showToast('Document supprimé.','');
+    closeModal();showToast('Document supprimé.','');
   }).catch(function(e){showToast('Erreur: '+e.message,'error');});
 }
 
