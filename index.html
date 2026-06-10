@@ -928,12 +928,12 @@ body.dark-mode .upload-zone:hover{background:var(--blue-light);border-color:var(
           <option value="">Tous les types</option>
           <option value="Ouvrage">Ouvrage</option>
           <option value="Article scientifique">Article scientifique</option>
+          <option value="Loi">Loi</option>
           <option value="Jurisprudence">Jurisprudence</option>
           <option value="Syllabus">Syllabus</option>
           <option value="Notes de cours">Notes de cours</option>
-          <option value="Exercices corriges">Exercices corrigés</option>
-          <option value="Examen corrige">Examen corrigé</option>
-          <option value="TD corrige">TD corrigé</option>
+          <option value="Exercice">Exercice</option>
+          <option value="Examen">Examen</option>
         </select>
         <select class="adv-select" id="filterYear" onchange="applyFilter()">
           <option value="">Toutes les années</option>
@@ -1228,7 +1228,7 @@ body.dark-mode .upload-zone:hover{background:var(--blue-light);border-color:var(
           <div class="form-grid">
             <div class="form-grp-adm form-full"><label class="form-lbl">Titre *</label><input class="form-inp" type="text" id="fTitle" placeholder="Ex: Introduction au Droit Civil Congolais"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Filière *</label><select class="form-sel" id="fFil"><option value="">Sélectionner...</option><option value="droit">Droit</option><option value="medecine">Médecine</option><option value="polytechnique">Polytechnique</option><option value="sciences">Sciences</option><option value="lettres">Lettres</option><option value="economie">Économie</option><option value="sciences_po">Sciences Politiques</option><option value="psychologie">Psychologie</option><option value="pharmacie">Pharmacie</option><option value="agronomie">Agronomie</option><option value="environnement">Environnement</option><option value="math_info">Math &amp; Informatique</option><option value="biologie">Biologie</option></select></div>
-            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Ouvrage</option><option>Article scientifique</option><option>Jurisprudence</option><option>Syllabus</option><option>Notes de cours</option><option>Exercices corrigés</option><option>Examen corrigé</option><option>TD corrigé</option></select></div>
+            <div class="form-grp-adm"><label class="form-lbl">Type *</label><select class="form-sel" id="fType"><option value="">Sélectionner...</option><option>Ouvrage</option><option>Article scientifique</option><option>Loi</option><option>Jurisprudence</option><option>Syllabus</option><option>Notes de cours</option><option>Exercice</option><option>Examen</option></select></div>
             <div class="form-grp-adm"><label class="form-lbl">Professeur *</label><input class="form-inp" type="text" id="fProf" placeholder="Prof. Nom Prénom"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Prix (USD) *</label><input class="form-inp" type="number" id="fPrix" placeholder="5" min="0" step="0.5"/></div>
             <div class="form-grp-adm"><label class="form-lbl">Pages</label><input class="form-inp" type="number" id="fPages" placeholder="100"/></div>
@@ -1575,18 +1575,22 @@ function updateStats(){
   var n=docs.length;
   ['cntDocs','statDocs','admDocN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=n;});
   var db2=document.getElementById('admDocBadge');if(db2)db2.textContent=n+' docs';
-  // Charger le nombre d'utilisateurs depuis Firebase
-  db.collection('users').get().then(function(snap){
-    var u=snap.size;
+  // Compteur users : tableau local si chargé, sinon stats/public
+  var u=users.length;
+  if(u>0){
     ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=u;});
     var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
-  }).catch(function(){});
-  // Charger le nombre de commandes
-  db.collection('orders').get().then(function(snap){
-    var o=snap.size;
-    var on=document.getElementById('admOrdN');if(on)on.textContent=o;
-    var ob=document.getElementById('admOrdBadge');if(ob)ob.textContent=o+' total';
-  }).catch(function(){});
+  } else {
+    db.collection('stats').doc('public').get().then(function(doc){
+      var cnt=doc.exists?(doc.data().userCount||0):0;
+      ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=cnt;});
+      var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=cnt+' inscrits';
+    }).catch(function(){});
+  }
+  // Compteur commandes depuis le tableau déjà chargé
+  var o=orders.length;
+  var on=document.getElementById('admOrdN');if(on)on.textContent=o;
+  var ob2=document.getElementById('admOrdBadge');if(ob2)ob2.textContent=o+' total';
 }
 
 // Render
@@ -1813,7 +1817,9 @@ function doRegister(){
   btn.disabled=true;btn.textContent='Création...';
   auth.createUserWithEmailAndPassword(email,pass).then(function(cred){
     return cred.user.updateProfile({displayName:name}).then(function(){
-      return db.collection('users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid});
+      return db.collection('users').doc(cred.user.uid).set({name:name,email:email,role:role,filiere:fil,createdAt:Date.now(),uid:cred.user.uid}).then(function(){
+        return db.collection('stats').doc('public').set({userCount:firebase.firestore.FieldValue.increment(1)},{merge:true});
+      });
     });
   }).then(function(){
     goPage('dashboard');showToast('Bienvenue '+name+' ! Compte créé 🎉','success');
@@ -2602,6 +2608,14 @@ try{
 
 // Precharger les documents immediatement
 loadDocs();
+// Charger le compteur public d'utilisateurs (visible sans connexion)
+db.collection('stats').doc('public').get().then(function(doc){
+  if(doc.exists){
+    var u=doc.data().userCount||0;
+    ['cntUsers','statUsers','admUserN'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=u;});
+    var ub=document.getElementById('admUserBadge');if(ub)ub.textContent=u+' inscrits';
+  }
+}).catch(function(){});
 // Precharger les stats si admin
 auth.onAuthStateChanged(function(u){
   if(u&&sessionStorage.getItem('el_admin')==='1'){
