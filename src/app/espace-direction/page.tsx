@@ -85,7 +85,7 @@ export default function EspaceDirectionPage() {
         {tab === 'dashboard' && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-              {[{ label: 'Documents', value: docs.length, color: '#2563eb' }, { label: 'Utilisateurs', value: users.length, color: '#059669' }, { label: 'Commandes', value: orders.length, color: '#d97706' }, { label: 'Revenus', value: '$' + orders.filter(o => o.status === 'Paye').reduce((s, o) => s + o.total, 0), color: '#7c3aed' }].map(({ label, value, color }) => (
+              {[{ label: 'Documents', value: docs.length, color: '#2563eb' }, { label: 'Utilisateurs', value: users.length, color: '#059669' }, { label: 'Commandes', value: orders.length, color: '#d97706' }, { label: 'Revenus', value: '$' + orders.filter(o => o.status === 'Payé').reduce((s, o) => s + o.total, 0), color: '#7c3aed' }].map(({ label, value, color }) => (
                 <div key={label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '1.25rem' }}>
                   <div style={{ fontSize: '1.75rem', fontWeight: 800, color, letterSpacing: '-0.04em' }}>{value}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 4 }}>{label}</div>
@@ -190,7 +190,7 @@ export default function EspaceDirectionPage() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontWeight: 700 }}>${o.total}</span>
-                  <span style={{ background: o.status === 'Paye' ? 'var(--green-light)' : 'var(--gold-light)', color: o.status === 'Paye' ? '#166534' : '#92400e', borderRadius: 6, padding: '3px 8px', fontSize: '0.72rem', fontWeight: 600 }}>{o.status}</span>
+                  <span style={{ background: o.status === 'Payé' ? 'var(--green-light)' : 'var(--gold-light)', color: o.status === 'Payé' ? '#166534' : '#92400e', borderRadius: 6, padding: '3px 8px', fontSize: '0.72rem', fontWeight: 600 }}>{o.status}</span>
                 </div>
               </div>
             ))}
