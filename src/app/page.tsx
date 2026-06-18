@@ -1,0 +1,277 @@
+'use client'
+
+import Link from 'next/link'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
+import { useStats } from '@/hooks/useStats'
+import { useDocs } from '@/hooks/useDocs'
+import { useAuth } from '@/context/AuthContext'
+import { FILIERES } from '@/types'
+import { useState, useEffect } from 'react'
+
+const typeColors: Record<string, string> = { 'Ouvrage': '#2563eb', 'Loi': '#7c3aed', 'Jurisprudence': '#0891b2', 'Syllabus': '#059669', 'Notes de cours': '#d97706', 'Exercice': '#dc2626', 'Examen': '#db2777', 'Article scientifique': '#6d28d9' }
+
+export default function HomePage() {
+  const { userCount, docCount } = useStats()
+  const { docs } = useDocs()
+  const { currentUser, isAdmin } = useAuth()
+  const [activeFiliere, setActiveFiliere] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#admin') {
+      if (isAdmin) {
+        window.location.href = '/espace-direction'
+      } else {
+        window.location.hash = ''
+      }
+    }
+  }, [isAdmin])
+  const recentDocs = docs.slice(0, 6)
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
+      <Navbar />
+      <main style={{ flex: 1 }}>
+
+        {/* ── HERO ── */}
+        <section style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)',
+          padding: 'clamp(4rem, 8vw, 6rem) 1.25rem',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(37,99,235,0.06)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -80, left: -80, width: 300, height: 300, borderRadius: '50%', background: 'rgba(217,119,6,0.05)', pointerEvents: 'none' }} />
+
+          <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr auto', gap: '3rem', alignItems: 'center' }}>
+
+            {/* Colonne gauche */}
+            <div>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: 'linear-gradient(135deg, rgba(37,99,235,0.2), rgba(217,119,6,0.15))',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 100, padding: '8px 20px', marginBottom: '2rem',
+              }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#d97706', display: 'inline-block', boxShadow: '0 0 8px #d97706' }} />
+                <span style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>Bibliothèque numérique #1 en RDC</span>
+              </div>
+
+              <h1 style={{
+                fontSize: 'clamp(2.2rem, 5.5vw, 3.75rem)',
+                fontWeight: 900, color: '#fff',
+                letterSpacing: '-0.04em', lineHeight: 1.1,
+                marginBottom: '1.25rem',
+              }}>
+                Accéder au savoir,<br />
+                <em style={{ color: '#d97706', fontStyle: 'italic' }}>c'est notre mission</em>
+              </h1>
+
+              <p style={{
+                fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)',
+                color: 'rgba(255,255,255,0.6)',
+                maxWidth: 520, lineHeight: 1.8, marginBottom: '2rem',
+              }}>
+                Ouvrages, syllabus, articles scientifiques, jurisprudences — les meilleures ressources académiques pour étudiants, professeurs et chercheurs de la République Démocratique du Congo.
+              </p>
+
+              {/* Citation */}
+              <div style={{ borderLeft: '3px solid #d97706', paddingLeft: '1.25rem', marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.92rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: 0 }}>
+                  "La quête du savoir et l'étude des sciences sont des tâches infiniment nobles — mais{" "}
+                  <strong style={{ color: 'rgba(255,255,255,0.85)', fontStyle: 'normal' }}>terriblement ardues.</strong>"
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
+                <Link href="/catalogue" style={{ background: 'var(--blue)', color: '#fff', padding: '14px 32px', borderRadius: 10, fontWeight: 700, fontSize: '1rem', textDecoration: 'none', boxShadow: '0 4px 20px rgba(37,99,235,0.35)' }}>
+                  Parcourir le catalogue
+                </Link>
+                {!currentUser && (
+                  <Link href="/register" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '14px 32px', borderRadius: 10, fontWeight: 600, fontSize: '1rem', textDecoration: 'none' }}>
+                    Accéder gratuitement
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Colonne droite — Stats */}
+            <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '1rem', minWidth: 220 }}>
+              {[
+                { value: docCount, label: 'DOCUMENTS', sub: 'Disponibles maintenant' },
+                { value: 13, label: 'FILIÈRES', sub: 'Facultés couvertes' },
+                { value: userCount, label: 'UTILISATEURS INSCRITS', sub: 'Font confiance à EduLib RDC' },
+              ].map(({ value, label, sub }) => (
+                <div key={label} style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 16, padding: '1.25rem 1.5rem',
+                }}>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: 700, letterSpacing: '0.1em', marginBottom: 6 }}>{label}</div>
+                  <div style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.05em', lineHeight: 1 }}>{value}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+        {/* ── RECHERCHE + FILTRES FILIÈRES ── */}
+        <section style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '1.5rem 1.25rem' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column' as const, gap: '1rem' }}>
+
+            {/* Barre de recherche */}
+            <div style={{ position: 'relative' as const, maxWidth: 600 }}>
+              <span style={{ position: 'absolute' as const, left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: '1rem', pointerEvents: 'none' }}>🔍</span>
+              <input
+                type="text"
+                placeholder="Rechercher un document, un auteur, une matière..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%', padding: '11px 16px 11px 42px',
+                  borderRadius: 10, border: '1px solid var(--border)',
+                  background: 'var(--surface-2)', color: 'var(--ink)',
+                  fontSize: '0.9rem', fontFamily: 'inherit', outline: 'none',
+                  boxSizing: 'border-box' as const,
+                }}
+              />
+            </div>
+
+            {/* Filtres filières en grille */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' as const }}>
+              <button onClick={() => setActiveFiliere('')} style={{
+                background: activeFiliere === '' ? 'var(--blue)' : 'var(--surface-2)',
+                color: activeFiliere === '' ? '#fff' : 'var(--text-muted)',
+                border: '1px solid ' + (activeFiliere === '' ? 'var(--blue)' : 'var(--border)'),
+                borderRadius: 8, padding: '7px 16px', fontSize: '0.82rem', fontWeight: 600,
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}>Tous</button>
+              {FILIERES.map(({ slug, label, emoji }) => (
+                <button key={slug} onClick={() => setActiveFiliere(slug)} style={{
+                  background: activeFiliere === slug ? 'var(--blue)' : 'var(--surface-2)',
+                  color: activeFiliere === slug ? '#fff' : 'var(--text-muted)',
+                  border: '1px solid ' + (activeFiliere === slug ? 'var(--blue)' : 'var(--border)'),
+                  borderRadius: 8, padding: '7px 16px', fontSize: '0.82rem', fontWeight: 500,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}>{emoji} {label}</button>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── STATS SECTION ── */}
+        <section style={{ background: 'var(--surface)', padding: 'clamp(2rem, 4vw, 3rem) 1.25rem', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+            {[
+              { icon: '📚', value: docCount, label: 'Documents disponibles' },
+              { icon: '👥', value: userCount, label: 'Utilisateurs inscrits' },
+              { icon: '🎓', value: 13, label: 'Filières couvertes' },
+            ].map(({ icon, value, label }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'var(--surface-2)', borderRadius: 14, padding: '1.25rem', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '2.5rem', flexShrink: 0 }}>{icon}</div>
+                <div>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--blue)', letterSpacing: '-0.04em', lineHeight: 1 }}>{value}</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 4 }}>{label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── DOCUMENTS RÉCENTS ── */}
+        {recentDocs.length > 0 && (
+          <section style={{ padding: 'clamp(2.5rem, 5vw, 4rem) 1.25rem' }}>
+            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.75rem' }}>
+                <div>
+                  <h2 style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.75rem)', fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>Documents récents</h2>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Les dernières ressources ajoutées sur la plateforme</p>
+                </div>
+                <Link href="/catalogue" style={{ color: 'var(--blue)', textDecoration: 'none', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap' }}>Voir tout →</Link>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1rem' }}>
+                {recentDocs.filter(d => (!activeFiliere || d.filiere?.toLowerCase() === activeFiliere) && (!searchQuery || d.title?.toLowerCase().includes(searchQuery.toLowerCase()) || (d as any).prof?.toLowerCase().includes(searchQuery.toLowerCase()))).map(doc => {
+                  const color = typeColors[doc.type] || '#64748b'
+                  return (
+                    <div key={doc.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: 10, transition: 'all 0.2s', cursor: 'pointer' }}
+                      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)' }}
+                      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'var(--border)' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <span style={{ background: color + '15', color, border: '1px solid ' + color + '25', borderRadius: 6, padding: '3px 10px', fontSize: '0.72rem', fontWeight: 700 }}>{doc.type}</span>
+                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: doc.prix === 0 ? '#22c55e' : 'var(--ink)' }}>{doc.prix === 0 ? 'Gratuit' : '$' + doc.prix}</span>
+                      </div>
+                      <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.4, flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{doc.title}</h3>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <span>📚 {doc.filiere}</span>
+                        <span>👤 {(doc as any).prof || (doc as any).professeur || 'Non renseigné'}</span>
+                      </div>
+                      <Link href="/catalogue" style={{ display: 'block', textAlign: 'center', background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 8, padding: '9px', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', marginTop: 4 }}>
+                        Voir le document →
+                      </Link>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── FILIÈRES GRID ── */}
+        <section style={{ padding: 'clamp(2.5rem, 5vw, 4rem) 1.25rem', background: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.75rem' }}>
+              <div>
+                <h2 style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.75rem)', fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>Choisir votre filière</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Accédez directement aux ressources de votre domaine</p>
+              </div>
+              <Link href="/filieres" style={{ color: 'var(--blue)', textDecoration: 'none', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap' }}>Toutes les filières →</Link>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 1fr))', gap: '0.875rem' }}>
+              {FILIERES.map(({ slug, label, emoji }) => (
+                <Link key={slug} href={'/filieres/' + slug} style={{
+                  background: 'var(--surface-2)', border: '1px solid var(--border)',
+                  borderRadius: 14, padding: '1.25rem 1rem',
+                  textDecoration: 'none', textAlign: 'center', display: 'block',
+                  color: 'var(--ink)', transition: 'all 0.18s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--blue)'; e.currentTarget.style.background = 'var(--blue-light)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.transform = 'none' }}
+                >
+                  <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{emoji}</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, lineHeight: 1.3, color: 'var(--ink)' }}>{label}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA FINAL ── */}
+        {!currentUser && (
+          <section style={{ padding: 'clamp(3rem, 6vw, 5rem) 1.25rem', textAlign: 'center', background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)' }}>
+            <div style={{ maxWidth: 600, margin: '0 auto' }}>
+              <h2 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.25rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: '1rem' }}>
+                Prêt à <em style={{ color: '#d97706', fontStyle: 'italic' }}>exceller</em> ?
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '2rem', fontSize: '1rem', lineHeight: 1.75 }}>
+                Rejoignez des milliers d'étudiants, professeurs et chercheurs congolais qui utilisent EduLib RDC pour accéder aux meilleures ressources académiques.
+              </p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' as const }}>
+                <Link href="/register" style={{ background: '#d97706', color: '#fff', padding: '14px 32px', borderRadius: 10, fontWeight: 700, fontSize: '1rem', textDecoration: 'none', boxShadow: '0 4px 16px rgba(217,119,6,0.35)' }}>
+                  Créer un compte gratuit
+                </Link>
+                <Link href="/catalogue" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '14px 32px', borderRadius: 10, fontWeight: 600, fontSize: '1rem', textDecoration: 'none' }}>
+                  Parcourir le catalogue
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+      </main>
+      <Footer />
+    </div>
+  )
+}
