@@ -5,16 +5,14 @@ import { useAuth } from '@/context/AuthContext'
 import { useDocs } from '@/hooks/useDocs'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { useRouter } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import { FILIERES, DOC_TYPES, type User, type Order } from '@/types'
 
 const EMPTY = { title: '', filiere: '', type: '', prof: '', prix: '', annee: '', desc: '', driveLink: '' }
 
 export default function EspaceDirectionPage() {
-  const { firebaseUser, isAdmin, isLoading } = useAuth()
+  const { firebaseUser, isAdmin, isLoading, login } = useAuth()
   const { docs } = useDocs()
-  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [tab, setTab] = useState<'dashboard' | 'docs' | 'users' | 'orders'>('dashboard')
@@ -24,7 +22,12 @@ export default function EspaceDirectionPage() {
   const [toast, setToast] = useState('')
   const [docSearch, setDocSearch] = useState('')
 
-  useEffect(() => { if (!isLoading && (!firebaseUser || !isAdmin)) router.push('/') }, [firebaseUser, isAdmin, isLoading, router])
+  // Login form state
+  const [email, setEmail] = useState('')
+  const [pass, setPass] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [showPass, setShowPass] = useState(false)
 
   useEffect(() => {
     if (!isAdmin) return
@@ -32,6 +35,23 @@ export default function EspaceDirectionPage() {
     const u2 = onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')), s => setOrders(s.docs.map(d => ({ id: d.id, ...d.data() } as Order))))
     return () => { u1(); u2() }
   }, [isAdmin])
+
+  async function handleAdminLogin(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email || !pass) { setLoginError('Remplissez tous les champs.'); return }
+    setLoginLoading(true); setLoginError('')
+    try {
+      await login(email, pass)
+    } catch (err: any) {
+      const msg: Record<string, string> = {
+        'auth/user-not-found': 'Aucun compte associe a cet email.',
+        'auth/wrong-password': 'Mot de passe incorrect.',
+        'auth/invalid-credential': 'Email ou mot de passe incorrect.',
+        'auth/too-many-requests': 'Trop de tentatives. Reessayez plus tard.'
+      }
+      setLoginError(msg[err.code] || 'Erreur de connexion.')
+    } finally { setLoginLoading(false) }
+  }
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 3000) }
   function setField(k: string, v: string) { setForm(p => ({ ...p, [k]: v })) }
@@ -60,11 +80,56 @@ export default function EspaceDirectionPage() {
     try { await deleteDoc(doc(db, 'documents', id)); showToast('Document supprime') } catch (e: any) { showToast('Erreur : ' + e.message) }
   }
 
-  if (isLoading || !isAdmin) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}><p style={{ color: 'rgba(255,255,255,0.5)' }}>Verification des acces...</p></div>
+  const inp: React.CSSProperties = { width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface-2)', color: 'var(--ink)', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit' }
+  const lbl: React.CSSProperties = { display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 5 }
+
+  // Chargement
+  if (isLoading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>
+      <p style={{ color: 'rgba(255,255,255,0.5)' }}>Chargement...</p>
+    </div>
+  )
+
+  // Non connecté ou pas admin — formulaire de connexion intégré
+  if (!firebaseUser || !isAdmin) return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f2d4a 100%)', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 20, padding: 'clamp(1.75rem, 4vw, 2.5rem)', width: '100%', maxWidth: 400, boxShadow: '0 24px 48px rgba(0,0,0,0.3)' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🔐</div>
+          <h1 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>Espace Direction</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Acces reserve a l&apos;administration EduLib RDC</p>
+        </div>
+        {loginError && (
+          <div style={{ background: 'var(--red-light)', border: '1px solid var(--red)', borderRadius: 8, padding: '10px 14px', marginBottom: '1.25rem', fontSize: '0.85rem', color: 'var(--red)' }}>
+            ⚠️ {loginError}
+          </div>
+        )}
+        {firebaseUser && !isAdmin && (
+          <div style={{ background: 'var(--red-light)', border: '1px solid var(--red)', borderRadius: 8, padding: '10px 14px', marginBottom: '1.25rem', fontSize: '0.85rem', color: 'var(--red)' }}>
+            ⚠️ Ce compte n&apos;a pas les droits administrateur.
+          </div>
+        )}
+        <form onSubmit={handleAdminLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={lbl}>Email admin</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@edulibrdc.com" autoComplete="email" style={inp} />
+          </div>
+          <div>
+            <label style={lbl}>Mot de passe</label>
+            <div style={{ position: 'relative' }}>
+              <input type={showPass ? 'text' : 'password'} value={pass} onChange={e => setPass(e.target.value)} placeholder="••••••••" autoComplete="current-password" style={{ ...inp, paddingRight: 44 }} />
+              <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>{showPass ? '🙈' : '👁️'}</button>
+            </div>
+          </div>
+          <button type="submit" disabled={loginLoading} style={{ background: loginLoading ? 'var(--border)' : 'var(--blue)', color: '#fff', border: 'none', borderRadius: 10, padding: '13px', fontSize: '0.95rem', fontWeight: 700, cursor: loginLoading ? 'not-allowed' : 'pointer', fontFamily: 'inherit', marginTop: 4 }}>
+            {loginLoading ? 'Connexion...' : 'Acceder a l\'espace direction'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
 
   const filteredDocs = docSearch ? docs.filter(d => d.title.toLowerCase().includes(docSearch.toLowerCase())) : docs
-  const lbl: React.CSSProperties = { display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 5 }
-  const inp: React.CSSProperties = { width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface-2)', color: 'var(--ink)', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit' }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface-2)' }}>

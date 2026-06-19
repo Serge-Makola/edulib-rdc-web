@@ -18,7 +18,11 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(url)
   }
   if (ADMIN.some(r => pathname.startsWith(r)) && (!isAuth || !isAdmin)) {
-    return NextResponse.redirect(new URL('/', req.url))
+    const url = req.nextUrl.clone()
+    url.pathname = '/login'
+    url.searchParams.set('redirect', pathname)
+    url.searchParams.set('admin', '1')
+    return NextResponse.redirect(url)
   }
   if (AUTH.some(r => pathname.startsWith(r)) && isAuth) {
     return NextResponse.redirect(new URL('/', req.url))

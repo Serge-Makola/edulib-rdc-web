@@ -9,17 +9,23 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
   useEffect(() => {
     setVisible(false)
-    const timer = setTimeout(() => setVisible(true), 30)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => setVisible(true), 50)
+    return () => clearTimeout(t)
   }, [pathname])
 
   return (
     <div style={{
       opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(14px)',
-      transition: 'opacity 0.4s ease, transform 0.4s ease',
+      transform: visible ? 'translateY(0)' : 'translateY(12px)',
+      transition: 'opacity 0.35s ease, transform 0.35s ease',
     }}>
       {children}
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
