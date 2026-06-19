@@ -62,7 +62,7 @@ export default function Navbar() {
           ) : (
             <div style={{ position: 'relative' }}>
               <button onClick={() => setUserMenuOpen(!userMenuOpen)} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '6px 12px', color: '#fff', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500 }}>
-                {currentUser.name.split(' ')[0]} ▾
+                {isAdmin ? 'Espace Direction' : currentUser.name.split(' ')[0]} ▾
               </button>
               {userMenuOpen && (
                 <div style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, minWidth: 200, boxShadow: 'var(--shadow-lg)', overflow: 'hidden', zIndex: 200 }}>

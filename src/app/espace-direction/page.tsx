@@ -6,6 +6,7 @@ import { useDocs } from '@/hooks/useDocs'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore'
 import Navbar from '@/components/layout/Navbar'
+import { useStats } from '@/hooks/useStats'
 import { FILIERES, DOC_TYPES, type User, type Order } from '@/types'
 
 const EMPTY = { title: '', filiere: '', type: '', prof: '', prix: '', annee: '', desc: '', driveLink: '' }
@@ -13,6 +14,7 @@ const EMPTY = { title: '', filiere: '', type: '', prof: '', prix: '', annee: '',
 export default function EspaceDirectionPage() {
   const { firebaseUser, isAdmin, isLoading, login } = useAuth()
   const { docs } = useDocs()
+  const { userCount } = useStats()
   const [users, setUsers] = useState<User[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [tab, setTab] = useState<'dashboard' | 'docs' | 'users' | 'orders'>('dashboard')
@@ -150,7 +152,7 @@ export default function EspaceDirectionPage() {
         {tab === 'dashboard' && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-              {[{ label: 'Documents', value: docs.length, color: '#2563eb' }, { label: 'Utilisateurs', value: users.length, color: '#059669' }, { label: 'Commandes', value: orders.length, color: '#d97706' }, { label: 'Revenus', value: '$' + orders.filter(o => o.status === 'Payé').reduce((s, o) => s + o.total, 0), color: '#7c3aed' }].map(({ label, value, color }) => (
+              {[{ label: 'Documents', value: docs.length, color: '#2563eb' }, { label: 'Utilisateurs inscrits', value: users.length || userCount, color: '#059669' }, { label: 'Commandes', value: orders.length, color: '#d97706' }, { label: 'Revenus', value: '$' + orders.filter(o => o.status === 'Payé').reduce((s, o) => s + o.total, 0), color: '#7c3aed' }].map(({ label, value, color }) => (
                 <div key={label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '1.25rem' }}>
                   <div style={{ fontSize: '1.75rem', fontWeight: 800, color, letterSpacing: '-0.04em' }}>{value}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 4 }}>{label}</div>
@@ -173,7 +175,7 @@ export default function EspaceDirectionPage() {
         )}
 
         {tab === 'docs' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.2fr)', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '1.5rem' }}>
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '1.5rem', height: 'fit-content' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                 <h3 style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '1rem' }}>{editId ? 'Modifier' : 'Ajouter un document'}</h3>
