@@ -1,5 +1,8 @@
 'use client'
 
+import Link from 'next/link'
+import { useAuth } from '@/context/AuthContext'
+
 interface Props {
   driveLink: string
   title: string
@@ -17,9 +20,35 @@ function getDriveId(link: string): string | null {
 }
 
 export default function PdfViewer({ driveLink, title, onClose }: Props) {
+  const { currentUser } = useAuth()
   const driveId = getDriveId(driveLink)
   const previewUrl = driveId ? 'https://drive.google.com/file/d/' + driveId + '/preview' : driveLink
   const downloadUrl = driveId ? 'https://drive.google.com/uc?export=download&id=' + driveId : driveLink
+
+  if (!currentUser) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ background: 'var(--surface)', borderRadius: 20, padding: '2.5rem 2rem', maxWidth: 380, width: '90%', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ fontSize: '3rem' }}>🔒</div>
+          <h2 style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--ink)' }}>Connexion requise</h2>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+            Tu dois etre connecte pour lire les documents EduLib RDC. C&apos;est gratuit et rapide.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
+            <Link href="/login" style={{ background: 'var(--blue)', color: '#fff', borderRadius: 10, padding: '12px', fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>
+              Se connecter
+            </Link>
+            <Link href="/register" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 10, padding: '12px', fontSize: '0.9rem', fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>
+              Creer un compte gratuit
+            </Link>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'inherit' }}>
+            Annuler
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.92)', display: 'flex', flexDirection: 'column' }}>

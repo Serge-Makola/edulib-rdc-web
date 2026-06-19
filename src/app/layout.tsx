@@ -26,7 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            {children}
+            <div className="page-transition">
+              {children}
+            </div>
             <AiSidebar />
           </AuthProvider>
         </ThemeProvider>

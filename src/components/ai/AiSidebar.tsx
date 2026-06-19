@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import Link from 'next/link'
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
@@ -39,7 +40,7 @@ export default function AiSidebar() {
   }, [messages, open, minimized])
 
   useEffect(() => {
-    if (open && !minimized && messages.length === 0) {
+    if (open && !minimized && messages.length === 0 && currentUser) {
       const name = currentUser?.name?.split(' ')[0]
       setMessages([{ role: 'assistant', content: name ? 'Bonjour ' + name + ' ! Je suis ton assistant academique EduLib RDC. Comment puis-je t\'aider dans tes etudes aujourd\'hui ?' : 'Bonjour ! Je suis l\'assistant academique d\'EduLib RDC. Pose-moi tes questions sur tes cours ou tes recherches.' }])
     }
@@ -74,9 +75,9 @@ export default function AiSidebar() {
             role: 'user',
             content: isImage ? [
               { type: 'image_url', image_url: { url: 'data:' + uploadedFile.type + ';base64,' + uploadedFile.base64 } },
-              { type: 'text', text: text || 'Explique ce fichier en détail.' }
+              { type: 'text', text: text || 'Explique ce fichier en detail.' }
             ] : [
-              { type: 'text', text: 'Fichier: ' + uploadedFile.name + '\n\n' + atob(uploadedFile.base64).slice(0, 3000) + '\n\n' + (text || 'Explique ce contenu en détail.') }
+              { type: 'text', text: 'Fichier: ' + uploadedFile.name + '\n\n' + atob(uploadedFile.base64).slice(0, 3000) + '\n\n' + (text || 'Explique ce contenu en detail.') }
             ]
           } as any
         }
@@ -120,49 +121,70 @@ export default function AiSidebar() {
               <button onClick={e => { e.stopPropagation(); setOpen(false); setMinimized(false); setMessages([]) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>X</button>
             </div>
           </div>
+
           {!minimized && (
             <>
-              <div style={{ flex: 1, overflowY: 'auto', padding: '14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {messages.map((msg, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                    <div style={{ maxWidth: '84%', background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'var(--surface-2)', color: msg.role === 'user' ? '#fff' : 'var(--ink)', border: msg.role === 'user' ? 'none' : '1px solid var(--border)', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', padding: '10px 14px', fontSize: '0.84rem', lineHeight: 1.65, whiteSpace: 'pre-wrap' as const }}>
-                      {msg.content.split('\n').map((line, j) => (
-                        <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
+              {!currentUser ? (
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1.5rem', textAlign: 'center', gap: '1rem' }}>
+                  <div style={{ fontSize: '2.5rem' }}>🔒</div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--ink)' }}>Connexion requise</div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                    Connecte-toi pour acceder a l&apos;assistant academique EduLib RDC.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+                    <Link href="/login" onClick={() => setOpen(false)} style={{ background: 'var(--blue)', color: '#fff', borderRadius: 10, padding: '11px', fontSize: '0.875rem', fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>
+                      Se connecter
+                    </Link>
+                    <Link href="/register" onClick={() => setOpen(false)} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 10, padding: '11px', fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>
+                      Creer un compte gratuit
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div style={{ flex: 1, overflowY: 'auto', padding: '14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {messages.map((msg, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                        <div style={{ maxWidth: '84%', background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'var(--surface-2)', color: msg.role === 'user' ? '#fff' : 'var(--ink)', border: msg.role === 'user' ? 'none' : '1px solid var(--border)', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', padding: '10px 14px', fontSize: '0.84rem', lineHeight: 1.65, whiteSpace: 'pre-wrap' as const }}>
+                          {msg.content.split('\n').map((line, j) => (
+                            <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {loading && (
+                      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: '16px 16px 16px 4px', padding: '10px 16px', display: 'flex', gap: 5, alignItems: 'center' }}>
+                          {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--blue)', animation: 'bounce 1.2s ease-in-out ' + (i*0.2) + 's infinite' }} />)}
+                          <style>{`@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-4px);opacity:1}}`}</style>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                  {messages.length <= 1 && (
+                    <div style={{ padding: '0 14px 10px', display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
+                      {['Comment reussir mes examens ?', 'Explique le droit constitutionnel', 'Aide-moi a faire des recherches'].map(s => (
+                        <button key={s} onClick={() => setInput(s)} style={{ background: 'var(--blue-light)', color: 'var(--blue)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 99, padding: '5px 11px', fontSize: '0.72rem', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>{s}</button>
                       ))}
                     </div>
-                  </div>
-                ))}
-                {loading && (
-                  <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                    <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: '16px 16px 16px 4px', padding: '10px 16px', display: 'flex', gap: 5, alignItems: 'center' }}>
-                      {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--blue)', animation: 'bounce 1.2s ease-in-out ' + (i*0.2) + 's infinite' }} />)}
-                      <style>{`@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-4px);opacity:1}}`}</style>
+                  )}
+                  <div style={{ padding: '10px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column' as const, gap: 8, flexShrink: 0 }}>
+                    {uploadedFile && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--blue-light)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 8, padding: '6px 10px' }}>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--blue)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>📎 {uploadedFile.name}</span>
+                        <button onClick={() => setUploadedFile(null)} style={{ background: 'none', border: 'none', color: 'var(--blue)', cursor: 'pointer', fontSize: '0.8rem', flexShrink: 0 }}>✕</button>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.doc,.docx" onChange={handleFile} style={{ display: 'none' }} />
+                      <button onClick={() => fileInputRef.current?.click()} title="Joindre un fichier" style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: 'var(--surface-2)', border: '1px solid var(--border)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>📎</button>
+                      <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder={uploadedFile ? 'Que veux-tu savoir sur ce fichier ?' : 'Pose ta question...'} disabled={loading} style={{ flex: 1, border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', background: 'var(--surface-2)', color: 'var(--ink)', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit' }} />
+                      <button onClick={sendMessage} disabled={(!input.trim() && !uploadedFile) || loading} style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: (input.trim() || uploadedFile) && !loading ? 'var(--blue)' : 'var(--border)', border: 'none', cursor: (input.trim() || uploadedFile) && !loading ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>➤</button>
                     </div>
                   </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-              {messages.length <= 1 && (
-                <div style={{ padding: '0 14px 10px', display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
-                  {['Comment reussir mes examens ?', 'Explique le droit constitutionnel', 'Aide-moi a faire des recherches'].map(s => (
-                    <button key={s} onClick={() => setInput(s)} style={{ background: 'var(--blue-light)', color: 'var(--blue)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 99, padding: '5px 11px', fontSize: '0.72rem', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>{s}</button>
-                  ))}
-                </div>
+                </>
               )}
-              <div style={{ padding: '10px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column' as const, gap: 8, flexShrink: 0 }}>
-                {uploadedFile && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--blue-light)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 8, padding: '6px 10px' }}>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--blue)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>📎 {uploadedFile.name}</span>
-                    <button onClick={() => setUploadedFile(null)} style={{ background: 'none', border: 'none', color: 'var(--blue)', cursor: 'pointer', fontSize: '0.8rem', flexShrink: 0 }}>✕</button>
-                  </div>
-                )}
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.doc,.docx" onChange={handleFile} style={{ display: 'none' }} />
-                  <button onClick={() => fileInputRef.current?.click()} title="Joindre un fichier" style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: 'var(--surface-2)', border: '1px solid var(--border)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>📎</button>
-                  <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder={uploadedFile ? 'Que veux-tu savoir sur ce fichier ?' : 'Pose ta question...'} disabled={loading} style={{ flex: 1, border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', background: 'var(--surface-2)', color: 'var(--ink)', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit' }} />
-                  <button onClick={sendMessage} disabled={(!input.trim() && !uploadedFile) || loading} style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: (input.trim() || uploadedFile) && !loading ? 'var(--blue)' : 'var(--border)', border: 'none', cursor: (input.trim() || uploadedFile) && !loading ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>➤</button>
-                </div>
-              </div>
             </>
           )}
         </div>
