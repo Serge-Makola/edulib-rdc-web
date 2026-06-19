@@ -29,5 +29,3 @@ export function proxy(req: NextRequest) {
 export const config = {
   matcher: ['/dashboard/:path*', '/espace-direction/:path*', '/login', '/register'],
 }
-
-export { proxy as middleware }
