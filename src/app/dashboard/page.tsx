@@ -116,7 +116,7 @@ export default function DashboardPage() {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <span style={{ fontWeight: 700 }}>${order.total}</span>
-                        <span style={{ background: order.status === 'Paye' ? 'var(--green-light)' : 'var(--gold-light)', color: order.status === 'Paye' ? '#166534' : '#92400e', borderRadius: 6, padding: '3px 8px', fontSize: '0.72rem', fontWeight: 600 }}>{order.status}</span>
+                        <span style={{ background: order.status === 'Payé' ? 'var(--green-light)' : 'var(--gold-light)', color: order.status === 'Payé' ? '#166534' : '#92400e', borderRadius: 6, padding: '3px 8px', fontSize: '0.72rem', fontWeight: 600 }}>{order.status}</span>
                       </div>
                     </div>
                   ))}
