@@ -24,7 +24,14 @@ Regles importantes :
 export default function AiSidebar() {
   const { currentUser } = useAuth()
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
+  const storageKey = currentUser ? 'edulib_chat_' + currentUser.uid : 'edulib_chat_guest'
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const saved = localStorage.getItem(storageKey)
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [minimized, setMinimized] = useState(false)
@@ -63,6 +70,7 @@ export default function AiSidebar() {
     const userMsg: Message = { role: 'user', content: text }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
+    try { localStorage.setItem(storageKey, JSON.stringify(newMessages.slice(-20))) } catch {}
     setInput('')
     setLoading(true)
     try {
@@ -95,7 +103,11 @@ export default function AiSidebar() {
         .replace(/\n{3,}/g, '\n\n')
         .replace(/^-\s+/gm, '- ')
         .trim()
-      setMessages(prev => [...prev, { role: 'assistant', content }])
+      setMessages(prev => {
+        const updated = [...prev, { role: 'assistant', content }]
+        try { localStorage.setItem(storageKey, JSON.stringify(updated.slice(-20))) } catch {}
+        return updated
+      })
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Connexion impossible. Verifie ta connexion internet et reessaie.' }])
     } finally { setLoading(false) }
@@ -118,7 +130,7 @@ export default function AiSidebar() {
             </div>
             <div style={{ display: 'flex', gap: 4 }}>
               <button onClick={e => { e.stopPropagation(); setMinimized(!minimized) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>{minimized ? '▲' : '▼'}</button>
-              <button onClick={e => { e.stopPropagation(); setOpen(false); setMinimized(false); setMessages([]) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>X</button>
+              <button onClick={e => { e.stopPropagation(); setOpen(false); setMinimized(false) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>X</button>
             </div>
           </div>
 

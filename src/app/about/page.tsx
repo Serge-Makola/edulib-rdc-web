@@ -12,20 +12,20 @@ export default function AboutPage() {
       <main style={{ flex: 1 }}>
         <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: 'clamp(2.5rem, 5vw, 4rem) 1.25rem' }}>
           <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
-            <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: '1rem' }}>A propos d'EduLib RDC</h1>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', lineHeight: 1.75 }}>La premiere plateforme congolaise de ressources pedagogiques et scientifiques.</p>
+            <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: '1rem' }}>À propos d'EduLib RDC</h1>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', lineHeight: 1.75 }}>La première bibliothèque numérique congolaise de ressources pédagogiques et scientifiques.</p>
           </div>
         </div>
         <div style={{ maxWidth: 800, margin: '0 auto', padding: 'clamp(2rem, 4vw, 3.5rem) 1.25rem' }}>
           <section style={{ marginBottom: '2.5rem' }}>
-            <p style={{ color: 'var(--text-muted)', lineHeight: 1.85, fontSize: '0.95rem' }}>EduLib RDC est la premiere plateforme congolaise de ressources pedagogiques et scientifiques, dediee aux etudiants, enseignants et chercheurs de la Republique Democratique du Congo. Notre vision est de democratiser l'acces au savoir et de valoriser la production intellectuelle congolaise.</p>
+            <p style={{ color: 'var(--text-muted)', lineHeight: 1.85, fontSize: '0.95rem' }}>EduLib RDC est la première bibliothèque numérique congolaise de ressources pédagogiques et scientifiques, dédiée aux étudiants, enseignants et chercheurs de la République Démocratique du Congo. Notre vision est de démocratiser l'accès au savoir et de valoriser la production intellectuelle congolaise.</p>
           </section>
           <section style={{ marginBottom: '2.5rem' }}>
             <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '0.875rem' }}>Notre mission</h2>
-            <p style={{ color: 'var(--text-muted)', lineHeight: 1.85, fontSize: '0.95rem' }}>Nous facilitons l'acces aux ressources pedagogiques et scientifiques de qualite pour tous, quelle que soit leur universite ou leur localisation en RDC. Nous offrons egalement aux enseignants et aux chercheurs une plateforme pour publier et valoriser leurs travaux.</p>
+            <p style={{ color: 'var(--text-muted)', lineHeight: 1.85, fontSize: '0.95rem' }}>Nous facilitons l'accès aux ressources pédagogiques et scientifiques de qualité pour tous, quelle que soit leur université ou leur localisation en RDC. Nous offrons également aux enseignants et aux chercheurs une plateforme pour publier et valoriser leurs travaux.</p>
           </section>
           <section style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '2rem', marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1.5rem', textAlign: 'center' as const }}>
-            {[{ value: docCount, label: 'Documents disponibles' }, { value: userCount, label: 'Etudiants inscrits' }, { value: 13, label: 'Filieres couvertes' }].map(({ value, label }) => (
+            {[{ value: docCount, label: 'Documents disponibles' }, { value: userCount, label: 'Utilisateurs inscrits' }, { value: 13, label: 'Filières couvertes' }].map(({ value, label }) => (
               <div key={label}>
                 <div style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--blue)', letterSpacing: '-0.04em', lineHeight: 1 }}>{value}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 6 }}>{label}</div>
@@ -33,9 +33,9 @@ export default function AboutPage() {
             ))}
           </section>
           <section style={{ marginBottom: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '1.25rem' }}>Notre equipe</h2>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '1.25rem' }}>Notre équipe</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-              {[{ name: 'Serge Makola', role: 'Fondateur & Developpeur', emoji: '👨‍💻' }, { name: 'Gloire Kisanga Josias', role: 'Gestionnaire de contenu & Publications', emoji: '📚' }].map(({ name, role, emoji }) => (
+              {[{ name: 'Serge Makola', role: 'Fondateur & Développeur', emoji: '👨‍💻' }, { name: 'Gloire Kisanga Josias', role: 'Gestionnaire de contenu & Publications', emoji: '📚' }].map(({ name, role, emoji }) => (
                 <div key={name} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '1.5rem', display: 'flex', alignItems: 'center', gap: 14 }}>
                   <div style={{ fontSize: '2rem', flexShrink: 0 }}>{emoji}</div>
                   <div>
