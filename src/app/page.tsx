@@ -184,13 +184,13 @@ export default function HomePage() {
                 cursor: 'pointer', fontFamily: 'inherit',
               }}>Tous</button>
               {FILIERES.map(({ slug, label, emoji }) => (
-                <button key={slug} onClick={() => setActiveFiliere(slug)} style={{
+                <Link key={slug} href={'/filieres/' + slug} style={{
                   background: activeFiliere === slug ? 'var(--blue)' : 'var(--surface-2)',
                   color: activeFiliere === slug ? '#fff' : 'var(--text-muted)',
                   border: '1px solid ' + (activeFiliere === slug ? 'var(--blue)' : 'var(--border)'),
                   borderRadius: 8, padding: '6px 14px', fontSize: '0.8rem', fontWeight: 500,
-                  cursor: 'pointer', fontFamily: 'inherit',
-                }}>{emoji} {label}</button>
+                  textDecoration: 'none', display: 'inline-block',
+                }}>{emoji} {label}</Link>
               ))}
             </div>
           </div>

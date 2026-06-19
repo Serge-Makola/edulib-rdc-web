@@ -23,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [authReady, setAuthReady] = useState(false)
   const isAdmin = firebaseUser?.uid === ADMIN_UID
 
   useEffect(() => {

@@ -201,7 +201,7 @@ export default function DashboardPage() {
                 </div>
                 {[
                   { label: 'Rôle', value: currentUser.role },
-                  { label: 'Filière', value: currentUser.filiere },
+                  { label: 'Filière', value: currentUser.filiere ? currentUser.filiere.charAt(0).toUpperCase() + currentUser.filiere.slice(1) : '—' },
                   { label: 'Documents accessibles', value: myDocs.length + ' document' + (myDocs.length !== 1 ? 's' : '') },
                   { label: 'Commandes', value: orders.length + ' commande' + (orders.length !== 1 ? 's' : '') },
                 ].map(({ label, value }, i, arr) => (
