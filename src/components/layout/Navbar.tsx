@@ -26,7 +26,7 @@ export default function Navbar() {
     setUserMenuOpen(false)
     setMenuOpen(false)
     await logout()
-    router.refresh()
+    window.location.href = '/'
   }
 
   return (
