@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import Link from 'next/link'
+import { db } from '@/lib/firebase'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
@@ -24,34 +26,53 @@ Regles importantes :
 export default function AiSidebar() {
   const { currentUser } = useAuth()
   const [open, setOpen] = useState(false)
-  const storageKey = currentUser ? 'edulib_chat_' + currentUser.uid : 'edulib_chat_guest'
-  const [messages, setMessages] = useState<Message[]>(() => {
-    if (typeof window === 'undefined') return []
-    try {
-      const saved = localStorage.getItem(storageKey)
-      return saved ? JSON.parse(saved) : []
-    } catch { return [] }
-  })
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [minimized, setMinimized] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [historyLoaded, setHistoryLoaded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploadedFile, setUploadedFile] = useState<{name: string, base64: string, type: string} | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
+  // Charger historique depuis Firestore
+  useEffect(() => {
+    if (!currentUser || historyLoaded) return
+    async function loadHistory() {
+      try {
+        const snap = await getDoc(doc(db, 'ai_history', currentUser!.uid))
+        if (snap.exists()) {
+          const saved = snap.data().messages as Message[]
+          if (saved?.length > 0) setMessages(saved)
+        }
+      } catch {}
+      setHistoryLoaded(true)
+    }
+    loadHistory()
+  }, [currentUser, historyLoaded])
+
+  // Sauvegarder historique dans Firestore
+  async function saveHistory(msgs: Message[]) {
+    if (!currentUser) return
+    try {
+      await setDoc(doc(db, 'ai_history', currentUser.uid), { messages: msgs.slice(-30), updatedAt: Date.now() }, { merge: true })
+    } catch {}
+  }
+
   useEffect(() => {
     if (open && !minimized) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, open, minimized])
 
   useEffect(() => {
-    if (open && !minimized && messages.length === 0 && currentUser) {
+    if (open && !minimized && messages.length === 0 && currentUser && historyLoaded) {
       const name = currentUser?.name?.split(' ')[0]
-      setMessages([{ role: 'assistant', content: name ? 'Bonjour ' + name + ' ! Je suis ton assistant academique EduLib RDC. Comment puis-je t\'aider dans tes etudes aujourd\'hui ?' : 'Bonjour ! Je suis l\'assistant academique d\'EduLib RDC. Pose-moi tes questions sur tes cours ou tes recherches.' }])
+      const welcome: Message = { role: 'assistant', content: name ? 'Bonjour ' + name + ' ! Je suis ton assistant academique EduLib RDC. Comment puis-je t\'aider dans tes etudes aujourd\'hui ?' : 'Bonjour ! Je suis l\'assistant academique d\'EduLib RDC. Pose-moi tes questions sur tes cours ou tes recherches.' }
+      setMessages([welcome])
     }
-  }, [open, currentUser, messages.length, minimized])
+  }, [open, currentUser, messages.length, minimized, historyLoaded])
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -70,7 +91,6 @@ export default function AiSidebar() {
     const userMsg: Message = { role: 'user', content: text }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
-    try { localStorage.setItem(storageKey, JSON.stringify(newMessages.slice(-20))) } catch {}
     setInput('')
     setLoading(true)
     try {
@@ -98,19 +118,21 @@ export default function AiSidebar() {
       })
       const data = await res.json()
       const raw = data.content || 'Je suis desole, je ne peux pas repondre pour le moment.'
-      const content = raw
-        .replace(/[*_~`#>]/g, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .replace(/^-\s+/gm, '- ')
-        .trim()
-      setMessages(prev => {
-        const updated = [...prev, { role: 'assistant', content }]
-        try { localStorage.setItem(storageKey, JSON.stringify(updated.slice(-20))) } catch {}
-        return updated
-      })
+      const content = raw.replace(/[*_~`#>]/g, '').replace(/\n{3,}/g, '\n\n').replace(/^-\s+/gm, '- ').trim()
+      const updated = [...newMessages, { role: 'assistant' as const, content }]
+      setMessages(updated)
+      saveHistory(updated)
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Connexion impossible. Verifie ta connexion internet et reessaie.' }])
     } finally { setLoading(false) }
+  }
+
+  function clearHistory() {
+    setMessages([])
+    setHistoryLoaded(false)
+    if (currentUser) {
+      setDoc(doc(db, 'ai_history', currentUser.uid), { messages: [], updatedAt: Date.now() })
+    }
   }
 
   if (!mounted) return null
@@ -129,8 +151,11 @@ export default function AiSidebar() {
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem' }}>Propulse par Mistral AI</div>
             </div>
             <div style={{ display: 'flex', gap: 4 }}>
+              {currentUser && messages.length > 1 && (
+                <button onClick={e => { e.stopPropagation(); clearHistory() }} title="Effacer l'historique" style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>🗑</button>
+              )}
               <button onClick={e => { e.stopPropagation(); setMinimized(!minimized) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>{minimized ? '▲' : '▼'}</button>
-              <button onClick={e => { e.stopPropagation(); setOpen(false); setMinimized(false) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>X</button>
+              <button onClick={e => { e.stopPropagation(); setOpen(false); setMinimized(false) }} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.5)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: '0.75rem' }}>✕</button>
             </div>
           </div>
 
@@ -140,16 +165,10 @@ export default function AiSidebar() {
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1.5rem', textAlign: 'center', gap: '1rem' }}>
                   <div style={{ fontSize: '2.5rem' }}>🔒</div>
                   <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--ink)' }}>Connexion requise</div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                    Connecte-toi pour acceder a l&apos;assistant academique EduLib RDC.
-                  </p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Connecte-toi pour acceder a l&apos;assistant academique EduLib RDC.</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-                    <Link href="/login" onClick={() => setOpen(false)} style={{ background: 'var(--blue)', color: '#fff', borderRadius: 10, padding: '11px', fontSize: '0.875rem', fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>
-                      Se connecter
-                    </Link>
-                    <Link href="/register" onClick={() => setOpen(false)} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 10, padding: '11px', fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>
-                      Creer un compte gratuit
-                    </Link>
+                    <Link href="/login" onClick={() => setOpen(false)} style={{ background: 'var(--blue)', color: '#fff', borderRadius: 10, padding: '11px', fontSize: '0.875rem', fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>Se connecter</Link>
+                    <Link href="/register" onClick={() => setOpen(false)} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 10, padding: '11px', fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>Creer un compte gratuit</Link>
                   </div>
                 </div>
               ) : (
