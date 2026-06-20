@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes'
 import { AuthProvider } from '@/context/AuthContext'
 import AiSidebar from '@/components/ai/AiSidebar'
 import PageTransition from '@/components/layout/PageTransition'
+import AutoUpdate from '@/components/layout/AutoUpdate'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
+            <AutoUpdate />
             <PageTransition>
               {children}
             </PageTransition>
