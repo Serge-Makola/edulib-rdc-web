@@ -52,7 +52,7 @@ export default function DashboardPage() {
               <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '1.3rem', flexShrink: 0, boxShadow: '0 4px 16px rgba(37,99,235,0.4)' }}>{initials}</div>
               <div>
                 <h1 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1 }}>Bonjour, {currentUser.name.split(' ')[0]} 👋</h1>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', marginTop: 4 }}>{currentUser.role} · {currentUser.filiere}</p>
+                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', marginTop: 4 }}>{currentUser.role} · {currentUser.filiere ? currentUser.filiere.charAt(0).toUpperCase() + currentUser.filiere.slice(1) : ''}</p>
               </div>
             </div>
 
@@ -61,7 +61,7 @@ export default function DashboardPage() {
               {[
                 { icon: '📚', value: myDocs.length, label: 'Documents' },
                 { icon: '🛒', value: orders.length, label: 'Commandes' },
-                { icon: '🎓', value: currentUser.filiere || '—', label: 'Filière' },
+                { icon: '🎓', value: currentUser.filiere ? currentUser.filiere.charAt(0).toUpperCase() + currentUser.filiere.slice(1) : '—', label: 'Filière' },
               ].map(({ icon, value, label }) => (
                 <div key={label} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '0.875rem 1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontSize: '1.4rem' }}>{icon}</span>
