@@ -8,6 +8,8 @@ import { useDocs } from '@/hooks/useDocs'
 import { useAuth } from '@/context/AuthContext'
 import { FILIERES } from '@/types'
 import { useState, useEffect, useRef } from 'react'
+import PdfViewer from '@/components/ui/PdfViewer'
+import type { Doc } from '@/types'
 
 const typeColors: Record<string, string> = { 'Ouvrage': '#2563eb', 'Loi': '#7c3aed', 'Jurisprudence': '#0891b2', 'Syllabus': '#059669', 'Notes de cours': '#d97706', 'Exercice': '#dc2626', 'Examen': '#db2777', 'Article scientifique': '#6d28d9' }
 
@@ -37,6 +39,7 @@ export default function HomePage() {
   const { currentUser, isAdmin } = useAuth()
   const [activeFiliere, setActiveFiliere] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [viewerDoc, setViewerDoc] = useState<Doc | null>(null)
   const [visible, setVisible] = useState(false)
 
   const animatedDocs = useCountUp(docCount)
@@ -246,9 +249,9 @@ export default function HomePage() {
                         <span>📚 {doc.filiere}</span>
                         <span>👤 {(doc as any).prof || (doc as any).professeur || 'Non renseigné'}</span>
                       </div>
-                      <Link href="/catalogue" style={{ display: 'block', textAlign: 'center', background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 8, padding: '8px', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none', marginTop: 3 }}>
+                      <button onClick={() => setViewerDoc(doc)} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 8, padding: '8px', fontSize: '0.78rem', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', marginTop: 3 }}>
                         Voir le document →
-                      </Link>
+                      </button>
                     </div>
                   )
                 })}
@@ -316,6 +319,7 @@ export default function HomePage() {
 
       </main>
       <Footer />
+      {viewerDoc && <PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} />}
     </div>
   )
 }

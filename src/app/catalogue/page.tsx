@@ -13,7 +13,7 @@ const typeColors: Record<string, string> = { 'Ouvrage': '#2563eb', 'Loi': '#7c3a
 
 export default function CataloguePage() {
   const { docs, loading, search } = useDocs()
-  const { currentUser } = useAuth()
+  const { currentUser, isLoading } = useAuth()
   const [query, setQuery] = useState('')
   const [selectedFiliere, setSelectedFiliere] = useState('')
   const [selectedType, setSelectedType] = useState('')
@@ -113,7 +113,7 @@ export default function CataloguePage() {
                       </div>
                       <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                         {owned ? (
-                          <button onClick={() => setViewerDoc(doc)} style={{ flex: 1, background: 'var(--blue)', color: '#fff', border: 'none', borderRadius: 8, padding: '9px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Lire</button>
+                          <button onClick={() => { if (!isLoading) setViewerDoc(doc) }} style={{ flex: 1, background: 'var(--blue)', color: '#fff', border: 'none', borderRadius: 8, padding: '9px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Lire</button>
                         ) : !currentUser ? (
                           <Link href="/login" style={{ flex: 1, background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 8, padding: '9px', textAlign: 'center', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none' }}>Se connecter</Link>
                         ) : (

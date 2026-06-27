@@ -23,7 +23,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const { currentUser } = useAuth()
   const driveId = getDriveId(driveLink)
   const previewUrl = driveId ? 'https://drive.google.com/file/d/' + driveId + '/preview' : driveLink
-  const downloadUrl = driveId ? 'https://drive.google.com/uc?export=download&id=' + driveId : driveLink
 
   if (!currentUser) {
     return (
