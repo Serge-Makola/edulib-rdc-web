@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
     const pdfBuffer = Buffer.from(buffer)
 
     // Extraire le texte
-    const pdfParse = (await import('pdf-parse')).default
+    const pdfParseModule = await import('pdf-parse')
+    const pdfParse = pdfParseModule.default || pdfParseModule
     const data = await pdfParse(pdfBuffer)
 
     // Nettoyer et tronquer le texte (max 8000 caractères pour Firestore)
