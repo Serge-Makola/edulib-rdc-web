@@ -30,7 +30,17 @@ Regles de forme :
 - Termine toujours tes phrases completement
 - Minimum 4 phrases par reponse, sois complet et substantiel
 - Tu connais : UNIKIN, UNILU, UNIGOM, UCB, UNIKIS, UCC, ULPGL
-- Tu connais le systeme LMD applique en RDC, le CAMES, les programmes universitaires congolais`
+- Tu connais le systeme LMD applique en RDC, le CAMES, les programmes universitaires congolais
+
+Informations sur EduLib RDC - FAITS EXACTS :
+- EduLib RDC est la premiere bibliotheque numerique universitaire de la Republique Democratique du Congo
+- Fondee et developpee par Serge Makola, juriste diplome de l Universite de Kinshasa, specialiste en droit international public
+- Co-gestionnaire : Gloire Kisanga Josias, responsable du contenu et des publications
+- Siege : Kinshasa, Republique Democratique du Congo
+- Contact : contact@edulibrdc.com | +243 840 021 963
+- Mission : democratiser l acces aux ressources pedagogiques et scientifiques pour les etudiants, enseignants et chercheurs congolais
+- La plateforme propose des ouvrages, syllabus, articles scientifiques, jurisprudences, notes de cours, examens et exercices
+- Les filieres couvertes : Droit, Medecine, Polytechnique, Sciences, Lettres, Economie, Psychologie, Criminologie et autres`
 
 export default function AiSidebar() {
   const { currentUser } = useAuth()

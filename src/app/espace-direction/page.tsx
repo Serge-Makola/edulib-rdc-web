@@ -70,11 +70,45 @@ export default function EspaceDirectionPage() {
     if (!title || !filiere || !type || !prof || prix === '' || !driveLink) { showToast('Remplissez tous les champs *'); return }
     setSaving(true)
     try {
-      const data = { title: title.trim(), filiere: filiere.toLowerCase(), type, prof: prof.trim(), prix: Number(prix), annee: form.annee.trim(), desc: form.desc.trim(), driveLink: driveLink.trim(), createdAt: Date.now(), downloads: 0 }
+      // Extraire le texte du PDF automatiquement
+      let extractedText = ''
+      try {
+        const extractRes = await fetch('/api/extract-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ driveLink: driveLink.trim() })
+        })
+        const extractData = await extractRes.json()
+        if (extractData.text) extractedText = extractData.text
+      } catch {}
+
+      const data = { title: title.trim(), filiere: filiere.toLowerCase(), type, prof: prof.trim(), prix: Number(prix), annee: form.annee.trim(), desc: form.desc.trim(), driveLink: driveLink.trim(), createdAt: Date.now(), downloads: 0, extractedText }
       if (editId) { await updateDoc(doc(db, 'documents', editId), data); showToast('Document modifie') }
       else { await addDoc(collection(db, 'documents'), data); showToast('Document publie') }
       resetForm()
     } catch (e: any) { showToast('Erreur : ' + e.message) } finally { setSaving(false) }
+  }
+
+  async function reindexAllDocs() {
+    showToast('Reindexation en cours...')
+    let count = 0
+    for (const d of docs) {
+      if (d.extractedText) continue
+      try {
+        const res = await fetch('/api/extract-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ driveLink: d.driveLink })
+        })
+        const data = await res.json()
+        if (data.text) {
+          const { updateDoc, doc: firestoreDoc } = await import('firebase/firestore')
+          await updateDoc(firestoreDoc(db, 'documents', d.id), { extractedText: data.text })
+          count++
+        }
+      } catch {}
+    }
+    showToast(count + ' documents reindexes')
   }
 
   async function deleteDocById(id: string, title: string) {
@@ -209,7 +243,10 @@ export default function EspaceDirectionPage() {
             </div>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h3 style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '1rem' }}>{docs.length} documents</h3>
+                <button onClick={reindexAllDocs} title='Reindexer les documents pour l assistant IA' style={{ background: 'var(--blue-light)', color: 'var(--blue)', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>🔄 Réindexer IA</button>
+              </div>
                 <input value={docSearch} onChange={e => setDocSearch(e.target.value)} placeholder="Filtrer..." style={{ ...inp, width: 160, padding: '7px 12px', fontSize: '0.8rem' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '0.625rem', maxHeight: '72vh', overflowY: 'auto' }}>
