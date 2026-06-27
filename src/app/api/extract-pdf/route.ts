@@ -1,27 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Polyfill pour environnement serverless
-if (typeof globalThis.DOMMatrix === 'undefined') {
-  (globalThis as any).DOMMatrix = class DOMMatrix {
-    constructor() {}
-    invertSelf() { return this }
-    multiplySelf() { return this }
-    translateSelf() { return this }
-    scaleSelf() { return this }
-    rotateSelf() { return this }
+// Polyfills pour Vercel serverless
+const setupPolyfills = () => {
+  if (typeof globalThis.DOMMatrix === 'undefined') {
+    (globalThis as any).DOMMatrix = class {
+      static fromMatrix() { return new (globalThis as any).DOMMatrix() }
+      invertSelf() { return this }
+      multiplySelf() { return this }
+      translateSelf() { return this }
+      scaleSelf() { return this }
+      rotateSelf() { return this }
+      transformPoint(p: any) { return p }
+    }
+  }
+  if (typeof globalThis.Path2D === 'undefined') {
+    (globalThis as any).Path2D = class {}
+  }
+  if (typeof globalThis.ImageData === 'undefined') {
+    (globalThis as any).ImageData = class {
+      constructor(public data: any, public width: number, public height: number) {}
+    }
   }
 }
 
-if (typeof globalThis.Path2D === 'undefined') {
-  (globalThis as any).Path2D = class Path2D {}
-}
-
-if (typeof globalThis.CanvasRenderingContext2D === 'undefined') {
-  (globalThis as any).CanvasRenderingContext2D = class CanvasRenderingContext2D {}
-}
+export const runtime = 'nodejs'
+export const maxDuration = 30
 
 export async function POST(req: NextRequest) {
   try {
+    setupPolyfills()
+
     const { driveLink } = await req.json()
     if (!driveLink) return NextResponse.json({ error: 'driveLink manquant' }, { status: 400 })
 
@@ -34,37 +42,38 @@ export async function POST(req: NextRequest) {
     const downloadUrl = `https://drive.google.com/uc?export=download&id=${driveId}`
 
     const pdfRes = await fetch(downloadUrl)
-    if (!pdfRes.ok) return NextResponse.json({ error: 'Impossible de télécharger le PDF' }, { status: 400 })
+    if (!pdfRes.ok) return NextResponse.json({ error: 'Impossible de télécharger' }, { status: 400 })
 
     const buffer = await pdfRes.arrayBuffer()
     const uint8 = new Uint8Array(buffer)
 
-    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
-    pdfjsLib.GlobalWorkerOptions.workerSrc = ''
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
+    pdfjs.GlobalWorkerOptions.workerSrc = false
 
-    const loadingTask = pdfjsLib.getDocument({
+    const loadingTask = pdfjs.getDocument({
       data: uint8,
+      useWorkerFetch: false,
+      isEvalSupported: false,
       disableFontFace: true,
+      disableRange: true,
+      disableStream: true,
       verbosity: 0,
     })
 
     const doc = await loadingTask.promise
-
     let text = ''
-    const maxPages = Math.min(doc.numPages, 50)
+    const maxPages = Math.min(doc.numPages, 40)
+
     for (let i = 1; i <= maxPages; i++) {
       try {
         const page = await doc.getPage(i)
         const content = await page.getTextContent()
-        text += content.items.map((item: any) => item.str).join(' ') + ' '
+        text += content.items.map((item: any) => item.str || '').join(' ') + '\n'
       } catch {}
     }
 
     const cleaned = text.replace(/\s+/g, ' ').trim().slice(0, 8000)
-
-    if (!cleaned || cleaned.length < 50) {
-      return NextResponse.json({ error: 'PDF scanné', text: '' })
-    }
+    if (cleaned.length < 50) return NextResponse.json({ error: 'PDF scanné', text: '' })
 
     return NextResponse.json({ text: cleaned, pages: doc.numPages })
   } catch (e: any) {
