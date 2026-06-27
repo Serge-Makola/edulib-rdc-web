@@ -55,8 +55,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
       <div style={{ background: '#0f172a', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
         <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'inherit', flexShrink: 0 }}>← Fermer</button>
         <span style={{ color: '#fff', fontWeight: 600, fontSize: '0.875rem', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{title}</span>
-        {driveId && (
-        )}
       </div>
       <iframe src={previewUrl} style={{ flex: 1, border: 'none', width: '100%', background: '#1e293b' }} allow="autoplay" title={title} />
     </div>
