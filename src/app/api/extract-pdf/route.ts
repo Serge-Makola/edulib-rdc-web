@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const uint8 = new Uint8Array(buffer)
 
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
-    pdfjs.GlobalWorkerOptions.workerSrc = false
+    pdfjs.GlobalWorkerOptions.workerSrc = ''
 
     const loadingTask = pdfjs.getDocument({
       data: uint8,
@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       disableRange: true,
       disableStream: true,
       verbosity: 0,
+      isOffscreenCanvasSupported: false,
     })
 
     const doc = await loadingTask.promise
