@@ -12,6 +12,7 @@ export interface Doc {
   annee?: string
   createdAt: number
   downloads?: number
+  extractedText?: string
 }
 
 export interface User {
