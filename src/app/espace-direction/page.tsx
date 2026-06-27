@@ -33,7 +33,7 @@ export default function EspaceDirectionPage() {
 
   useEffect(() => {
     if (!isAdmin) return
-    const u1 = onSnapshot(collection(db, 'users'), s => setUsers(s.docs.map(d => ({ uid: d.id, ...d.data() } as User))))
+    const u1 = onSnapshot(collection(db, 'users'), s => setUsers(s.docs.map(d => ({ uid: d.id, ...d.data() } as User)).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))))
     const u2 = onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')), s => setOrders(s.docs.map(d => ({ id: d.id, ...d.data() } as Order))))
     return () => { u1(); u2() }
   }, [isAdmin])
