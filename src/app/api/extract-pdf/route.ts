@@ -5,7 +5,6 @@ export async function POST(req: NextRequest) {
     const { driveLink } = await req.json()
     if (!driveLink) return NextResponse.json({ error: 'driveLink manquant' }, { status: 400 })
 
-    // Extraire l'ID Google Drive
     const match = driveLink.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||
                   driveLink.match(/id=([a-zA-Z0-9_-]+)/) ||
                   driveLink.match(/\/d\/([a-zA-Z0-9_-]+)/)
@@ -14,25 +13,31 @@ export async function POST(req: NextRequest) {
     const driveId = match[1]
     const downloadUrl = `https://drive.google.com/uc?export=download&id=${driveId}`
 
-    // Télécharger le PDF
     const pdfRes = await fetch(downloadUrl)
     if (!pdfRes.ok) return NextResponse.json({ error: 'Impossible de télécharger le PDF' }, { status: 400 })
 
     const buffer = await pdfRes.arrayBuffer()
-    const pdfBuffer = Buffer.from(buffer)
+    const uint8 = new Uint8Array(buffer)
 
-    // Extraire le texte
-    const pdfParse = (await import('pdf-parse') as any).default ?? (await import('pdf-parse'))
-    const data = await pdfParse(pdfBuffer)
+    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
+    const loadingTask = pdfjsLib.getDocument({ data: uint8, disableFontFace: true })
+    const doc = await loadingTask.promise
 
-    // Nettoyer et tronquer le texte (max 8000 caractères pour Firestore)
-    const text = data.text
-      .replace(/\s+/g, ' ')
-      .replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F]/g, ' ')
-      .trim()
-      .slice(0, 8000)
+    let text = ''
+    const maxPages = Math.min(doc.numPages, 50)
+    for (let i = 1; i <= maxPages; i++) {
+      const page = await doc.getPage(i)
+      const content = await page.getTextContent()
+      text += content.items.map((item: any) => item.str).join(' ') + ' '
+    }
 
-    return NextResponse.json({ text, pages: data.numpages })
+    const cleaned = text.replace(/\s+/g, ' ').trim().slice(0, 8000)
+
+    if (!cleaned || cleaned.length < 50) {
+      return NextResponse.json({ error: 'PDF scanné — texte non extractible', text: '' })
+    }
+
+    return NextResponse.json({ text: cleaned, pages: doc.numPages })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
