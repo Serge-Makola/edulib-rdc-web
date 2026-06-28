@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useMemo } from 'react'
+import { use, useState, useMemo, useEffect } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useDocs } from '@/hooks/useDocs'
@@ -32,6 +32,21 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
   const [selectedType, setSelectedType] = useState('')
   const [query, setQuery] = useState('')
   const [viewerDoc, setViewerDoc] = useState<Doc | null>(null)
+
+  useEffect(() => {
+    if (loading) return
+    const hash = window.location.hash
+    if (!hash) return
+    const id = hash.replace('#', '')
+    const el = document.getElementById(id)
+    if (el) {
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.style.boxShadow = '0 0 0 3px var(--blue)'
+        setTimeout(() => { el.style.boxShadow = '' }, 2000)
+      }, 300)
+    }
+  }, [loading])
 
   const filtered = useMemo(() => {
     let list = docs.filter(d => d.filiere?.toLowerCase() === filiere.slug)
