@@ -3,10 +3,11 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useStats } from '@/hooks/useStats'
-import { FILIERES } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 
 export default function AboutPage() {
   const { userCount, docCount } = useStats()
+  const { filieres: FILIERES } = useFilieres()
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
       <Navbar />

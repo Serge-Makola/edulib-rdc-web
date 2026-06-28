@@ -3,11 +3,12 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useDocs } from '@/hooks/useDocs'
-import { FILIERES } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
 
 export default function FilieresPage() {
   const { docs, loading } = useDocs()
+  const { filieres: FILIERES } = useFilieres()
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
       <Navbar />

@@ -4,12 +4,13 @@ import { useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FILIERES } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 
 const ROLES = ['Etudiant', 'Enseignant', 'Chercheur']
 
 export default function RegisterPage() {
   const { register } = useAuth()
+  const { filieres: FILIERES } = useFilieres()
   const router = useRouter()
   const [form, setForm] = useState({ name: '', email: '', pass: '', confirm: '', role: 'Etudiant', filiere: '' })
   const [loading, setLoading] = useState(false)

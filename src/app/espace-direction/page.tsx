@@ -7,7 +7,8 @@ import { db } from '@/lib/firebase'
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore'
 import Navbar from '@/components/layout/Navbar'
 import { useStats } from '@/hooks/useStats'
-import { FILIERES, DOC_TYPES, type User, type Order } from '@/types'
+import { DOC_TYPES, type User, type Order } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 
 const EMPTY = { title: '', filiere: '', type: '', prof: '', prix: '', annee: '', desc: '', driveLink: '' }
 
@@ -15,6 +16,7 @@ export default function EspaceDirectionPage() {
   const { firebaseUser, isAdmin, isLoading, login } = useAuth()
   const { docs } = useDocs()
   const { userCount } = useStats()
+  const { filieres: FILIERES } = useFilieres()
   const [users, setUsers] = useState<User[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [tab, setTab] = useState<'dashboard' | 'docs' | 'users' | 'orders'>('dashboard')

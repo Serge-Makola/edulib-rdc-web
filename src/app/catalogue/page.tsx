@@ -5,7 +5,8 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useDocs } from '@/hooks/useDocs'
 import { useAuth } from '@/context/AuthContext'
-import { DOC_TYPES, FILIERES, type Doc } from '@/types'
+import { DOC_TYPES, type Doc } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
 import PdfViewer from '@/components/ui/PdfViewer'
 
@@ -14,6 +15,7 @@ const typeColors: Record<string, string> = { 'Ouvrage': '#2563eb', 'Loi': '#7c3a
 export default function CataloguePage() {
   const { docs, loading, search } = useDocs()
   const { currentUser, isLoading } = useAuth()
+  const { filieres: FILIERES } = useFilieres()
   const [query, setQuery] = useState('')
   const [selectedFiliere, setSelectedFiliere] = useState('')
   const [selectedType, setSelectedType] = useState('')

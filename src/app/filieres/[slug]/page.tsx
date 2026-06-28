@@ -5,7 +5,8 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useDocs } from '@/hooks/useDocs'
 import { useAuth } from '@/context/AuthContext'
-import { FILIERES, DOC_TYPES, type Doc } from '@/types'
+import { DOC_TYPES, type Doc } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import PdfViewer from '@/components/ui/PdfViewer'
@@ -24,8 +25,10 @@ const typeEmojis: Record<string, string> = {
 
 export default function FilierePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
-  const filiere = FILIERES.find(f => f.slug === slug)
-  if (!filiere) notFound()
+  const { filieres } = useFilieres()
+  const filiere = filieres.find(f => f.slug === slug)
+  if (!filiere && filieres.length > 0) notFound()
+  if (!filiere) return null
 
   const { docs, loading } = useDocs()
   const { currentUser } = useAuth()

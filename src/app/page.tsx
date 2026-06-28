@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer'
 import { useStats } from '@/hooks/useStats'
 import { useDocs } from '@/hooks/useDocs'
 import { useAuth } from '@/context/AuthContext'
-import { FILIERES } from '@/types'
+import { useFilieres } from '@/hooks/useFilieres'
 import { useState, useEffect, useRef } from 'react'
 import PdfViewer from '@/components/ui/PdfViewer'
 import type { Doc } from '@/types'
@@ -35,6 +35,7 @@ function useCountUp(target: number, duration = 1800) {
 
 export default function HomePage() {
   const { userCount, docCount } = useStats()
+  const { filieres: FILIERES } = useFilieres()
   const { docs } = useDocs()
   const { currentUser, isAdmin } = useAuth()
   const [activeFiliere, setActiveFiliere] = useState('')
