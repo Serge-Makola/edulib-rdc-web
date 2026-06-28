@@ -25,16 +25,16 @@ const typeEmojis: Record<string, string> = {
 
 export default function FilierePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
-  const { filieres } = useFilieres()
-  const filiere = filieres.find(f => f.slug === slug)
-  if (!filiere && filieres.length > 0) notFound()
-  if (!filiere) return null
+  const { filieres, loading: filieresLoading } = useFilieres()
 
   const { docs, loading } = useDocs()
   const { currentUser } = useAuth()
   const [selectedType, setSelectedType] = useState('')
   const [query, setQuery] = useState('')
   const [viewerDoc, setViewerDoc] = useState<Doc | null>(null)
+  const filiere = filieres.find(f => f.slug === slug)
+  if (filieresLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: 'var(--text-muted)' }}>Chargement...</p></div>
+  if (!filiere) { notFound(); return null }
 
   useEffect(() => {
     if (loading) return
