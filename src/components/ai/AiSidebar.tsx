@@ -172,7 +172,7 @@ export default function AiSidebar() {
         <button onClick={() => setOpen(true)} style={{ position: 'fixed', bottom: 24, right: 20, zIndex: 900, width: 54, height: 54, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', border: 'none', cursor: 'pointer', fontSize: '1.4rem', boxShadow: '0 4px 20px rgba(37,99,235,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🤖</button>
       )}
       {open && (
-        <div style={{ position: 'fixed', bottom: 20, right: 16, zIndex: 900, width: 'min(370px, calc(100vw - 32px))', height: minimized ? 58 : 'min(540px, calc(100vh - 100px))', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 16px 48px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', transition: 'height 0.25s ease' }}>
+        <div style={{ position: 'fixed', bottom: 20, right: 16, zIndex: 900, width: 'min(520px, calc(100vw - 32px))', height: minimized ? 58 : 'min(680px, calc(100vh - 80px))', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 16px 48px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', transition: 'height 0.25s ease' }}>
           <div style={{ background: 'linear-gradient(135deg, #1e3a5f, #0f172a)', padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, cursor: 'pointer' }} onClick={() => setMinimized(!minimized)}>
             <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>🤖</div>
             <div style={{ flex: 1 }}>

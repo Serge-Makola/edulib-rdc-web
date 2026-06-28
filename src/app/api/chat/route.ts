@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: 'mistral-large-latest',
         messages: enrichedMessages,
-        max_tokens: 2000,
+        max_tokens: 4000,
         temperature: 0.3
       }),
     })
