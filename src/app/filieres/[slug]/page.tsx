@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { DOC_TYPES, type Doc } from '@/types'
 import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import PdfViewer from '@/components/ui/PdfViewer'
 
 const typeColors: Record<string, string> = {
@@ -34,7 +34,7 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
   const [viewerDoc, setViewerDoc] = useState<Doc | null>(null)
   const filiere = filieres.find(f => f.slug === slug)
   if (filieresLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: 'var(--text-muted)' }}>Chargement...</p></div>
-  if (!filiere) { notFound(); return null }
+  if (!filiere) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-2)' }}><p style={{ color: 'var(--text-muted)' }}>Filière introuvable</p></div>
 
   useEffect(() => {
     if (loading) return
