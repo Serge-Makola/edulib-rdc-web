@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     // Import pdfjs et désactiver complètement le worker
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
-    pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs"
+    pdfjs.GlobalWorkerOptions.workerSrc = require.resolve("pdfjs-dist/legacy/build/pdf.worker.mjs")
     
     // Forcer le mode sans worker
     const { getDocument } = pdfjs
