@@ -23,6 +23,7 @@ export default function EspaceDirectionPage() {
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState('')
   const [docSearch, setDocSearch] = useState('')
+  const [customFiliere, setCustomFiliere] = useState('')
 
   // Login form state
   const [email, setEmail] = useState('')
@@ -82,7 +83,8 @@ export default function EspaceDirectionPage() {
         if (extractData.text) extractedText = extractData.text
       } catch {}
 
-      const data = { title: title.trim(), filiere: filiere.toLowerCase(), type, prof: prof.trim(), prix: Number(prix), annee: form.annee.trim(), desc: form.desc.trim(), driveLink: driveLink.trim(), createdAt: Date.now(), downloads: 0, extractedText }
+      const finalFiliere = form.type === 'Autres' && customFiliere.trim() ? customFiliere.trim().toLowerCase() : filiere.toLowerCase()
+      const data = { title: title.trim(), filiere: finalFiliere, type, prof: prof.trim(), prix: Number(prix), annee: form.annee.trim(), desc: form.desc.trim(), driveLink: driveLink.trim(), createdAt: Date.now(), downloads: 0, extractedText }
       if (editId) { await updateDoc(doc(db, 'documents', editId), data); showToast('Document modifie') }
       else { await addDoc(collection(db, 'documents'), data); showToast('Document publie') }
       resetForm()
@@ -217,6 +219,9 @@ export default function EspaceDirectionPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '0.875rem' }}>
                 <div><label style={lbl}>Titre *</label><input value={form.title} onChange={e => setField('title', e.target.value)} placeholder="Titre du document" style={inp} /></div>
+                {form.type === 'Autres' && (
+                  <div><label style={lbl}>Filière personnalisée *</label><input value={customFiliere} onChange={e => setCustomFiliere(e.target.value)} placeholder='Ex: Kinésithérapie, Géologie...' style={inp} /></div>
+                )}
                 <div><label style={lbl}>Filiere *</label>
                   <select value={form.filiere} onChange={e => setField('filiere', e.target.value)} style={inp}>
                     <option value="">Choisir</option>

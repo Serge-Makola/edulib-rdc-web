@@ -36,7 +36,7 @@ export interface Order {
   createdAt: any
 }
 
-export type DocType = 'Ouvrage' | 'Article scientifique' | 'Loi' | 'Jurisprudence' | 'Syllabus' | 'Notes de cours' | 'Exercice' | 'Examen'
+export type DocType = 'Ouvrage' | 'Article scientifique' | 'Loi' | 'Jurisprudence' | 'Syllabus' | 'Notes de cours' | 'Exercice' | 'Examen' | 'Autres'
 
 export const FILIERES = [
   { slug: 'droit', label: 'Droit', emoji: '⚖️' },
@@ -52,6 +52,7 @@ export const FILIERES = [
   { slug: 'communication', label: 'Communication', emoji: '📡' },
   { slug: 'architecture', label: 'Architecture', emoji: '🏛️' },
   { slug: 'criminologie', label: 'Criminologie', emoji: '🔍' },
+  { slug: 'sciences-politiques', label: 'Sciences Politiques & Administratives', emoji: '🏛️' },
 ] as const
 
-export const DOC_TYPES: DocType[] = ['Ouvrage', 'Article scientifique', 'Loi', 'Jurisprudence', 'Syllabus', 'Notes de cours', 'Exercice', 'Examen']
+export const DOC_TYPES = ['Ouvrage', 'Article scientifique', 'Loi', 'Jurisprudence', 'Syllabus', 'Notes de cours', 'Exercice', 'Examen', 'Autres'] as const
