@@ -141,7 +141,7 @@ export default function HomePage() {
             <div className="hero-stats" style={{ display: 'flex', flexDirection: 'row' as const, gap: '0.75rem', flexWrap: 'wrap' as const }}>
               {[
                 { value: animatedDocs, label: 'DOCUMENTS', sub: 'Disponibles maintenant' },
-                { value: animated13, label: 'FILIÈRES', sub: 'Facultés couvertes' },
+                { value: '+' + FILIERES.length, label: 'FILIÈRES', sub: 'Facultés couvertes' },
                 { value: animatedUsers, label: 'UTILISATEURS', sub: 'Font confiance à EduLib' },
               ].map(({ value, label, sub }) => (
                 <div key={label} style={{
@@ -205,7 +205,7 @@ export default function HomePage() {
             {[
               { icon: '📚', value: animatedDocs, label: 'Documents disponibles' },
               { icon: '👥', value: animatedUsers, label: 'Utilisateurs inscrits' },
-              { icon: '🎓', value: animated13, label: 'Filières couvertes' },
+              { icon: '🎓', value: '+' + FILIERES.length, label: 'Filières couvertes' },
             ].map(({ icon, value, label }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface-2)', borderRadius: 14, padding: '1.1rem', border: '1px solid var(--border)' }}>
                 <div style={{ fontSize: '2rem', flexShrink: 0 }}>{icon}</div>

@@ -3,6 +3,7 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useStats } from '@/hooks/useStats'
+import { FILIERES } from '@/types'
 
 export default function AboutPage() {
   const { userCount, docCount } = useStats()
@@ -25,7 +26,7 @@ export default function AboutPage() {
             <p style={{ color: 'var(--text-muted)', lineHeight: 1.85, fontSize: '0.95rem' }}>Nous facilitons l'accès aux ressources pédagogiques et scientifiques de qualité pour tous, quelle que soit leur université ou leur localisation en RDC. Nous offrons également aux enseignants et aux chercheurs une plateforme pour publier et valoriser leurs travaux.</p>
           </section>
           <section style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '2rem', marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1.5rem', textAlign: 'center' as const }}>
-            {[{ value: docCount, label: 'Documents disponibles' }, { value: userCount, label: 'Utilisateurs inscrits' }, { value: 13, label: 'Filières couvertes' }].map(({ value, label }) => (
+            {[{ value: docCount, label: 'Documents disponibles' }, { value: userCount, label: 'Utilisateurs inscrits' }, { value: '+' + FILIERES.length, label: 'Filières couvertes' }].map(({ value, label }) => (
               <div key={label}>
                 <div style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--blue)', letterSpacing: '-0.04em', lineHeight: 1 }}>{value}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 6 }}>{label}</div>
