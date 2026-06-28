@@ -20,52 +20,14 @@ export async function POST(req: NextRequest) {
     if (!pdfRes.ok) return NextResponse.json({ error: 'Impossible de télécharger' }, { status: 400 })
 
     const buffer = await pdfRes.arrayBuffer()
-
-    // Polyfills nécessaires
-    if (typeof globalThis.DOMMatrix === 'undefined') {
-      (globalThis as any).DOMMatrix = class {
-        static fromMatrix() { return new (globalThis as any).DOMMatrix() }
-        invertSelf() { return this }
-        multiplySelf() { return this }
-        translateSelf() { return this }
-        scaleSelf() { return this }
-        rotateSelf() { return this }
-        transformPoint(p: any) { return p }
-        a=1;b=0;c=0;d=1;e=0;f=0
-      }
-    }
-    if (typeof globalThis.Path2D === 'undefined') {
-      (globalThis as any).Path2D = class {}
-    }
-    if (typeof globalThis.OffscreenCanvas === 'undefined') {
-      (globalThis as any).OffscreenCanvas = class {
-        constructor(public width: number, public height: number) {}
-        getContext() { return null }
-      }
-    }
-
-    // Import pdfjs et désactiver complètement le worker
-    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
-    pdfjs.GlobalWorkerOptions.workerSrc = require.resolve("pdfjs-dist/legacy/build/pdf.worker.mjs")
-    
-    // Forcer le mode sans worker
-    const { getDocument } = pdfjs
     const uint8 = new Uint8Array(buffer)
-    
-    const loadingTask = getDocument({
-      data: uint8,
-      worker: null,
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      disableFontFace: true,
-      disableRange: true,
-      disableStream: true,
-      verbosity: 0,
-      isOffscreenCanvasSupported: false,
-      canvasFactory: null,
-    })
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pdfjs = require('pdfjs-dist/legacy/build/pdf.js')
+
+    const loadingTask = pdfjs.getDocument({ data: uint8 })
     const doc = await loadingTask.promise
+
     let text = ''
     const maxPages = Math.min(doc.numPages, 40)
 
