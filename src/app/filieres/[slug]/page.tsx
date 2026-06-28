@@ -88,7 +88,7 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
                 const isFree = doc.prix === 0
                 const owned = currentUser?.boughtIds?.includes(doc.id) || isFree
                 return (
-                  <div key={doc.id}
+                  <div key={doc.id} id={'doc-' + doc.id}
                     style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'pointer' }}
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = color + '40' }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'var(--border)' }}

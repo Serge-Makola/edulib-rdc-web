@@ -229,7 +229,7 @@ export default function HomePage() {
                 </div>
                 <Link href="/catalogue" style={{ color: 'var(--blue)', textDecoration: 'none', fontWeight: 600, fontSize: '0.85rem', whiteSpace: 'nowrap' }}>Voir tout →</Link>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '0.875rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 160px), 1fr))', gap: '0.875rem' }}>
                 {recentDocs.filter(d =>
                   (!activeFiliere || d.filiere?.toLowerCase() === activeFiliere) &&
                   (!searchQuery || d.title?.toLowerCase().includes(searchQuery.toLowerCase()) || (d as any).prof?.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -249,9 +249,9 @@ export default function HomePage() {
                         <span>📚 {doc.filiere}</span>
                         <span>👤 {(doc as any).prof || (doc as any).professeur || 'Non renseigné'}</span>
                       </div>
-                      <button onClick={() => setViewerDoc(doc)} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 8, padding: '8px', fontSize: '0.78rem', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', marginTop: 3 }}>
-                        Voir le document →
-                      </button>
+                      <Link href={'/filieres/' + (doc.filiere?.toLowerCase() || '') + '#doc-' + doc.id} style={{ display: 'block', textAlign: 'center', background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 8, padding: '8px', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none', marginTop: 3 }}>
+                        Voir dans la filière →
+                      </Link>
                     </div>
                   )
                 })}
