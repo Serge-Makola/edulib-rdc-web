@@ -99,7 +99,7 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
               <h3 style={{ color: 'var(--ink)', fontWeight: 600 }}>Aucun document trouvé</h3>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 220px), 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 160px), 1fr))', gap: '1rem' }}>
               {filtered.map(doc => {
                 const color = typeColors[doc.type] || '#64748b'
                 const emoji = typeEmojis[doc.type] || '📄'
