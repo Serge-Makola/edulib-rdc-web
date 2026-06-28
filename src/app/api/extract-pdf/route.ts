@@ -1,35 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Polyfills pour Vercel serverless
-const setupPolyfills = () => {
-  if (typeof globalThis.DOMMatrix === 'undefined') {
-    (globalThis as any).DOMMatrix = class {
-      static fromMatrix() { return new (globalThis as any).DOMMatrix() }
-      invertSelf() { return this }
-      multiplySelf() { return this }
-      translateSelf() { return this }
-      scaleSelf() { return this }
-      rotateSelf() { return this }
-      transformPoint(p: any) { return p }
-    }
-  }
-  if (typeof globalThis.Path2D === 'undefined') {
-    (globalThis as any).Path2D = class {}
-  }
-  if (typeof globalThis.ImageData === 'undefined') {
-    (globalThis as any).ImageData = class {
-      constructor(public data: any, public width: number, public height: number) {}
-    }
-  }
-}
-
 export const runtime = 'nodejs'
 export const maxDuration = 30
 
 export async function POST(req: NextRequest) {
   try {
-    setupPolyfills()
-
     const { driveLink } = await req.json()
     if (!driveLink) return NextResponse.json({ error: 'driveLink manquant' }, { status: 400 })
 
@@ -47,16 +22,33 @@ export async function POST(req: NextRequest) {
     const buffer = await pdfRes.arrayBuffer()
     const uint8 = new Uint8Array(buffer)
 
+    // Polyfills
+    if (typeof globalThis.DOMMatrix === 'undefined') {
+      (globalThis as any).DOMMatrix = class {
+        static fromMatrix() { return new (globalThis as any).DOMMatrix() }
+        invertSelf() { return this }
+        multiplySelf() { return this }
+        translateSelf() { return this }
+        scaleSelf() { return this }
+        rotateSelf() { return this }
+        transformPoint(p: any) { return p }
+      }
+    }
+    if (typeof globalThis.Path2D === 'undefined') {
+      (globalThis as any).Path2D = class {}
+    }
+
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs') as any
-    pdfjs.GlobalWorkerOptions.workerSrc = ''
+    
+    // Utiliser le worker bundlé
+    const workerPath = require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
+    pdfjs.GlobalWorkerOptions.workerSrc = workerPath
 
     const loadingTask = pdfjs.getDocument({
       data: uint8,
       useWorkerFetch: false,
       isEvalSupported: false,
       disableFontFace: true,
-      disableRange: true,
-      disableStream: true,
       verbosity: 0,
       isOffscreenCanvasSupported: false,
     })
