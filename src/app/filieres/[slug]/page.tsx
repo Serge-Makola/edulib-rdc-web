@@ -33,8 +33,6 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
   const [query, setQuery] = useState('')
   const [viewerDoc, setViewerDoc] = useState<Doc | null>(null)
   const filiere = filieres.find(f => f.slug === slug)
-  if (filieresLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: 'var(--text-muted)' }}>Chargement...</p></div>
-  if (!filiere) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-2)' }}><p style={{ color: 'var(--text-muted)' }}>Filière introuvable</p></div>
 
   useEffect(() => {
     if (loading) return
@@ -51,7 +49,10 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
     }
   }, [loading])
 
+
+
   const filtered = useMemo(() => {
+    if (!filiere) return []
     let list = docs.filter(d => d.filiere?.toLowerCase() === filiere.slug)
     if (selectedType) list = list.filter(d => d.type === selectedType)
     if (query.trim()) {
@@ -59,7 +60,10 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
       list = list.filter(d => d.title.toLowerCase().includes(q) || (d as any).prof?.toLowerCase().includes(q))
     }
     return list
-  }, [docs, filiere.slug, selectedType, query])
+  }, [docs, filiere, selectedType, query])
+
+  if (filieresLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: 'var(--text-muted)' }}>Chargement...</p></div>
+  if (!filiere) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-2)' }}><p style={{ color: 'var(--text-muted)' }}>Filière introuvable</p></div>
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
