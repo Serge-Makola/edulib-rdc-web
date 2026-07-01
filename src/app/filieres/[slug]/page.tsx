@@ -8,7 +8,6 @@ import { useAuth } from '@/context/AuthContext'
 import { DOC_TYPES, type Doc } from '@/types'
 import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
-import { notFound, redirect } from 'next/navigation'
 import PdfViewer from '@/components/ui/PdfViewer'
 
 const typeColors: Record<string, string> = {
@@ -26,16 +25,16 @@ const typeEmojis: Record<string, string> = {
 export default function FilierePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   const { filieres, loading: filieresLoading } = useFilieres()
-
   const { docs, loading } = useDocs()
   const { currentUser } = useAuth()
   const [selectedType, setSelectedType] = useState('')
   const [query, setQuery] = useState('')
   const [viewerDoc, setViewerDoc] = useState<Doc | null>(null)
+
   const filiere = filieres.find(f => f.slug === slug)
 
   useEffect(() => {
-    if (loading) return
+    if (loading || filieresLoading) return
     const hash = window.location.hash
     if (!hash) return
     const id = hash.replace('#', '')
@@ -47,9 +46,7 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
         setTimeout(() => { el.style.boxShadow = '' }, 2000)
       }, 300)
     }
-  }, [loading])
-
-
+  }, [loading, filieresLoading])
 
   const filtered = useMemo(() => {
     if (!filiere) return []
@@ -62,8 +59,17 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
     return list
   }, [docs, filiere, selectedType, query])
 
-  if (filieresLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: 'var(--text-muted)' }}>Chargement...</p></div>
-  if (!filiere) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-2)' }}><p style={{ color: 'var(--text-muted)' }}>Filière introuvable</p></div>
+  if (filieresLoading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-2)' }}>
+      <p style={{ color: 'var(--text-muted)' }}>Chargement...</p>
+    </div>
+  )
+
+  if (!filiere) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-2)' }}>
+      <p style={{ color: 'var(--text-muted)' }}>Filière introuvable</p>
+    </div>
+  )
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
@@ -83,7 +89,6 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
         </div>
 
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '1.5rem 1.25rem' }}>
-          {/* Filtres */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '1rem', marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap' as const, gap: '0.75rem' }}>
             <div style={{ position: 'relative', flex: '1 1 200px' }}>
               <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: '0.85rem' }}>🔍</span>
@@ -115,13 +120,10 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = color + '40' }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'var(--border)' }}
                   >
-                    {/* Header coloré */}
                     <div style={{ background: color + '15', borderBottom: '1px solid ' + color + '20', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
                       <div style={{ fontSize: '2.5rem' }}>{emoji}</div>
                       <span style={{ background: color + '20', color, border: '1px solid ' + color + '30', borderRadius: 99, padding: '2px 10px', fontSize: '0.68rem', fontWeight: 700 }}>{doc.type}</span>
                     </div>
-
-                    {/* Contenu */}
                     <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
                       <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0 }}>{doc.title}</h3>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: 3, flex: 1 }}>
