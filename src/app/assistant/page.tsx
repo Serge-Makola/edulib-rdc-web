@@ -39,9 +39,16 @@ Regles de forme :
 - N'utilise JAMAIS de caracteres speciaux comme **, ##, *, _, ~, backtick
 - Structure tes reponses en paragraphes separes par une ligne vide
 - Utilise des tirets simples (-) pour les listes
-- Adapte la longueur de ta reponse au contexte : pour un simple bonjour ou une question courte, reponds brievement ; pour une question academique complexe, sois complet et substantiel
+- Adapte la longueur de ta reponse au contexte
 - Tu connais : UNIKIN, UNILU, UNIGOM, UCB, UNIKIS, UCC, ULPGL
 - Tu connais le systeme LMD applique en RDC, le CAMES, les programmes universitaires congolais`
+
+const SUGGESTIONS = [
+  'Explique le droit constitutionnel congolais',
+  'Qu\'est-ce que le droit OHADA ?',
+  'Comment rédiger un mémoire ?',
+  'Qu\'est-ce que EduLib RDC ?',
+]
 
 export default function AssistantPage() {
   const { currentUser } = useAuth()
@@ -51,8 +58,8 @@ export default function AssistantPage() {
   const [historyLoaded, setHistoryLoaded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [uploadedFile, setUploadedFile] = useState<{ name: string, base64: string, type: string } | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [uploadedFile, setUploadedFile] = useState<{ name: string, base64: string, type: string } | null>(null)
 
   useEffect(() => {
     if (!currentUser || historyLoaded) return
@@ -61,7 +68,7 @@ export default function AssistantPage() {
         const snap = await getDoc(doc(db, 'ai_history', currentUser!.uid))
         if (snap.exists()) {
           const saved = snap.data().messages as Message[]
-          if (saved?.length > 0) setMessages(saved)
+          if (saved?.length > 0) { setMessages(saved); setHistoryLoaded(true); return }
         }
       } catch {}
       setHistoryLoaded(true)
@@ -72,7 +79,7 @@ export default function AssistantPage() {
   useEffect(() => {
     if (messages.length === 0 && currentUser && historyLoaded) {
       const name = currentUser?.name?.split(' ')[0]
-      setMessages([{ role: 'assistant', content: name ? 'Bonjour ' + name + ' ! Je suis ton assistant academique EduLib RDC. Comment puis-je t\'aider ?' : 'Bonjour ! Je suis l\'assistant academique d\'EduLib RDC.' }])
+      setMessages([{ role: 'assistant', content: name ? 'Bonjour ' + name + ' ! Comment puis-je t\'aider aujourd\'hui ?' : 'Bonjour ! Comment puis-je vous aider ?' }])
     }
   }, [currentUser, historyLoaded, messages.length])
 
@@ -106,7 +113,6 @@ export default function AssistantPage() {
     setMessages(newMessages)
     setInput('')
     setLoading(true)
-
     try {
       const apiMessages = [{ role: 'system', content: SYSTEM_PROMPT }, ...newMessages.slice(-8)]
       if (uploadedFile) {
@@ -117,15 +123,14 @@ export default function AssistantPage() {
             role: 'user',
             content: isImage ? [
               { type: 'image_url', image_url: { url: 'data:' + uploadedFile.type + ';base64,' + uploadedFile.base64 } },
-              { type: 'text', text: text || 'Explique ce fichier en detail.' }
+              { type: 'text', text: text || 'Explique ce fichier.' }
             ] : [
-              { type: 'text', text: 'Fichier: ' + uploadedFile.name + '\n\n' + atob(uploadedFile.base64).slice(0, 3000) + '\n\n' + (text || 'Explique ce contenu en detail.') }
+              { type: 'text', text: 'Fichier: ' + uploadedFile.name + '\n\n' + atob(uploadedFile.base64).slice(0, 3000) + '\n\n' + (text || 'Explique ce contenu.') }
             ]
           } as any
         }
         setUploadedFile(null)
       }
-
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -145,118 +150,142 @@ export default function AssistantPage() {
   function clearHistory() {
     setMessages([])
     setHistoryLoaded(false)
-    if (currentUser) {
-      setDoc(doc(db, 'ai_history', currentUser.uid), { messages: [], updatedAt: Date.now() })
-    }
+    if (currentUser) setDoc(doc(db, 'ai_history', currentUser.uid), { messages: [], updatedAt: Date.now() })
   }
 
   if (!currentUser) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(135deg, #0f172a, #1e3a5f)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
         <Navbar />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-          <div style={{ background: 'var(--surface)', borderRadius: 20, padding: '2.5rem 2rem', maxWidth: 380, width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ fontSize: '3rem' }}>🔒</div>
-            <h2 style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--ink)' }}>Connexion requise</h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>Connecte-toi pour acceder a l&apos;assistant academique EduLib RDC.</p>
-            <Link href="/login" style={{ background: 'var(--blue)', color: '#fff', borderRadius: 10, padding: '12px 24px', fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none' }}>Se connecter</Link>
-            <Link href="/register" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 10, padding: '12px 24px', fontSize: '0.9rem', fontWeight: 600, textDecoration: 'none' }}>Creer un compte gratuit</Link>
+          <div style={{ background: 'var(--surface)', borderRadius: 20, padding: '2.5rem 2rem', maxWidth: 380, width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', border: '1px solid var(--border)' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem' }}>🤖</div>
+            <h2 style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--ink)' }}>Assistant EduLib RDC</h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>Connecte-toi pour acceder a ton assistant academique personnel.</p>
+            <Link href="/login" style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', color: '#fff', borderRadius: 10, padding: '12px 24px', fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', width: '100%', textAlign: 'center', boxSizing: 'border-box' as const }}>Se connecter</Link>
+            <Link href="/register" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 10, padding: '12px 24px', fontSize: '0.9rem', fontWeight: 600, textDecoration: 'none', width: '100%', textAlign: 'center', boxSizing: 'border-box' as const }}>Creer un compte gratuit</Link>
           </div>
         </div>
       </div>
     )
   }
 
+  const showSuggestions = messages.length <= 1
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)', overflow: 'hidden' }}>
       <Navbar />
-      <div style={{ flex: 1, maxWidth: 900, width: '100%', margin: '0 auto', padding: '1.5rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>🤖</div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--ink)' }}>Assistant EduLib</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Propulsé par Mistral AI · Recherche web activée</div>
-            </div>
-          </div>
-          {messages.length > 1 && (
-            <button onClick={clearHistory} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 14px', fontSize: '0.8rem', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: 'inherit' }}>🗑 Effacer</button>
-          )}
-        </div>
+      {/* Layout principal */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 800, width: '100%', margin: '0 auto', padding: '0 1rem' }}>
 
-        {/* Messages */}
-        <div style={{ flex: 1, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, minHeight: '60vh', maxHeight: '65vh' }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start', gap: 10, alignItems: 'flex-start' }}>
-              {msg.role === 'assistant' && (
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', flexShrink: 0, marginTop: 2 }}>🤖</div>
-              )}
-              <div style={{
-                maxWidth: '78%',
-                background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'var(--surface-2)',
-                color: msg.role === 'user' ? '#fff' : 'var(--ink)',
-                border: msg.role === 'user' ? 'none' : '1px solid var(--border)',
-                borderRadius: msg.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                padding: '12px 16px',
-                fontSize: '0.9rem',
-                lineHeight: 1.7,
-                whiteSpace: 'pre-wrap' as const,
-              }}>
-                {msg.content.split('\n').map((line, j) => (
-                  <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
+        {/* Zone messages — scrollable */}
+        <div style={{ flex: 1, overflowY: 'auto', paddingTop: '1.5rem', paddingBottom: '1rem', display: 'flex', flexDirection: 'column', gap: 0 }}>
+
+          {/* Accueil quand pas de messages */}
+          {showSuggestions && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '3rem', paddingBottom: '2rem', gap: '1.5rem' }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', boxShadow: '0 8px 32px rgba(37,99,235,0.3)' }}>🤖</div>
+              <div style={{ textAlign: 'center' }}>
+                <h1 style={{ fontSize: 'clamp(1.3rem, 4vw, 1.8rem)', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.5rem' }}>
+                  Bonjour, {currentUser.name.split(' ')[0]} 👋
+                </h1>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Assistant académique EduLib RDC · Propulsé par Mistral AI</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.75rem', width: '100%', maxWidth: 600 }}>
+                {SUGGESTIONS.map(s => (
+                  <button key={s} onClick={() => { setInput(s); setTimeout(() => sendMessage(), 100) }}
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '0.875rem 1rem', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: 'var(--ink)', textAlign: 'left', lineHeight: 1.4, transition: 'all 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--blue)'; e.currentTarget.style.background = 'var(--blue-light)' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)' }}
+                  >{s}</button>
                 ))}
               </div>
-              {msg.role === 'user' && (
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0, marginTop: 2 }}>{currentUser.name.charAt(0)}</div>
-              )}
+            </div>
+          )}
+
+          {/* Messages */}
+          {messages.filter(m => !(showSuggestions && m.role === 'assistant')).map((msg, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, marginBottom: '1.5rem', alignItems: 'flex-start', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
+              {/* Avatar */}
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: msg.role === 'assistant' ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : 'linear-gradient(135deg, #0891b2, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: msg.role === 'assistant' ? '1rem' : '0.85rem', color: '#fff', fontWeight: 700 }}>
+                {msg.role === 'assistant' ? '🤖' : currentUser.name.charAt(0).toUpperCase()}
+              </div>
+              {/* Bulle */}
+              <div style={{ maxWidth: '80%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, paddingLeft: msg.role === 'user' ? 0 : 4, paddingRight: msg.role === 'user' ? 4 : 0, textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+                  {msg.role === 'assistant' ? 'Assistant EduLib' : currentUser.name.split(' ')[0]}
+                </div>
+                <div style={{
+                  background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'var(--surface)',
+                  color: msg.role === 'user' ? '#fff' : 'var(--ink)',
+                  border: msg.role === 'user' ? 'none' : '1px solid var(--border)',
+                  borderRadius: msg.role === 'user' ? '18px 4px 18px 18px' : '4px 18px 18px 18px',
+                  padding: '12px 16px',
+                  fontSize: '0.9rem',
+                  lineHeight: 1.75,
+                  whiteSpace: 'pre-wrap' as const,
+                  boxShadow: msg.role === 'assistant' ? '0 2px 8px rgba(0,0,0,0.06)' : '0 2px 8px rgba(37,99,235,0.2)',
+                }}>
+                  {msg.content.split('\n').map((line, j) => (
+                    <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
+
+          {/* Animation chargement */}
           {loading && (
-            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', flexShrink: 0 }}>🤖</div>
-              <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', display: 'flex', gap: 5, alignItems: 'center' }}>
-                {[0, 1, 2].map(i => <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--blue)', animation: 'bounce 1.2s ease-in-out ' + (i * 0.2) + 's infinite' }} />)}
-                <style>{`@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-5px);opacity:1}}`}</style>
+            <div style={{ display: 'flex', gap: 12, marginBottom: '1.5rem', alignItems: 'flex-start' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1rem' }}>🤖</div>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px 18px 18px 18px', padding: '14px 18px', display: 'flex', gap: 5, alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--blue)', animation: 'pulse 1.4s ease-in-out ' + (i * 0.2) + 's infinite' }} />
+                ))}
+                <style>{`@keyframes pulse{0%,100%{transform:scale(0.7);opacity:0.4}50%{transform:scale(1);opacity:1}}`}</style>
               </div>
             </div>
           )}
+
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Suggestions */}
-        {messages.length <= 1 && (
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' as const }}>
-            {['Explique le droit constitutionnel congolais', 'Qu\'est-ce que le droit OHADA ?', 'Comment rédiger un mémoire ?', 'Qu\'est-ce que EduLib RDC ?'].map(s => (
-              <button key={s} onClick={() => setInput(s)} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 99, padding: '7px 14px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: 'var(--ink)' }}>{s}</button>
-            ))}
-          </div>
-        )}
-
-        {/* Zone de saisie */}
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '0.875rem', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* Zone saisie — fixe en bas */}
+        <div style={{ paddingBottom: '1rem', flexShrink: 0 }}>
           {uploadedFile && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--blue-light)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 8, padding: '6px 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--blue-light)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 10, padding: '8px 14px', marginBottom: 8 }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--blue)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>📎 {uploadedFile.name}</span>
-              <button onClick={() => setUploadedFile(null)} style={{ background: 'none', border: 'none', color: 'var(--blue)', cursor: 'pointer', fontSize: '0.9rem' }}>✕</button>
+              <button onClick={() => setUploadedFile(null)} style={{ background: 'none', border: 'none', color: 'var(--blue)', cursor: 'pointer', fontSize: '1rem', flexShrink: 0 }}>✕</button>
             </div>
           )}
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '0.75rem', display: 'flex', gap: 10, alignItems: 'flex-end', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
             <input ref={fileInputRef} type="file" accept="image/*,.pdf,.txt,.doc,.docx" onChange={handleFile} style={{ display: 'none' }} />
-            <button onClick={() => fileInputRef.current?.click()} style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0, background: 'var(--surface-2)', border: '1px solid var(--border)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>📎</button>
+            <button onClick={() => fileInputRef.current?.click()} style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, background: 'var(--surface-2)', border: '1px solid var(--border)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', color: 'var(--text-muted)' }}>📎</button>
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={e => {
+                setInput(e.target.value)
+                e.target.style.height = 'auto'
+                e.target.style.height = Math.min(e.target.scrollHeight, 140) + 'px'
+              }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
-              placeholder="Pose ta question academique... (Entrée pour envoyer, Shift+Entrée pour nouvelle ligne)"
+              placeholder="Pose ta question académique... (Entrée pour envoyer)"
               disabled={loading}
               rows={1}
-              style={{ flex: 1, border: '1px solid var(--border)', borderRadius: 10, padding: '10px 14px', background: 'var(--surface-2)', color: 'var(--ink)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'none', minHeight: 42, maxHeight: 120, overflowY: 'auto' }}
+              style={{ flex: 1, border: 'none', borderRadius: 0, padding: '8px 4px', background: 'transparent', color: 'var(--ink)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', resize: 'none', minHeight: 38, maxHeight: 140, overflowY: 'auto', lineHeight: 1.6 }}
             />
-            <button onClick={sendMessage} disabled={(!input.trim() && !uploadedFile) || loading} style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: (input.trim() || uploadedFile) && !loading ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : 'var(--border)', border: 'none', cursor: (input.trim() || uploadedFile) && !loading ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#fff' }}>➤</button>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+              {messages.length > 1 && (
+                <button onClick={clearHistory} title="Effacer la conversation" style={{ width: 38, height: 38, borderRadius: 10, background: 'var(--surface-2)', border: '1px solid var(--border)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>🗑</button>
+              )}
+              <button onClick={sendMessage} disabled={(!input.trim() && !uploadedFile) || loading} style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, background: (input.trim() || uploadedFile) && !loading ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : 'var(--border)', border: 'none', cursor: (input.trim() || uploadedFile) && !loading ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', color: '#fff', transition: 'all 0.15s' }}>➤</button>
+            </div>
           </div>
+          <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 8 }}>
+            Assistant EduLib RDC · Mistral AI · Recherche web activée
+          </p>
         </div>
       </div>
     </div>
