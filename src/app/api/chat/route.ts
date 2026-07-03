@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { initializeApp, getApps } from 'firebase/app'
 import { getFirestore, collection, getDocs } from 'firebase/firestore'
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -10,10 +9,8 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
-
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
 const db = getFirestore(app)
-
 function getRelevantDocs(docs: any[], query: string, maxDocs = 3): string {
   if (!query || docs.length === 0) return ''
   const queryLower = query.toLowerCase()
@@ -38,28 +35,23 @@ function getRelevantDocs(docs: any[], query: string, maxDocs = 3): string {
       `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${(d.extractedText || '').slice(0, 1500)}`
     ).join('\n\n')
 }
-
 export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json()
-
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')
     const userQuery = typeof lastUserMsg?.content === 'string' ? lastUserMsg.content : ''
-
     let docsContext = ''
     try {
       const snap = await getDocs(collection(db, 'documents'))
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       docsContext = getRelevantDocs(docs, userQuery)
     } catch {}
-
     const enrichedMessages = messages.map((m: any, i: number) => {
       if (i === 0 && m.role === 'system' && docsContext) {
         return { ...m, content: m.content + docsContext }
       }
       return m
     })
-
     // Appel avec web_search activé
     const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
       method: 'POST',
@@ -72,17 +64,13 @@ export async function POST(req: NextRequest) {
         messages: enrichedMessages,
         max_tokens: 4000,
         temperature: 0.3,
-      
-    
       }),
     })
-
     const data = await response.json()
-
     // Gérer les tool calls (recherche web)
     const message = data.choices?.[0]?.message
-    
-    
+
+    if (message?.tool_calls && message.tool_calls.length > 0) {
       // Mistral a fait une recherche web - on relance avec les résultats
       const messagesWithToolResult = [
         ...enrichedMessages,
@@ -93,7 +81,6 @@ export async function POST(req: NextRequest) {
           content: JSON.stringify({ query: tc.function?.arguments }),
         }))
       ]
-
       const response2 = await fetch('https://api.mistral.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -110,7 +97,6 @@ export async function POST(req: NextRequest) {
       const data2 = await response2.json()
       return NextResponse.json({ content: data2.choices?.[0]?.message?.content ?? '' })
     }
-
     return NextResponse.json({ content: message?.content ?? '' })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
