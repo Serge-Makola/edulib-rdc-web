@@ -64,12 +64,12 @@ export async function POST(req: NextRequest) {
         messages: enrichedMessages,
         max_tokens: 4000,
         temperature: 0.3,
+        tools: [{ type: 'web_search' }],
       }),
     })
     const data = await response.json()
     // Gérer les tool calls (recherche web)
     const message = data.choices?.[0]?.message
-
     if (message?.tool_calls && message.tool_calls.length > 0) {
       // Mistral a fait une recherche web - on relance avec les résultats
       const messagesWithToolResult = [
