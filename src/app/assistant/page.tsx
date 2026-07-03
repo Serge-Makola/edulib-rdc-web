@@ -173,7 +173,7 @@ export default function AssistantPage() {
   const showSuggestions = messages.length <= 1
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)'
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)' }}>
       <Navbar />
 
       {/* Layout principal */}
