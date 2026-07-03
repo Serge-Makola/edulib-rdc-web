@@ -173,11 +173,11 @@ export default function AssistantPage() {
   const showSuggestions = messages.length <= 1
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--surface-2)'
       <Navbar />
 
       {/* Layout principal */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 800, width: '100%', margin: '0 auto', padding: '0 1rem' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 800, width: '100%', margin: '0 auto', padding: '0 0.75rem' }}>
 
         {/* Zone messages — scrollable */}
         <div style={{ flex: 1, overflowY: 'auto', paddingTop: '1.5rem', paddingBottom: '1rem', display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -212,7 +212,7 @@ export default function AssistantPage() {
                 {msg.role === 'assistant' ? '🤖' : currentUser.name.charAt(0).toUpperCase()}
               </div>
               {/* Bulle */}
-              <div style={{ maxWidth: '80%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ maxWidth: '100%', display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, paddingLeft: msg.role === 'user' ? 0 : 4, paddingRight: msg.role === 'user' ? 4 : 0, textAlign: msg.role === 'user' ? 'right' : 'left' }}>
                   {msg.role === 'assistant' ? 'Assistant EduLib' : currentUser.name.split(' ')[0]}
                 </div>
