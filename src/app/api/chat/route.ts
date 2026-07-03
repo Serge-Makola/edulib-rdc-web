@@ -64,7 +64,6 @@ export async function POST(req: NextRequest) {
         messages: enrichedMessages,
         max_tokens: 4000,
         temperature: 0.3,
-        tools: [{ type: 'web_search' }],
       }),
     })
     const data = await response.json()
@@ -102,3 +101,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
+
+
+
+Remplace ce que tu dois remplacer et rends moi le fichier complet
