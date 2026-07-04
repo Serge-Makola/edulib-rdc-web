@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
         messages: enrichedMessages,
         max_tokens: 4000,
         temperature: 0.3,
+        tools: [{ type: 'web_search' }],
       }),
     })
     const data = await response.json()
