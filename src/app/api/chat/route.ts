@@ -101,7 +101,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
-
-
-
-Remplace ce que tu dois remplacer et rends moi le fichier complet
