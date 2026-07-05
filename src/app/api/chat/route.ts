@@ -13,18 +13,27 @@ export async function POST(req: NextRequest) {
         'Authorization': 'Bearer ' + process.env.MISTRAL_API_KEY,
       },
       body: JSON.stringify({
-        agent_id: process.env.MISTRAL_AGENT_ID,
+        agent_id: 'ag_019f32d282ee74c3a7fe0fbcea223667',
         inputs: userQuery,
       }),
     })
 
     const data = await response.json()
-    return NextResponse.json({
-      debug_agent_id_present: !!process.env.MISTRAL_AGENT_ID,
-      debug_api_key_present: !!process.env.MISTRAL_API_KEY,
-      debug_status: response.status,
-      raw: data,
-    })
+
+    const messageEntry = data.outputs?.find((o: any) => o.type === 'message.output')
+    const contentParts = messageEntry?.content
+
+    let textOutput = ''
+    if (typeof contentParts === 'string') {
+      textOutput = contentParts
+    } else if (Array.isArray(contentParts)) {
+      textOutput = contentParts
+        .filter((c: any) => c.type === 'text')
+        .map((c: any) => c.text)
+        .join('')
+    }
+
+    return NextResponse.json({ content: textOutput })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
