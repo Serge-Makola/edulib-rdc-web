@@ -116,7 +116,7 @@ function PageCanvas({
     canvas.style.height = Math.floor(viewport.height) + 'px'
     const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined
 
-    const task = page.render({ canvas, canvasContext: context, viewport, transform })
+    const task = page.render({ canvasContext: context, viewport, transform })
     task.promise
       .then(() => {
         if (!cancelled) setRendered(true)
@@ -226,7 +226,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     ;(async () => {
       try {
         const pdfjsLib = await import('pdfjs-dist')
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.mjs'
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.js'
         pdfjsLibRef.current = pdfjsLib
 
         const loadingTask = pdfjsLib.getDocument({
