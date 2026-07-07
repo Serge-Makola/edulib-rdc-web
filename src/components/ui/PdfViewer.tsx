@@ -212,6 +212,14 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const driveId = useMemo(() => getDriveId(driveLink), [driveLink])
   const proxyUrl = driveId ? '/api/pdf-proxy?id=' + driveId : null
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
   const registerRef = useCallback((n: number, el: HTMLDivElement | null) => {
     if (el) {
       pageRefs.current.set(n, el)
