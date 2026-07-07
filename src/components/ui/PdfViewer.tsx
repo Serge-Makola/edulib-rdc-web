@@ -219,6 +219,17 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
       document.body.style.overflow = previousOverflow
     }
   }, [])
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null)
+  useEffect(() => {
+    const updateHeight = () => setViewportHeight(window.innerHeight)
+    updateHeight()
+    window.addEventListener('resize', updateHeight)
+    window.addEventListener('orientationchange', updateHeight)
+    return () => {
+      window.removeEventListener('resize', updateHeight)
+      window.removeEventListener('orientationchange', updateHeight)
+    }
+  }, [])
 
   const registerRef = useCallback((n: number, el: HTMLDivElement | null) => {
     if (el) {
@@ -401,7 +412,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const btnBg = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', height: '100dvh' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', height: viewportHeight ? viewportHeight + 'px' : '100dvh' }}>
       <div
         style={{
           background: barBg,
