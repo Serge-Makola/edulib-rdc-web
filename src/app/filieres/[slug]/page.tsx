@@ -9,6 +9,7 @@ import { DOC_TYPES, type Doc } from '@/types'
 import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
 import PdfViewer from '@/components/ui/PdfViewer'
+import PdfViewerErrorBoundary from '@/components/ui/PdfViewerErrorBoundary'
 
 const typeColors: Record<string, string> = {
   'Ouvrage': '#2563eb', 'Loi': '#7c3aed', 'Jurisprudence': '#0891b2',
@@ -149,7 +150,7 @@ export default function FilierePage({ params }: { params: Promise<{ slug: string
         </div>
       </main>
       <Footer />
-      {viewerDoc && <PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} />}
+      {viewerDoc && <PdfViewerErrorBoundary><PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} /></PdfViewerErrorBoundary>}
     </div>
   )
 }
