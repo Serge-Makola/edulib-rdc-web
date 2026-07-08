@@ -211,14 +211,19 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const observerRef = useRef<IntersectionObserver | null>(null)
 
   const driveId = useMemo(() => getDriveId(driveLink), [driveLink])
-  const proxyUrl = driveId ? '/api/pdf-proxy?id=' + driveId : null
-
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = ''
     }
   }, [])
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0
+    }
+  }, [])
+  const proxyUrl = driveId ? '/api/pdf-proxy?id=' + driveId : null
 
   const registerRef = useCallback((n: number, el: HTMLDivElement | null) => {
     if (el) {
