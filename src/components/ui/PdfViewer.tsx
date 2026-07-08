@@ -236,6 +236,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.js'
         pdfjsLibRef.current = pdfjsLib
 
+        console.log("[DEBUG] avant getDocument")
         const loadingTask = pdfjsLib.getDocument({
           url: proxyUrl,
           cMapUrl: '/pdf-worker/cmaps/',
@@ -243,15 +244,18 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           standardFontDataUrl: '/pdf-worker/standard_fonts/',
         })
         loadingTaskRef.current = loadingTask
+        console.log("[DEBUG] avant await loadingTask.promise")
         const pdf = await loadingTask.promise
         if (cancelled) return
 
         pdfRef.current = pdf
         setNumPages(pdf.numPages)
         setVisiblePages(new Set([1, 2]))
+        console.log("[DEBUG] setLoading(false) appele, numPages=", pdf.numPages)
         setLoading(false)
 
         const preloaded = new Map<number, PDFPageProxy>()
+        console.log("[DEBUG] avant pdf.getPage(1)")
         const page1 = await pdf.getPage(1)
         if (cancelled) return
         preloaded.set(1, page1)
@@ -267,6 +271,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         for (let n = 1; n <= pdf.numPages; n++) {
           if (cancelled) return
           const page = preloaded.get(n) ?? (await pdf.getPage(n))
+        console.log("[DEBUG] avant getTextContent page", n)
           const content = await page.getTextContent()
           const items = content.items.filter((it) => 'str' in it) as unknown as PdfTextItem[]
           pageItemsRef.current.set(n, items)
