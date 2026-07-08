@@ -339,6 +339,18 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     return () => clearTimeout(t)
   }, [searchQuery, indexProgress.done, numPages])
 
+  useEffect(() => {
+    if (indexProgress.total > 0 && indexProgress.done === indexProgress.total && containerRef.current) {
+      const el = containerRef.current
+      const currentScroll = el.scrollTop
+      void el.offsetHeight
+      el.style.overflow = 'hidden'
+      void el.offsetHeight
+      el.style.overflow = 'auto'
+      el.scrollTop = currentScroll
+    }
+  }, [indexProgress.done, indexProgress.total])
+
   const goToMatch = useCallback(
     (i: number) => {
       if (matches.length === 0) return
