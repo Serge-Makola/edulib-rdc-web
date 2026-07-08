@@ -407,7 +407,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
 
   console.log("[DEBUG] juste avant le return JSX principal, numPages=", numPages, "loading=", loading, "loadError=", loadError)
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', height: '100dvh', minHeight: '100vh' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', }}>
       <div
         style={{
           background: barBg,
