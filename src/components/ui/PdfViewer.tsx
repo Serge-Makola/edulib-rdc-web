@@ -185,7 +185,6 @@ function PageCanvas({
 }
 
 export default function PdfViewer({ driveLink, title, onClose }: Props) {
-  console.log("[DEBUG] PdfViewer render appele")
   const { currentUser } = useAuth()
   const [darkMode, setDarkMode] = useState(true)
   const [scale, setScale] = useState(1.15)
@@ -242,7 +241,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.js'
         pdfjsLibRef.current = pdfjsLib
 
-        console.log("[DEBUG] avant getDocument")
         const loadingTask = pdfjsLib.getDocument({
           url: proxyUrl,
           cMapUrl: '/pdf-worker/cmaps/',
@@ -250,18 +248,15 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           standardFontDataUrl: '/pdf-worker/standard_fonts/',
         })
         loadingTaskRef.current = loadingTask
-        console.log("[DEBUG] avant await loadingTask.promise")
         const pdf = await loadingTask.promise
         if (cancelled) return
 
         pdfRef.current = pdf
         setNumPages(pdf.numPages)
         setVisiblePages(new Set([1, 2]))
-        console.log("[DEBUG] setLoading(false) appele, numPages=", pdf.numPages)
         setLoading(false)
 
         const preloaded = new Map<number, PDFPageProxy>()
-        console.log("[DEBUG] avant pdf.getPage(1)")
         const page1 = await pdf.getPage(1)
         if (cancelled) return
         preloaded.set(1, page1)
@@ -277,7 +272,8 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         for (let n = 1; n <= pdf.numPages; n++) {
           if (cancelled) return
           const page = preloaded.get(n) ?? (await pdf.getPage(n))
-        console.log("[DEBUG] avant getTextContent page", n)
+          setPages((prev) => (prev.has(n) ? prev : new Map(prev).set(n, page)))
+          setVisiblePages((prev) => (prev.has(n) ? prev : new Set(prev).add(n)))
           const content = await page.getTextContent()
           const items = content.items.filter((it) => 'str' in it) as unknown as PdfTextItem[]
           pageItemsRef.current.set(n, items)
@@ -410,7 +406,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const barFg = darkMode ? '#fff' : '#0f172a'
   const btnBg = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
 
-  console.log("[DEBUG] juste avant le return JSX principal, numPages=", numPages, "loading=", loading, "loadError=", loadError)
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', }}>
       <div
