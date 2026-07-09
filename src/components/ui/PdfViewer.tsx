@@ -339,18 +339,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     return () => clearTimeout(t)
   }, [searchQuery, indexProgress.done, numPages])
 
-  useEffect(() => {
-    if (indexProgress.total > 0 && indexProgress.done === indexProgress.total && containerRef.current) {
-      const el = containerRef.current
-      const currentScroll = el.scrollTop
-      void el.offsetHeight
-      el.style.overflow = 'hidden'
-      void el.offsetHeight
-      el.style.overflow = 'auto'
-      el.scrollTop = currentScroll
-    }
-  }, [indexProgress.done, indexProgress.total])
-
   const goToMatch = useCallback(
     (i: number) => {
       if (matches.length === 0) return
@@ -419,7 +407,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const btnBg = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', height: '100dvh' }}>
       <div
         style={{
           background: barBg,
