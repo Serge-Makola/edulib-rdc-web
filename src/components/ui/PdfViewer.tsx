@@ -220,6 +220,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = 0
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 50)
     }
   }, [])
   const proxyUrl = driveId ? '/api/pdf-proxy?id=' + driveId : null
