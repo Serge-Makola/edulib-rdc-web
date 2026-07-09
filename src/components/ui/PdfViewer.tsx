@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
+import { createPortal } from 'react-dom'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 
@@ -209,6 +210,10 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const rootRef = useRef<HTMLDivElement>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const driveId = useMemo(() => getDriveId(driveLink), [driveLink])
   useEffect(() => {
@@ -221,7 +226,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = 0
-      if (rootRef.current) { void rootRef.current.offsetHeight }
     }
   }, [])
   const proxyUrl = driveId ? '/api/pdf-proxy?id=' + driveId : null
@@ -379,8 +383,9 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     [matches, currentMatchIdx, pages, scale]
   )
 
+  if (mounted === false) return null
   if (!currentUser) {
-    return (
+    return createPortal(
       <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
         <div style={{ background: 'var(--surface)', borderRadius: 20, padding: '2.5rem 2rem', maxWidth: 380, width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
           <div style={{ fontSize: '3rem' }}>🔒</div>
@@ -401,15 +406,15 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           </button>
         </div>
       </div>
-    )
+    , document.body)
   }
 
   const barBg = darkMode ? '#1e293b' : '#fff'
   const barFg = darkMode ? '#fff' : '#0f172a'
   const btnBg = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
 
-  return (
-    <div ref={rootRef} style={{ position: 'fixed', inset: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column', height: '100dvh', minHeight: '100vh' }}>
+  return createPortal(
+    <div ref={rootRef} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column' }}>
       <div
         style={{
           background: barBg,
@@ -531,5 +536,5 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           })}
       </div>
     </div>
-  )
+  , document.body)
 }
