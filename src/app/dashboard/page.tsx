@@ -10,6 +10,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 import PdfViewer from '@/components/ui/PdfViewer'
+import PdfViewerErrorBoundary from '@/components/ui/PdfViewerErrorBoundary'
 import type { Order, Doc } from '@/types'
 
 export default function DashboardPage() {
@@ -219,7 +220,7 @@ export default function DashboardPage() {
         </div>
       </main>
       <Footer />
-      {viewerDoc && <PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} />}
+      {viewerDoc && <PdfViewerErrorBoundary onClose={() => setViewerDoc(null)}><PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} /></PdfViewerErrorBoundary>}
     </div>
   )
 }

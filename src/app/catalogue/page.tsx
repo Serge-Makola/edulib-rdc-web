@@ -9,6 +9,7 @@ import { DOC_TYPES, type Doc } from '@/types'
 import { useFilieres } from '@/hooks/useFilieres'
 import Link from 'next/link'
 import PdfViewer from '@/components/ui/PdfViewer'
+import PdfViewerErrorBoundary from '@/components/ui/PdfViewerErrorBoundary'
 
 const typeColors: Record<string, string> = { 'Ouvrage': '#2563eb', 'Loi': '#7c3aed', 'Jurisprudence': '#0891b2', 'Syllabus': '#059669', 'Notes de cours': '#d97706', 'Exercice': '#dc2626', 'Examen': '#db2777', 'Article scientifique': '#6d28d9' }
 
@@ -131,7 +132,7 @@ export default function CataloguePage() {
         </div>
       </main>
       <Footer />
-      {viewerDoc && <PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} />}
+      {viewerDoc && <PdfViewerErrorBoundary onClose={() => setViewerDoc(null)}><PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} /></PdfViewerErrorBoundary>}
     </div>
   )
 }

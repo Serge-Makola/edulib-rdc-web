@@ -4,43 +4,45 @@ import { Component, ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
+  onClose: () => void
 }
 
 interface State {
-  error: Error | null
-  errorInfo: string | null
+  hasError: boolean
 }
 
 export default class PdfViewerErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { error: null, errorInfo: null }
+    this.state = { hasError: false }
   }
 
-  static getDerivedStateFromError(error: Error) {
-    return { error, errorInfo: null }
+  static getDerivedStateFromError() {
+    return { hasError: true }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('[PdfViewerErrorBoundary] Erreur capturee:', error)
     console.error('[PdfViewerErrorBoundary] Stack:', errorInfo.componentStack)
-    this.setState({ errorInfo: errorInfo.componentStack || null })
   }
 
   render() {
-    if (this.state.error) {
+    if (this.state.hasError) {
       return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: '#0f172a', color: '#fff', padding: '2rem', overflow: 'auto', fontFamily: 'monospace', fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>
-          <h2 style={{ color: '#f87171', marginBottom: '1rem' }}>Erreur de rendu du lecteur PDF (DEBUG)</h2>
-          <p><strong>Message:</strong> {this.state.error.message}</p>
-          <p style={{ marginTop: '1rem' }}><strong>Stack:</strong></p>
-          <p>{this.state.error.stack}</p>
-          {this.state.errorInfo && (
-            <>
-              <p style={{ marginTop: '1rem' }}><strong>Component stack:</strong></p>
-              <p>{this.state.errorInfo}</p>
-            </>
-          )}
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#1e293b', borderRadius: 20, padding: '2.5rem 2rem', maxWidth: 380, width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ fontSize: '3rem' }}>📄</div>
+            <h2 style={{ fontWeight: 800, fontSize: '1.2rem' }}>Ce document n&apos;a pas pu s&apos;afficher</h2>
+            <p style={{ fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.65 }}>
+              Une erreur est survenue lors de l&apos;ouverture de ce document. Essaie de le rouvrir, ou choisis un autre document.
+            </p>
+            <button
+              onClick={this.props.onClose}
+              style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 24px', fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', width: '100%' }}
+            >
+              Fermer
+            </button>
+          </div>
         </div>
       )
     }
