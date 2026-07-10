@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const doc = await loadingTask.promise
 
     let text = ''
-    const maxPages = Math.min(doc.numPages, 40)
+    const maxPages = Math.min(doc.numPages, 150)
 
     for (let i = 1; i <= maxPages; i++) {
       try {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       } catch {}
     }
 
-    const cleaned = text.replace(/\s+/g, ' ').trim().slice(0, 8000)
+    const cleaned = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 40000)
     if (cleaned.length < 50) return NextResponse.json({ error: 'PDF scanné', text: '' })
 
     return NextResponse.json({ text: cleaned, pages: doc.numPages })
