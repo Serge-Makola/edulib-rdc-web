@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
 const db = getFirestore(app)
 
-function getRelevantDocs(docs: any[], query: string, maxDocs = 3): string {
+function getRelevantDocs(docs: any[], query: string, maxDocs = 2): string {
   if (!query || docs.length === 0) return ''
   const queryLower = query.toLowerCase()
   const keywords = queryLower.split(' ').filter(w => w.length > 3)
@@ -37,7 +37,7 @@ function getRelevantDocs(docs: any[], query: string, maxDocs = 3): string {
   if (scored.length === 0) return ''
   return '\n\nDOCUMENTS DISPONIBLES SUR EDULIB RDC PERTINENTS POUR CETTE QUESTION :\n' +
     scored.map(d =>
-      `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${(d.extractedText || '').slice(0, 1500)}`
+      `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${(d.extractedText || '').slice(0, 10000)}`
     ).join('\n\n')
 }
 
