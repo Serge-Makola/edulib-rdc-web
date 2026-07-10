@@ -115,6 +115,27 @@ export default function EspaceDirectionPage() {
     showToast(count + ' documents reindexes')
   }
 
+  async function reindexAllDocsForce() {
+    showToast("Reindexation FORCEE en cours (tous les documents)...")
+    let count = 0
+    for (const d of docs) {
+      try {
+        const res = await fetch("/api/extract-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ driveLink: d.driveLink })
+        })
+        const data = await res.json()
+        if (data.text) {
+          const { updateDoc, doc: firestoreDoc } = await import("firebase/firestore")
+          await updateDoc(firestoreDoc(db, "documents", d.id), { extractedText: data.text })
+          count++
+        }
+      } catch {}
+    }
+    showToast(count + " documents reindexes (forcé)")
+  }
+
   async function deleteDocById(id: string, title: string) {
     if (!confirm('Supprimer "' + title + '" ?')) return
     try { await deleteDoc(doc(db, 'documents', id)); showToast('Document supprime') } catch (e: any) { showToast('Erreur : ' + e.message) }
@@ -253,6 +274,7 @@ export default function EspaceDirectionPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h3 style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '1rem' }}>{docs.length} documents</h3>
                 <button onClick={reindexAllDocs} title='Reindexer les documents pour l assistant IA' style={{ background: 'var(--blue-light)', color: 'var(--blue)', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>🔄 Réindexer IA</button>
+                <button onClick={reindexAllDocsForce} title='Reindexer TOUS les documents meme deja indexes (usage ponctuel apres amelioration du systeme d extraction)' style={{ background: 'var(--red-light)', color: 'var(--red)', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', marginLeft: 6 }}>🔁 Réindexer TOUT (forcé)</button>
               </div>
                 <input value={docSearch} onChange={e => setDocSearch(e.target.value)} placeholder="Filtrer..." style={{ ...inp, width: 160, padding: '7px 12px', fontSize: '0.8rem' }} />
               </div>
