@@ -285,8 +285,10 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         for (let n = 1; n <= pdf.numPages; n++) {
           if (cancelled) return
           const page = preloaded.get(n) ?? (await pdf.getPage(n))
-          setPages((prev) => (prev.has(n) ? prev : new Map(prev).set(n, page)))
-          setVisiblePages((prev) => (prev.has(n) ? prev : new Set(prev).add(n)))
+          if (!pageHeightsRef.current.has(n)) {
+            const viewport = page.getViewport({ scale })
+            pageHeightsRef.current.set(n, viewport.height)
+          }
           const content = await page.getTextContent()
           const items = content.items.filter((it) => 'str' in it) as unknown as PdfTextItem[]
           pageItemsRef.current.set(n, items)
