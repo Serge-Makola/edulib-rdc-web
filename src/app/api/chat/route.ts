@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
     })
 
     const data = await response.json()
+    console.log('[DEBUG Mistral response]', JSON.stringify(data))
 
     const messageEntry = data.outputs?.find((o: any) => o.type === 'message.output')
     const contentParts = messageEntry?.content
