@@ -44,7 +44,8 @@ function getRelevantDocs(docs: any[], query: string, maxDocs = 2): string {
 export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json()
-    const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')
+    const validMessages = messages.filter((m: any) => m.role === 'user' || m.role === 'assistant')
+    const lastUserMsg = [...validMessages].reverse().find((m: any) => m.role === 'user')
     const userQuery = typeof lastUserMsg?.content === 'string' ? lastUserMsg.content : ''
     let docsContext = ''
     try {
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       docsContext = getRelevantDocs(docs, userQuery)
     } catch {}
-    const conversationInputs = messages.map((m: any, idx: number) => {
+    const conversationInputs = validMessages.map((m: any, idx: number) => {
       const isLastUserMsg = m === lastUserMsg
       const content = isLastUserMsg && docsContext ? `${m.content}${docsContext}` : m.content
       return { role: m.role, content }
