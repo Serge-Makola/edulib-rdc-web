@@ -90,6 +90,7 @@ function PageCanvas({
   highlights,
   registerRef,
   PdfjsUtil,
+  onHeightMeasured,
 }: {
   page: PDFPageProxy
   pageNumber: number
@@ -98,6 +99,7 @@ function PageCanvas({
   highlights: HighlightRect[]
   registerRef: (n: number, el: HTMLDivElement | null) => void
   PdfjsUtil: { transform: (m1: any, m2: any) => any[] }
+  onHeightMeasured: (n: number, height: number) => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [rendered, setRendered] = useState(false)
@@ -120,6 +122,7 @@ function PageCanvas({
     const task = page.render({ canvasContext: context, viewport, transform })
     task.promise
       .then(() => {
+        onHeightMeasured(pageNumber, viewport.height)
         if (!cancelled) setRendered(true)
       })
       .catch((err: any) => {
@@ -206,6 +209,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const pdfjsLibRef = useRef<any>(null)
   const pageIndexRef = useRef<Map<number, PageIndex>>(new Map())
   const pageItemsRef = useRef<Map<number, PdfTextItem[]>>(new Map())
+  const pageHeightsRef = useRef<Map<number, number>>(new Map())
   const pageRefs = useRef<Map<number, HTMLDivElement>>(new Map())
   const containerRef = useRef<HTMLDivElement>(null)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -235,6 +239,9 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
       pageRefs.current.set(n, el)
       observerRef.current?.observe(el)
     }
+  }, [])
+  const handleHeightMeasured = useCallback((n: number, height: number) => {
+    pageHeightsRef.current.set(n, height)
   }, [])
 
   useEffect(() => {
@@ -307,14 +314,24 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return
           const n = Number((entry.target as HTMLElement).dataset.pageNumber)
           if (!n) return
-          setVisiblePages((prev) => (prev.has(n) ? prev : new Set(prev).add(n)))
-          if (!pages.has(n)) {
-            pdfRef.current?.getPage(n).then((page) => {
-              setPages((prev) => (prev.has(n) ? prev : new Map(prev).set(n, page)))
-            })
+          if (entry.isIntersecting) {
+            setVisiblePages((prev) => (prev.has(n) ? prev : new Set(prev).add(n)))
+            if (!pages.has(n)) {
+              pdfRef.current?.getPage(n).then((page) => {
+                setPages((prev) => (prev.has(n) ? prev : new Map(prev).set(n, page)))
+              })
+            }
+          } else {
+            if (pageHeightsRef.current.has(n)) {
+              setPages((prev) => {
+                if (!prev.has(n)) return prev
+                const next = new Map(prev)
+                next.delete(n)
+                return next
+              })
+            }
           }
         })
       },
@@ -515,7 +532,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
                   key={n}
                   ref={(el) => registerRef(n, el)}
                   data-page-number={n}
-                  style={{ height: 400, marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: darkMode ? '#334155' : '#e2e8f0', fontSize: '0.75rem' }}
+                  style={{ height: pageHeightsRef.current.get(n) ?? 400, marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: darkMode ? '#334155' : '#e2e8f0', fontSize: '0.75rem' }}
                 >
                   Page {n}
                 </div>
@@ -531,6 +548,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
                 highlights={highlightsForPage(n)}
                 registerRef={registerRef}
                 PdfjsUtil={pdfjsLibRef.current?.Util}
+                onHeightMeasured={handleHeightMeasured}
               />
             )
           })}
