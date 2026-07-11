@@ -46,16 +46,17 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json()
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')
     const userQuery = typeof lastUserMsg?.content === 'string' ? lastUserMsg.content : ''
-
     let docsContext = ''
     try {
       const snap = await getDocs(collection(db, 'documents'))
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       docsContext = getRelevantDocs(docs, userQuery)
     } catch {}
-
-    const enrichedInput = docsContext ? `${userQuery}${docsContext}` : userQuery
-
+    const conversationInputs = messages.map((m: any, idx: number) => {
+      const isLastUserMsg = m === lastUserMsg
+      const content = isLastUserMsg && docsContext ? `${m.content}${docsContext}` : m.content
+      return { role: m.role, content }
+    })
     const response = await fetch('https://api.mistral.ai/v1/conversations', {
       method: 'POST',
       headers: {
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         agent_id: 'ag_019f32d282ee74c3a7fe0fbcea223667',
-        inputs: enrichedInput,
+        inputs: conversationInputs,
       }),
     })
 
