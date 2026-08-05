@@ -156,7 +156,7 @@ export default function AssistantPage() {
                 <h1 style={{ fontSize: 'clamp(1.3rem, 4vw, 1.8rem)', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.5rem' }}>
                   Bonjour, {currentUser.name.split(' ')[0]} 👋
                 </h1>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Assistant académique EduLib RDC · Propulsé par Mistral AI</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Assistant académique EduLib RDC · Propulsé par Gemini AI</p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.75rem', width: '100%', maxWidth: 600 }}>
                 {SUGGESTIONS.map(s => (
@@ -250,7 +250,7 @@ export default function AssistantPage() {
             </div>
           </div>
           <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 8 }}>
-            Assistant EduLib RDC · Mistral AI · Recherche web activée
+            Assistant EduLib RDC · Gemini AI
           </p>
         </div>
       </div>
