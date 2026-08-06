@@ -97,7 +97,7 @@ function getRelevantDocs(docs: any[], query: string, maxDocs = 2): string {
   if (scored.length === 0) return ''
   return '\n\nDOCUMENTS DISPONIBLES SUR EDULIB RDC PERTINENTS POUR CETTE QUESTION :\n' +
     scored.map(d =>
-      `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${(d.extractedText || '').slice(0, 10000)}`
+      `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${(d.extractedText || '').slice(0, 40000)}`
     ).join('\n\n')
 }
 
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
     } catch {}
     const geminiContents = validMessages.map((m: any) => {
       const isLastUserMsg = m === lastUserMsg
-      const text = isLastUserMsg && docsContext ? `${m.content}${docsContext}` : m.content
+      const text = isLastUserMsg && docsContext ? `${docsContext}\n\n${m.content}` : m.content
       const role = m.role === 'assistant' ? 'model' : 'user'
       return { role, parts: [{ text }] }
     })
