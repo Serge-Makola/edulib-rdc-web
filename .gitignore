@@ -4,3 +4,4 @@ node_modules
 node_modules/
 .vercel
 public/pdf-worker/
+.env*
