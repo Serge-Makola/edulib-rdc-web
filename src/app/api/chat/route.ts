@@ -73,10 +73,30 @@ Informations sur EduLib RDC - FAITS EXACTS :
 - La plateforme propose des ouvrages, syllabus, articles scientifiques, jurisprudences, notes de cours, examens et exercices.
 - Les filieres couvertes : Droit, Medecine, Polytechnique, Sciences, Lettres, Economie, Psychologie, Criminologie et autres.`
 
+function getBestExcerpt(text: string, keywords: string[], windowSize = 8000, step = 2000): string {
+  if (text.length <= windowSize) return text
+  let bestScore = -1
+  let bestStart = 0
+  for (let start = 0; start < text.length; start += step) {
+    const window = text.slice(start, start + windowSize).toLowerCase()
+    let score = 0
+    keywords.forEach(kw => {
+      const count = (window.match(new RegExp(kw, 'g')) || []).length
+      score += count
+    })
+    if (score > bestScore) {
+      bestScore = score
+      bestStart = start
+    }
+  }
+  return text.slice(bestStart, bestStart + windowSize)
+}
+
 function getRelevantDocs(docs: any[], query: string, maxDocs = 2): string {
   if (!query || docs.length === 0) return ''
   const queryLower = query.toLowerCase()
   const keywords = queryLower.split(' ').filter(w => w.length > 3)
+  const TYPES_NORMATIFS = ['loi', 'code', 'constitution', 'decret', 'ordonnance', 'statut', 'traite']
   const scored = docs
     .filter(d => d.extractedText)
     .map(d => {
@@ -86,8 +106,11 @@ function getRelevantDocs(docs: any[], query: string, maxDocs = 2): string {
         const count = (text.match(new RegExp(kw, 'g')) || []).length
         score += count
       })
-      if (score > 0 && d.type === 'Loi') {
-        score += 100
+      const typeLower = (d.type || '').toLowerCase()
+      const titleLower = (d.title || '').toLowerCase()
+      const estNormatif = TYPES_NORMATIFS.some(t => typeLower.includes(t) || titleLower.includes(t))
+      if (score > 0 && estNormatif) {
+        score += 500
       }
       return { ...d, score }
     })
@@ -97,7 +120,7 @@ function getRelevantDocs(docs: any[], query: string, maxDocs = 2): string {
   if (scored.length === 0) return ''
   return '\n\nDOCUMENTS DISPONIBLES SUR EDULIB RDC PERTINENTS POUR CETTE QUESTION :\n' +
     scored.map(d =>
-      `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${(d.extractedText || '').slice(0, 40000)}`
+      `--- ${d.title} (${d.filiere} - ${d.type}) ---\n${getBestExcerpt(d.extractedText || '', keywords)}`
     ).join('\n\n')
 }
 
