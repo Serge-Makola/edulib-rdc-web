@@ -452,6 +452,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           white-space: pre;
           cursor: text;
           transform-origin: 0% 0%;
+          transition: transform 0.05s linear;
         }
         .pdf-text-layer span::selection {
           background: rgba(59, 130, 246, 0.4);
