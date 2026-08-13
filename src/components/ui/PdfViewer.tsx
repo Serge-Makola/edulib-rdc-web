@@ -541,7 +541,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         )}
       </div>
 
-      <div ref={containerRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '16px 8px', WebkitOverflowScrolling: 'touch' as const, overscrollBehavior: 'contain' as const }}>
+      <div ref={containerRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '16px 8px', WebkitOverflowScrolling: 'touch' as const }}>
         {loading && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: darkMode ? '#94a3b8' : '#64748b', fontSize: '0.9rem' }}>
             Chargement du document…
