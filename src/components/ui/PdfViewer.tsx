@@ -6,13 +6,6 @@ import { createPortal } from 'react-dom'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 
-interface PdfTextItem {
-  str: string
-  transform: number[]
-  width: number
-  height: number
-}
-
 interface Props {
   driveLink: string
   title: string
@@ -35,26 +28,25 @@ function normalize(s: string): string {
 
 interface PageIndex {
   text: string
-  charMap: number[]
+  itemForChar: number[]
 }
 
-function buildPageIndex(items: PdfTextItem[]): PageIndex {
+function buildPageIndex(itemStrs: string[]): PageIndex {
   let text = ''
-  const charMap: number[] = []
-  items.forEach((item, itemIndex) => {
-    const normalized = normalize(item.str)
-    for (let i = 0; i < normalized.length; i++) charMap.push(itemIndex)
+  const itemForChar: number[] = []
+  itemStrs.forEach((str, itemIndex) => {
+    const normalized = normalize(str)
+    for (let i = 0; i < normalized.length; i++) itemForChar.push(itemIndex)
     text += normalized
     text += ' '
-    charMap.push(-1)
+    itemForChar.push(-1)
   })
-  return { text, charMap }
+  return { text, itemForChar }
 }
 
 interface SearchMatch {
   pageNumber: number
   itemIndexes: number[]
-  charStart: number
 }
 
 function findMatchesInPage(index: PageIndex, query: string, pageNumber: number): SearchMatch[] {
@@ -66,20 +58,13 @@ function findMatchesInPage(index: PageIndex, query: string, pageNumber: number):
     if (idx === -1) break
     const covered = new Set<number>()
     for (let i = idx; i < idx + query.length; i++) {
-      const it = index.charMap[i]
+      const it = index.itemForChar[i]
       if (it >= 0) covered.add(it)
     }
-    matches.push({ pageNumber, itemIndexes: Array.from(covered), charStart: idx })
+    matches.push({ pageNumber, itemIndexes: Array.from(covered) })
     from = idx + query.length
   }
   return matches
-}
-
-interface HighlightRect {
-  x: number
-  y: number
-  w: number
-  h: number
 }
 
 function PageCanvas({
@@ -87,22 +72,24 @@ function PageCanvas({
   pageNumber,
   scale,
   darkMode,
-  highlights,
+  activeSearchQuery,
   registerRef,
-  PdfjsUtil,
   onHeightMeasured,
+  onTextItemsReady,
 }: {
   page: PDFPageProxy
   pageNumber: number
   scale: number
   darkMode: boolean
-  highlights: HighlightRect[]
+  activeSearchQuery: string
   registerRef: (n: number, el: HTMLDivElement | null) => void
-  PdfjsUtil: { transform: (m1: any, m2: any) => any[] }
   onHeightMeasured: (n: number, height: number) => void
+  onTextItemsReady: (n: number, itemStrs: string[]) => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const textLayerRef = useRef<HTMLDivElement>(null)
   const [rendered, setRendered] = useState(false)
+
 
   useEffect(() => {
     let cancelled = false
@@ -135,7 +122,81 @@ function PageCanvas({
       cancelled = true
       task.cancel()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, scale, pageNumber])
+
+  const lastRenderedScaleRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    let renderTask: { promise: Promise<void>; cancel: () => void } | null = null
+
+    ;(async () => {
+      const container = textLayerRef.current
+      if (!container) return
+
+      // Garde-fou : si ce container a deja une couche de texte rendue pour
+      // exactement ce scale, on ne detruit pas et reconstruit pas le DOM.
+      // Evite qu'un re-render du parent (sans changement reel de page/scale)
+      // ne casse une selection de texte en cours sur une page voisine.
+      if (lastRenderedScaleRef.current === scale && container.childElementCount > 0) {
+        return
+      }
+
+      const pdfjsLib = await import('pdfjs-dist')
+      const viewport = page.getViewport({ scale })
+      const textContent = await page.getTextContent()
+      if (cancelled) return
+
+      onTextItemsReady(
+        pageNumber,
+        (textContent.items as any[]).filter((it) => 'str' in it).map((it) => it.str)
+      )
+
+      container.innerHTML = ''
+      container.style.setProperty('--scale-factor', String(scale))
+      container.style.width = Math.floor(viewport.width) + 'px'
+      container.style.height = Math.floor(viewport.height) + 'px'
+
+      renderTask = (pdfjsLib as any).renderTextLayer({
+        textContent,
+        container,
+        viewport,
+        textDivs: [],
+      })
+      await renderTask!.promise
+      if (!cancelled) lastRenderedScaleRef.current = scale
+    })().catch((err: any) => {
+      if (err?.name !== 'RenderingCancelledException') {
+        console.error('Erreur de rendu texte page', pageNumber, err)
+      }
+    })
+
+    return () => {
+      cancelled = true
+      renderTask?.cancel()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, scale, pageNumber])
+
+  useEffect(() => {
+    const container = textLayerRef.current
+    if (!container) return
+    const spans = container.querySelectorAll('span')
+    const q = normalize(activeSearchQuery.trim())
+    spans.forEach((span) => {
+      const el = span as HTMLElement
+      if (!q) {
+        el.classList.remove('pdf-search-hit')
+        return
+      }
+      if (normalize(el.textContent || '').includes(q)) {
+        el.classList.add('pdf-search-hit')
+      } else {
+        el.classList.remove('pdf-search-hit')
+      }
+    })
+  }, [activeSearchQuery, rendered])
 
   return (
     <div
@@ -167,22 +228,11 @@ function PageCanvas({
             Page {pageNumber}…
           </div>
         )}
-        {highlights.map((h, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: h.x,
-              top: h.y - 2,
-              width: h.w,
-              height: h.h + 4,
-              background: 'rgba(250, 204, 21, 0.45)',
-              outline: '2px solid rgba(234, 179, 8, 0.9)',
-              pointerEvents: 'none',
-              borderRadius: 2,
-            }}
-          />
-        ))}
+        <div
+          ref={textLayerRef}
+          className="pdf-text-layer"
+          style={{ position: 'absolute', inset: 0 }}
+        />
       </div>
     </div>
   )
@@ -206,9 +256,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
 
   const pdfRef = useRef<PDFDocumentProxy | null>(null)
   const loadingTaskRef = useRef<{ destroy: () => Promise<void> } | null>(null)
-  const pdfjsLibRef = useRef<any>(null)
   const pageIndexRef = useRef<Map<number, PageIndex>>(new Map())
-  const pageItemsRef = useRef<Map<number, PdfTextItem[]>>(new Map())
   const pageHeightsRef = useRef<Map<number, number>>(new Map())
   const pageRefs = useRef<Map<number, HTMLDivElement>>(new Map())
   const containerRef = useRef<HTMLDivElement>(null)
@@ -243,6 +291,14 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const handleHeightMeasured = useCallback((n: number, height: number) => {
     pageHeightsRef.current.set(n, height)
   }, [])
+  const indexedPagesRef = useRef<Set<number>>(new Set())
+  const handleTextItemsReady = useCallback((n: number, itemStrs: string[]) => {
+    pageIndexRef.current.set(n, buildPageIndex(itemStrs))
+    if (!indexedPagesRef.current.has(n)) {
+      indexedPagesRef.current.add(n)
+      setIndexProgress((prev) => ({ done: prev.done + 1, total: prev.total }))
+    }
+  }, [])
 
   useEffect(() => {
     if (!currentUser || !proxyUrl) return
@@ -252,7 +308,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
       try {
         const pdfjsLib = await import('pdfjs-dist')
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.js'
-        pdfjsLibRef.current = pdfjsLib
 
         const loadingTask = pdfjsLib.getDocument({
           url: proxyUrl,
@@ -266,35 +321,17 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
 
         pdfRef.current = pdf
         setNumPages(pdf.numPages)
+        setIndexProgress({ done: 0, total: pdf.numPages })
         setVisiblePages(new Set([1, 2]))
         setLoading(false)
 
-        const preloaded = new Map<number, PDFPageProxy>()
         const page1 = await pdf.getPage(1)
         if (cancelled) return
-        preloaded.set(1, page1)
         setPages((prev) => new Map(prev).set(1, page1))
         if (pdf.numPages >= 2) {
           const page2 = await pdf.getPage(2)
           if (cancelled) return
-          preloaded.set(2, page2)
           setPages((prev) => new Map(prev).set(2, page2))
-        }
-
-        setIndexProgress({ done: 0, total: pdf.numPages })
-        for (let n = 1; n <= pdf.numPages; n++) {
-          if (cancelled) return
-          const page = preloaded.get(n) ?? (await pdf.getPage(n))
-          if (!pageHeightsRef.current.has(n)) {
-            const viewport = page.getViewport({ scale })
-            pageHeightsRef.current.set(n, viewport.height)
-          }
-          const content = await page.getTextContent()
-          const items = content.items.filter((it) => 'str' in it) as unknown as PdfTextItem[]
-          pageItemsRef.current.set(n, items)
-          pageIndexRef.current.set(n, buildPageIndex(items))
-          if (cancelled) return
-          setIndexProgress({ done: n, total: pdf.numPages })
         }
       } catch (e: any) {
         if (!cancelled) {
@@ -325,16 +362,11 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
                 setPages((prev) => (prev.has(n) ? prev : new Map(prev).set(n, page)))
               })
             }
-          } else {
-            if (pageHeightsRef.current.has(n)) {
-              setPages((prev) => {
-                if (!prev.has(n)) return prev
-                const next = new Map(prev)
-                next.delete(n)
-                return next
-              })
-            }
           }
+          // Volontairement: on ne decharge plus les pages qui sortent du
+          // viewport. Une fois chargee, une page reste montee pour de bon,
+          // afin qu'une selection de texte en cours sur une page ne soit
+          // jamais interrompue par un demontage/remontage pendant le scroll.
         })
       },
       { root: containerRef.current, rootMargin: '600px 0px 600px 0px' }
@@ -376,32 +408,6 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     [matches]
   )
 
-  const highlightsForPage = useCallback(
-    (pageNumber: number): HighlightRect[] => {
-      if (matches.length === 0) return []
-      const page = pages.get(pageNumber)
-      const util = pdfjsLibRef.current?.Util
-      if (!page || !util) return []
-      const items = pageItemsRef.current.get(pageNumber)
-      if (!items) return []
-      const viewport = page.getViewport({ scale })
-      const rects: HighlightRect[] = []
-      matches.forEach((m) => {
-        if (m.pageNumber !== pageNumber) return
-        m.itemIndexes.forEach((itemIdx) => {
-          const item = items[itemIdx]
-          if (!item) return
-          const tx = util.transform(viewport.transform, item.transform)
-          const w = item.width * Math.hypot(tx[0], tx[1])
-          const h = Math.hypot(tx[2], tx[3]) || item.height * scale
-          rects.push({ x: tx[4], y: tx[5] - h, w, h })
-        })
-      })
-      return rects
-    },
-    [matches, currentMatchIdx, pages, scale]
-  )
-
   if (mounted === false) return null
   if (!currentUser) {
     return createPortal(
@@ -434,6 +440,27 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
 
   return createPortal(
     <div ref={rootRef} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: darkMode ? '#0f172a' : '#f8fafc', display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .pdf-text-layer {
+          overflow: hidden;
+          opacity: 1;
+          line-height: 1;
+        }
+        .pdf-text-layer span {
+          color: transparent;
+          position: absolute;
+          white-space: pre;
+          cursor: text;
+          transform-origin: 0% 0%;
+        }
+        .pdf-text-layer span::selection {
+          background: rgba(59, 130, 246, 0.4);
+        }
+        .pdf-text-layer span.pdf-search-hit {
+          background: rgba(250, 204, 21, 0.4);
+          border-radius: 2px;
+        }
+      `}</style>
       <div
         style={{
           background: barBg,
@@ -547,10 +574,10 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
                 pageNumber={n}
                 scale={scale}
                 darkMode={darkMode}
-                highlights={highlightsForPage(n)}
+                activeSearchQuery={searchQuery}
                 registerRef={registerRef}
-                PdfjsUtil={pdfjsLibRef.current?.Util}
                 onHeightMeasured={handleHeightMeasured}
+                onTextItemsReady={handleTextItemsReady}
               />
             )
           })}
