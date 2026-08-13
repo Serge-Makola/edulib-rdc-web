@@ -369,7 +369,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           // jamais interrompue par un demontage/remontage pendant le scroll.
         })
       },
-      { root: containerRef.current, rootMargin: '600px 0px 600px 0px' }
+      { root: containerRef.current, rootMargin: '200px 0px 200px 0px' }
     )
     observerRef.current = observer
     pageRefs.current.forEach((el) => observer.observe(el))
