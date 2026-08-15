@@ -7,7 +7,7 @@ export default function PdfViewerV2Test() {
     <div style={{ height: '100vh', width: '100%' }}>
       <PDFViewer
         config={{
-          src: 'https://snippet.embedpdf.com/ebook.pdf',
+          src: '/api/pdf-proxy?id=13AVZwrNZEritMZhmdSzrr0vPDzHptCeZ',
           theme: { preference: 'dark' },
         }}
       />
