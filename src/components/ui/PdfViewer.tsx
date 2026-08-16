@@ -178,7 +178,6 @@ function PageCanvas({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, scale, pageNumber])
-
   useEffect(() => {
     const container = textLayerRef.current
     if (!container) return
@@ -186,15 +185,29 @@ function PageCanvas({
     const q = normalize(activeSearchQuery.trim())
     spans.forEach((span) => {
       const el = span as HTMLElement
+      if (!el.dataset.originalText) {
+        el.dataset.originalText = el.textContent || ''
+      }
+      const original = el.dataset.originalText
       if (!q) {
-        el.classList.remove('pdf-search-hit')
+        if (el.innerHTML !== original) el.textContent = original
         return
       }
-      if (normalize(el.textContent || '').includes(q)) {
-        el.classList.add('pdf-search-hit')
-      } else {
-        el.classList.remove('pdf-search-hit')
+      const normalizedOriginal = normalize(original)
+      const idx = normalizedOriginal.indexOf(q)
+      if (idx === -1) {
+        if (el.innerHTML !== original) el.textContent = original
+        return
       }
+      const before = original.slice(0, idx)
+      const matchText = original.slice(idx, idx + q.length)
+      const after = original.slice(idx + q.length)
+      const escapeHtml = (s: string) =>
+        s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      el.innerHTML =
+        escapeHtml(before) +
+        '<mark class="pdf-search-hit">' + escapeHtml(matchText) + '</mark>' +
+        escapeHtml(after)
     })
   }, [activeSearchQuery, rendered])
 
@@ -456,9 +469,10 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
         .pdf-text-layer span::selection {
           background: rgba(59, 130, 246, 0.4);
         }
-        .pdf-text-layer span.pdf-search-hit {
+        .pdf-text-layer .pdf-search-hit {
           background: rgba(250, 204, 21, 0.4);
           border-radius: 2px;
+          color: inherit;
         }
       `}</style>
       <div
