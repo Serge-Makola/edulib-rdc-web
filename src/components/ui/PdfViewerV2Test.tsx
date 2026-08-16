@@ -15,6 +15,12 @@ export default function PdfViewerV2Test() {
           console.log('[DEBUG EmbedPDF] engine.options', JSON.stringify((engine as any)?.options))
           console.log('[DEBUG EmbedPDF] engine methods', Object.getOwnPropertyNames(Object.getPrototypeOf(engine || {})))
           console.log('[DEBUG EmbedPDF] registry methods', Object.getOwnPropertyNames(Object.getPrototypeOf(registry)))
+          try {
+            const result = await (engine as any)?.openDocumentUrl('https://edulib-rdc-web.vercel.app/api/pdf-proxy?id=13AVZwrNZEritMZhmdSzrr0vPDzHptCeZ')
+            console.log('[DEBUG EmbedPDF] openDocumentUrl result', result)
+          } catch (err) {
+            console.error('[DEBUG EmbedPDF] openDocumentUrl error', err)
+          }
         }}
       />
     </div>
