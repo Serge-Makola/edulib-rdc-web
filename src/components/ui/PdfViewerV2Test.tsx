@@ -13,6 +13,8 @@ export default function PdfViewerV2Test() {
           const engine = registry.getEngine?.()
           console.log('[DEBUG EmbedPDF] engine', engine)
           console.log('[DEBUG EmbedPDF] engine.options', JSON.stringify((engine as any)?.options))
+          console.log('[DEBUG EmbedPDF] engine methods', Object.getOwnPropertyNames(Object.getPrototypeOf(engine || {})))
+          console.log('[DEBUG EmbedPDF] registry methods', Object.getOwnPropertyNames(Object.getPrototypeOf(registry)))
         }}
       />
     </div>
