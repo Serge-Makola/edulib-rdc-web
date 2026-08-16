@@ -8,8 +8,10 @@ export default function PdfViewerV2Test() {
           src: 'https://edulib-rdc-web.vercel.app/api/pdf-proxy?id=13AVZwrNZEritMZhmdSzrr0vPDzHptCeZ',
           theme: { preference: 'dark' },
         }}
-        onReady={(registry) => {
-          console.log('[DEBUG EmbedPDF] onReady declenche', registry)
+        onReady={async (registry) => {
+          console.log('[DEBUG EmbedPDF] onReady declenche')
+          const engine = registry.getEngine?.()
+          console.log('[DEBUG EmbedPDF] engine', engine)
         }}
       />
     </div>
