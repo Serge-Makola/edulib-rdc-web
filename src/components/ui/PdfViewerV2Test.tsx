@@ -7,7 +7,7 @@ export default function PdfViewerV2Test() {
     <div style={{ height: '100vh', width: '100%' }}>
       <PDFViewer
         config={{
-          src: '/api/pdf-proxy?id=13AVZwrNZEritMZhmdSzrr0vPDzHptCeZ',
+          src: 'https://edulib-rdc-web.vercel.app/api/pdf-proxy?id=13AVZwrNZEritMZhmdSzrr0vPDzHptCeZ',
           theme: { preference: 'dark' },
         }}
       />
