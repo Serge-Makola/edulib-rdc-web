@@ -75,6 +75,7 @@ function PageCanvas({
   activeSearchQuery,
   registerRef,
   onHeightMeasured,
+  onMarksUpdated,
   onTextItemsReady,
 }: {
   page: PDFPageProxy
@@ -85,6 +86,7 @@ function PageCanvas({
   registerRef: (n: number, el: HTMLDivElement | null) => void
   onHeightMeasured: (n: number, height: number) => void
   onTextItemsReady: (n: number, itemStrs: string[]) => void
+  onMarksUpdated: (n: number, marks: HTMLElement[]) => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const textLayerRef = useRef<HTMLDivElement>(null)
@@ -209,6 +211,7 @@ function PageCanvas({
         '<mark class="pdf-search-hit">' + escapeHtml(matchText) + '</mark>' +
         escapeHtml(after)
     })
+    onMarksUpdated(pageNumber, Array.from(container.querySelectorAll('.pdf-search-hit')) as HTMLElement[])
   }, [activeSearchQuery, rendered])
 
   return (
@@ -270,6 +273,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const pdfRef = useRef<PDFDocumentProxy | null>(null)
   const loadingTaskRef = useRef<{ destroy: () => Promise<void> } | null>(null)
   const pageIndexRef = useRef<Map<number, PageIndex>>(new Map())
+  const pageMarksRef = useRef<Map<number, HTMLElement[]>>(new Map())
   const pageHeightsRef = useRef<Map<number, number>>(new Map())
   const pageRefs = useRef<Map<number, HTMLDivElement>>(new Map())
   const containerRef = useRef<HTMLDivElement>(null)
@@ -311,6 +315,9 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
       indexedPagesRef.current.add(n)
       setIndexProgress((prev) => ({ done: prev.done + 1, total: prev.total }))
     }
+  }, [])
+  const handleMarksUpdated = useCallback((n: number, marks: HTMLElement[]) => {
+    pageMarksRef.current.set(n, marks)
   }, [])
 
   useEffect(() => {
@@ -415,8 +422,18 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
       const wrapped = ((i % matches.length) + matches.length) % matches.length
       setCurrentMatchIdx(wrapped)
       const match = matches[wrapped]
-      const el = pageRefs.current.get(match.pageNumber)
-      el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      let sameePageIndex = 0
+      for (let j = 0; j < wrapped; j++) {
+        if (matches[j].pageNumber === match.pageNumber) sameePageIndex++
+      }
+      const pageMarks = pageMarksRef.current.get(match.pageNumber)
+      const markEl = pageMarks?.[sameePageIndex]
+      if (markEl) {
+        markEl.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      } else {
+        const el = pageRefs.current.get(match.pageNumber)
+        el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }
     },
     [matches]
   )
@@ -592,6 +609,7 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
                 registerRef={registerRef}
                 onHeightMeasured={handleHeightMeasured}
                 onTextItemsReady={handleTextItemsReady}
+                onMarksUpdated={handleMarksUpdated}
               />
             )
           })}
