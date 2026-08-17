@@ -353,6 +353,19 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           if (cancelled) return
           setPages((prev) => new Map(prev).set(2, page2))
         }
+        for (let n = 1; n <= pdf.numPages; n++) {
+          if (cancelled) return
+          try {
+            const page = n === 1 ? page1 : await pdf.getPage(n)
+            const textContent = await page.getTextContent()
+            const itemStrs = (textContent.items as any[]).filter((it) => 'str' in it).map((it) => it.str)
+            pageIndexRef.current.set(n, buildPageIndex(itemStrs))
+            if (!indexedPagesRef.current.has(n)) {
+              indexedPagesRef.current.add(n)
+              setIndexProgress((prev) => ({ done: prev.done + 1, total: prev.total }))
+            }
+          } catch {}
+        }
       } catch (e: any) {
         if (!cancelled) {
           setLoadError(e?.message || 'Impossible de charger le document')
