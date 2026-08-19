@@ -142,9 +142,8 @@ export async function POST(req: NextRequest) {
       const role = m.role === 'assistant' ? 'model' : 'user'
       return { role, parts: [{ text }] }
     })
-    console.log('[DEBUG accents check]', SYSTEM_INSTRUCTION.slice(0, 100))
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent',
       {
         method: 'POST',
         headers: {
