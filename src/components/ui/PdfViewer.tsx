@@ -5,10 +5,13 @@ import { useAuth } from '@/context/AuthContext'
 import { createPortal } from 'react-dom'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
+import { db } from '@/lib/firebase'
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 interface Props {
   driveLink: string
   title: string
+  documentId: string
   onClose: () => void
 }
 
@@ -254,7 +257,7 @@ function PageCanvas({
   )
 }
 
-export default function PdfViewer({ driveLink, title, onClose }: Props) {
+export default function PdfViewer({ driveLink, title, documentId, onClose }: Props) {
   const { currentUser } = useAuth()
   const [darkMode, setDarkMode] = useState(true)
   const [scale, setScale] = useState(1.15)
@@ -269,6 +272,13 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const [searchQuery, setSearchQuery] = useState('')
   const [matches, setMatches] = useState<SearchMatch[]>([])
   const [currentMatchIdx, setCurrentMatchIdx] = useState(0)
+
+  // Reprise de lecture : page sauvegardee pour ce document et cet utilisateur,
+  // proposee via un bandeau plutot qu'un saut automatique (choix explicite du produit).
+  const [savedPage, setSavedPage] = useState<number | null>(null)
+  const [resumeBannerVisible, setResumeBannerVisible] = useState(false)
+  const currentPageRef = useRef<number>(1)
+  const saveProgressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const pdfRef = useRef<PDFDocumentProxy | null>(null)
   const loadingTaskRef = useRef<{ destroy: () => Promise<void> } | null>(null)
@@ -285,6 +295,34 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   }, [])
 
   const driveId = useMemo(() => getDriveId(driveLink), [driveLink])
+
+  // Lecture de la position sauvegardee, des que l'utilisateur et le document
+  // sont connus. Independant du chargement du PDF lui-meme : on veut savoir
+  // s'il faut proposer le bandeau de reprise le plus tot possible.
+  useEffect(() => {
+    if (!currentUser || !documentId) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const progressRef = doc(db, 'reading_progress', currentUser.uid + '_' + documentId)
+        const snap = await getDoc(progressRef)
+        if (cancelled || !snap.exists()) return
+        const data = snap.data()
+        const page = typeof data.page === 'number' ? data.page : null
+        if (page && page > 1) {
+          setSavedPage(page)
+          setResumeBannerVisible(true)
+        }
+      } catch {
+        // Echec silencieux : la lecture de la position sauvegardee n'est
+        // qu'une amelioration de confort, elle ne doit jamais bloquer
+        // l'ouverture normale du document.
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [currentUser, documentId])
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => {
@@ -319,6 +357,20 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
   const handleMarksUpdated = useCallback((n: number, marks: HTMLElement[]) => {
     pageMarksRef.current.set(n, marks)
   }, [])
+
+  // Sauvegarde la page courante dans Firestore, avec un anti-rebond de 2s
+  // pour n'ecrire qu'apres un arret reel de lecture, pas a chaque page
+  // traversee pendant un scroll rapide.
+  const saveProgress = useCallback((page: number) => {
+    if (!currentUser || !documentId) return
+    if (saveProgressTimeoutRef.current) clearTimeout(saveProgressTimeoutRef.current)
+    saveProgressTimeoutRef.current = setTimeout(() => {
+      const progressRef = doc(db, 'reading_progress', currentUser.uid + '_' + documentId)
+      setDoc(progressRef, { page, documentId, userId: currentUser.uid, updatedAt: serverTimestamp() }).catch(() => {
+        // Echec silencieux : ne doit jamais perturber la lecture en cours.
+      })
+    }, 2000)
+  }, [currentUser, documentId])
 
   useEffect(() => {
     if (!currentUser || !proxyUrl) return
@@ -385,6 +437,8 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     if (!numPages || !containerRef.current) return
     const observer = new IntersectionObserver(
       (entries) => {
+        let bestRatio = 0
+        let bestPage: number | null = null
         entries.forEach((entry) => {
           const n = Number((entry.target as HTMLElement).dataset.pageNumber)
           if (!n) return
@@ -395,14 +449,24 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
                 setPages((prev) => (prev.has(n) ? prev : new Map(prev).set(n, page)))
               })
             }
+            if (entry.intersectionRatio > bestRatio) {
+              bestRatio = entry.intersectionRatio
+              bestPage = n
+            }
           }
           // Volontairement: on ne decharge plus les pages qui sortent du
           // viewport. Une fois chargee, une page reste montee pour de bon,
           // afin qu'une selection de texte en cours sur une page ne soit
           // jamais interrompue par un demontage/remontage pendant le scroll.
         })
+        // Sauvegarde la page la plus visible comme position de lecture,
+        // seulement si elle a reellement change depuis la derniere fois.
+        if (bestPage !== null && bestPage !== currentPageRef.current) {
+          currentPageRef.current = bestPage
+          saveProgress(bestPage)
+        }
       },
-      { root: containerRef.current, rootMargin: '200px 0px 200px 0px' }
+      { root: containerRef.current, rootMargin: '200px 0px 200px 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
     )
     observerRef.current = observer
     pageRefs.current.forEach((el) => observer.observe(el))
@@ -450,6 +514,23 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
     },
     [matches]
   )
+
+  const goToSavedPage = useCallback(() => {
+    if (savedPage === null) return
+    setResumeBannerVisible(false)
+    // La page ciblee doit d'abord etre montee (visiblePages/pages) pour que
+    // sa ref existe. On force son ajout, puis on scrolle une fois le DOM pret.
+    setVisiblePages((prev) => (prev.has(savedPage) ? prev : new Set(prev).add(savedPage)))
+    if (!pages.has(savedPage)) {
+      pdfRef.current?.getPage(savedPage).then((page) => {
+        setPages((prev) => (prev.has(savedPage) ? prev : new Map(prev).set(savedPage, page)))
+      })
+    }
+    setTimeout(() => {
+      const el = pageRefs.current.get(savedPage)
+      el?.scrollIntoView({ block: 'start', behavior: 'auto' })
+    }, 150)
+  }, [savedPage, pages])
 
   if (mounted === false) return null
   if (!currentUser) {
@@ -583,6 +664,40 @@ export default function PdfViewer({ driveLink, title, onClose }: Props) {
           </div>
         )}
       </div>
+
+      {resumeBannerVisible && savedPage !== null && (
+        <div
+          style={{
+            background: darkMode ? '#1e3a5f' : '#eff6ff',
+            borderBottom: '1px solid ' + (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'),
+            padding: '10px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+            flexWrap: 'wrap' as const,
+            flexShrink: 0,
+          }}
+        >
+          <span style={{ color: barFg, fontSize: '0.85rem' }}>
+            Reprendre à la page {savedPage} ?
+          </span>
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <button
+              onClick={goToSavedPage}
+              style={{ background: 'var(--blue)', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', fontWeight: 600 }}
+            >
+              Reprendre
+            </button>
+            <button
+              onClick={() => setResumeBannerVisible(false)}
+              style={{ background: btnBg, color: barFg, border: 'none', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit' }}
+            >
+              Non merci
+            </button>
+          </div>
+        </div>
+      )}
 
       <div ref={containerRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '16px 8px', WebkitOverflowScrolling: 'touch' as const }}>
         {loading && (

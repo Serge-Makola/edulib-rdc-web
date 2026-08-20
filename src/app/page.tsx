@@ -321,7 +321,7 @@ export default function HomePage() {
 
       </main>
       <Footer />
-      {viewerDoc && <PdfViewerErrorBoundary onClose={() => setViewerDoc(null)}><PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} onClose={() => setViewerDoc(null)} /></PdfViewerErrorBoundary>}
+      {viewerDoc && <PdfViewerErrorBoundary onClose={() => setViewerDoc(null)}><PdfViewer driveLink={viewerDoc.driveLink} title={viewerDoc.title} documentId={viewerDoc.id} onClose={() => setViewerDoc(null)} /></PdfViewerErrorBoundary>}
     </div>
   )
 }
