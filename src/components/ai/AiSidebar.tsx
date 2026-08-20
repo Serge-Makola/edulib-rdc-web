@@ -162,7 +162,7 @@ export default function AiSidebar() {
                   <div style={{ flex: 1, overflowY: 'auto', padding: '14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {messages.map((msg, i) => (
                       <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                        <div style={{ maxWidth: '84%', background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'var(--surface-2)', color: msg.role === 'user' ? '#fff' : 'var(--ink)', border: msg.role === 'user' ? 'none' : '1px solid var(--border)', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', padding: '10px 14px', fontSize: '0.84rem', lineHeight: 1.65, whiteSpace: 'pre-wrap' as const }}>
+                        <div style={{ maxWidth: '84%', background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'var(--surface-2)', color: msg.role === 'user' ? '#fff' : 'var(--ink)', border: msg.role === 'user' ? 'none' : '1px solid var(--border)', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', padding: '10px 14px', fontSize: '0.84rem', lineHeight: 1.65, whiteSpace: 'pre-wrap' as const, fontFamily: msg.role === 'assistant' ? '"Segoe UI", Roboto, Helvetica, Arial, sans-serif' : 'inherit' }}>
                           {msg.content.split('\n').map((line, j) => (
                             <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
                           ))}
