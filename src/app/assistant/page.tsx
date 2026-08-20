@@ -192,7 +192,7 @@ export default function AssistantPage() {
                   lineHeight: 1.75,
                   whiteSpace: 'pre-wrap' as const,
                   boxShadow: msg.role === 'assistant' ? '0 2px 8px rgba(0,0,0,0.06)' : '0 2px 8px rgba(37,99,235,0.2)',
-                  fontFamily: msg.role === 'assistant' ? '"Segoe UI", Roboto, Helvetica, Arial, sans-serif' : 'inherit',
+                  fontFamily: msg.role === 'assistant' ? '"Times New Roman", Times, Georgia, serif' : 'inherit',
                 }}>
                   {msg.content.split('\n').map((line, j) => (
                     <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
