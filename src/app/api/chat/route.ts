@@ -159,7 +159,6 @@ export async function POST(req: NextRequest) {
       }
     )
     const data = await response.json()
-    console.log('[DEBUG Gemini 3.7 response]', JSON.stringify(data).slice(0, 1000))
     const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     return NextResponse.json({ content: textOutput })
   } catch (e: any) {
