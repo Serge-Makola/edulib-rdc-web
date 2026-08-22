@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       } catch {}
     }
 
-    const cleaned = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 160000)
+    const cleaned = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 1800000)
     if (cleaned.length < 50) return NextResponse.json({ error: 'PDF scanné', text: '' })
 
     return NextResponse.json({ text: cleaned, pages: doc.numPages })
