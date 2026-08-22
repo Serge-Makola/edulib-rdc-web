@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
       return { role, parts: [{ text }] }
     })
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
       {
         method: 'POST',
         headers: {
@@ -160,8 +160,6 @@ export async function POST(req: NextRequest) {
       }
     )
     const data = await response.json()
-    console.log('DEBUG GEMINI: status HTTP =', response.status)
-    console.log('DEBUG GEMINI: reponse brute complete =', JSON.stringify(data))
     const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     return NextResponse.json({ content: textOutput })
   } catch (e: any) {
