@@ -163,6 +163,9 @@ export async function POST(req: NextRequest) {
       }
     )
     const data = await response.json()
+    if (data?.error) {
+      console.log('DEBUG GEMINI ERREUR:', data.error.code, data.error.message, data.error.status)
+    }
     const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     return NextResponse.json({ content: textOutput })
   } catch (e: any) {
