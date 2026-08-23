@@ -140,6 +140,21 @@ export async function POST(req: NextRequest) {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       docsContext = getRelevantDocs(docs, userQuery)
     } catch {}
+
+    // Recherche web activee seulement quand necessaire, pour ne pas epuiser
+    // le quota Grounding with Google Search sur chaque question. Deux cas :
+    // aucun document RAG pertinent trouve, ou question de droit international
+    // (traites, conventions, jurisprudence internationale), conformement aux
+    // regles de priorite definies dans SYSTEM_INSTRUCTION.
+    const MOTS_CLES_DROIT_INTERNATIONAL = [
+      'traite', 'convention internationale', 'cour internationale de justice', 'cij',
+      'cour penale internationale', 'cpi', 'droit international public',
+      'jurisprudence internationale', 'nations unies', 'onu', 'statut de rome',
+    ]
+    const queryLower = userQuery.toLowerCase()
+    const besoinDroitInternational = MOTS_CLES_DROIT_INTERNATIONAL.some(m => queryLower.includes(m))
+    const besoinWeb = !docsContext || besoinDroitInternational
+
     const geminiContents = validMessages.map((m: any) => {
       const isLastUserMsg = m === lastUserMsg
       const text = isLastUserMsg && docsContext ? `${docsContext}\n\n${m.content}` : m.content
@@ -157,7 +172,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
           contents: geminiContents,
-          tools: [{ google_search: {} }],
+          ...(besoinWeb ? { tools: [{ google_search: {} }] } : {}),
           generationConfig: { temperature: 0.4, maxOutputTokens: 8000 },
         }),
       }
