@@ -157,6 +157,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
           contents: geminiContents,
+          tools: [{ google_search: {} }],
           generationConfig: { temperature: 0.4, maxOutputTokens: 8000 },
         }),
       }
