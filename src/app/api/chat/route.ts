@@ -141,19 +141,6 @@ export async function POST(req: NextRequest) {
       docsContext = getRelevantDocs(docs, userQuery)
     } catch {}
 
-    // Recherche web activee seulement quand necessaire, pour ne pas epuiser
-    // le quota Grounding with Google Search sur chaque question. Deux cas :
-    // aucun document RAG pertinent trouve, ou question de droit international
-    // (traites, conventions, jurisprudence internationale), conformement aux
-    // regles de priorite definies dans SYSTEM_INSTRUCTION.
-    const MOTS_CLES_DROIT_INTERNATIONAL = [
-      'traite', 'convention internationale', 'cour internationale de justice', 'cij',
-      'cour penale internationale', 'cpi', 'droit international public',
-      'jurisprudence internationale', 'nations unies', 'onu', 'statut de rome',
-    ]
-    const queryLower = userQuery.toLowerCase()
-    const besoinDroitInternational = MOTS_CLES_DROIT_INTERNATIONAL.some(m => queryLower.includes(m))
-    const besoinWeb = !docsContext || besoinDroitInternational
 
     const geminiContents = validMessages.map((m: any) => {
       const isLastUserMsg = m === lastUserMsg
@@ -172,15 +159,11 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
           contents: geminiContents,
-          ...(besoinWeb ? { tools: [{ google_search: {} }] } : {}),
           generationConfig: { temperature: 0.4, maxOutputTokens: 8000 },
         }),
       }
     )
     const data = await response.json()
-    if (data?.error) {
-      console.log('DEBUG GEMINI ERREUR:', data.error.code, data.error.message, data.error.status)
-    }
     const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     return NextResponse.json({ content: textOutput })
   } catch (e: any) {
